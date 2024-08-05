@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import background from '../assets/background.png';
 import flag from '../assets/flag.png';
-import selectBox from '../assets/select.png';
+import selectBox from '../assets/선택전.png';
 import startBtn from '../assets/Start.png';
 import CalendarSite from './Calendar';
+import selected from './assets/selected.png';
 
 const Background = styled.div`
     display: flex;
@@ -65,8 +66,16 @@ const CalendarWrapper = styled.div`
     z-index: 10; /* 다른 요소들 위에 표시되도록 */
 `;
 
+const SelectCon =styled.div`
+    display:flex;
+    justify-content: center;
+    `
+
 const Main = () => {
     const [showCalendar, setShowCalendar] = useState(false);
+    const [startDate, setStartDate] =useState("MM.DD");
+    const [EndDate, setEndDate] =useState("MM.DD");
+    const [People , setPeople] =useState("추가");
 
     return (
         <Background>
@@ -75,6 +84,9 @@ const Main = () => {
                 <Title>Route Porter</Title>
                 <Description>일정을 추가한 뒤 루트포터와 대화를 시작해보세요.</Description>
                 <SelectBox src={selectBox} onClick={() => setShowCalendar(!showCalendar)} />
+                <SelectCon>
+
+                </SelectCon>
                 {showCalendar && (
                     <CalendarWrapper>
                         <CalendarSite />
