@@ -1,11 +1,13 @@
 import React from "react";
 import Icon from "../assets/Icon.svg";
 import Vector from "../assets/Vector.svg";
+import button2 from "../assets/button2.png";
 import styled from "styled-components";
 import { useState } from "react";
 
+
 const Body = styled.div`
-  margin-top: 200px;
+  margin-top: 190px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -26,7 +28,7 @@ const VectorImg = styled.img`
   position: absolute;
   z-index: -1;
   width: 700px;
-  height: 520px;
+  height: 500px;
   margin-right: 45px;
   margin-top: 50px;
   display: block;

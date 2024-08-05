@@ -1,12 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import buttonImg from "../assets/button.png";
-import button2 from "../assets/button2.png";
-
 
 const FooterContainer = styled.div`
   display: flex;
-  padding: 16px 380px 10px 380px;
+  padding: 16px 380px 56px 380px;
   justify-content: center;
   align-items: center;
   position: relative;
@@ -14,10 +12,10 @@ const FooterContainer = styled.div`
 
 const Input = styled.input`
   display: flex;
-  width: 700px;
+  width: 450px;
   height: 62px;
-  margin-top: 240px;
-  padding: 0 100px 0 40px;
+  margin-top: 200px;
+  padding: 0 200px;
   justify-content: flex-end;
   align-items: center;
   gap: 210px;
@@ -42,16 +40,16 @@ const Button = styled.img`
   z-index: +2;
   position: absolute;
   margin-left: 770px;
-  margin-top: 240px;
+  margin-top: 200px;
 `;
 
-function Footer() {
+function Footer3() {
   return (
     <FooterContainer>
-      <Input placeholder="루트포터의 질문에 답하고 완벽한 여행 계획을 세워보세요." />
-      <Button src={button2}></Button>
+      <Input placeholder="시작하기" />
+      <Button src={buttonImg}></Button>
     </FooterContainer>
   );
 }
 
-export default Footer;
+export default Footer3;
