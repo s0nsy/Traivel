@@ -1,10 +1,35 @@
-import React from 'react';
 import "./App.css";
-import { RouterProvider } from "react-router-dom";
-import router from "./libs/router";
+import Header from "./Pages/header";
+import Main from "./Pages/Main";
+import List from "./Pages/List/List";
+
+import { Routes, Route } from "react-router-dom";
 
 function App() {
-    return <RouterProvider router={router} />;
+  return (
+    <div className="App">
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <div>
+              <Header />
+              <List />
+            </div>
+          }
+        />
+        <Route
+          path="/main"
+          element={
+            <div>
+              <Header />
+              <Main />
+            </div>
+          }
+        />
+      </Routes>
+    </div>
+  );
 }
 
 export default App;
