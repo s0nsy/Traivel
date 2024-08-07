@@ -1,22 +1,10 @@
 import React from 'react';
-import './App.css';
-import Header from './Pages/header';
-import Main from './Pages/Main';
-import Calendar from './Pages/Calendar';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import "./App.css";
+import { RouterProvider } from "react-router-dom";
+import router from "./libs/router";
 
 function App() {
-    return (
-        <><Router>
-        <Header/>
-          <Routes>
-            <Route path='/' element={<Main/>}/>
-            <Route path='/temp' element={<Calendar/>}/>
-          </Routes>
-        </Router>
-            
-        </>
-    );
+    return <RouterProvider router={router} />;
 }
 
 export default App;
