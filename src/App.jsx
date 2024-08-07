@@ -2,10 +2,12 @@ import "./App.css";
 import Header from "./components/Header";
 import Main from "./components/Main";
 import Footer from "./components/Footer";
-import Footer2 from "./components/Footer2";
-import Footer3 from "./components/Footer3";
-import Body2 from "./components/Body2";
-import { Routes, Route, Link } from "react-router-dom";
+import Theme from "./components/Theme";
+import Location from "./components/Location";
+import Cost from "./components/Cost";
+import Preference from "./components/Preference";
+
+import { Routes, Route } from "react-router-dom";
 
 function App() {
   return (
@@ -22,12 +24,34 @@ function App() {
           }
         />
         <Route
-          path="/details"
+          path="/theme"
           element={
             <div>
-              <Header />
-              <Body2 />
-              <Footer2 />
+              <Theme />
+            </div>
+          }
+        />
+        <Route
+          path="/location"
+          element={
+            <div>
+              <Location />
+            </div>
+          }
+        />
+        <Route
+          path="/cost"
+          element={
+            <div>
+              <Cost />
+            </div>
+          }
+        />
+        <Route
+          path="/preference"
+          element={
+            <div>
+              <Preference />
             </div>
           }
         />

@@ -1,10 +1,9 @@
 import React from "react";
 import Icon from "../assets/Icon.svg";
 import Vector from "../assets/Vector.svg";
-import button2 from "../assets/button2.png";
 import styled from "styled-components";
 import { useState } from "react";
-
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Body = styled.div`
   margin-top: 190px;
@@ -70,6 +69,9 @@ const Button = styled.button`
   font-weight: 400;
   line-height: normal;
   cursor: pointer;
+  &:hover {
+    background: rgba(0, 0, 0, 0.5);
+  }
 `;
 
 const Guide = styled.p`
@@ -94,7 +96,26 @@ function Main() {
     "이동 및 경비",
     "여행 취향",
   ]);
-
+  const navigate = useNavigate();
+  const handleNavigate = (i) => {
+    switch (i) {
+      case 0:
+        navigate("/theme");
+        break;
+      case 1:
+        navigate("location");
+        break;
+      case 2:
+        navigate("cost");
+        break;
+      case 3:
+        navigate("preference");
+        break;
+      default:
+        navigate("/");
+        break;
+    }
+  };
   return (
     <Background>
       <Body>
@@ -103,7 +124,9 @@ function Main() {
         <Recommend>대화로 추천받는 내 여행지</Recommend>
         <Suggest>
           {sentense.map((a, i) => {
-            return <Button>{sentense[i]}</Button>;
+            return (
+              <Button onClick={() => handleNavigate(i)}>{sentense[i]}</Button>
+            );
           })}
         </Suggest>
         <Guide>멋진 일정을 계획하기 위해 루트포터 가이드를 이용해보세요.</Guide>

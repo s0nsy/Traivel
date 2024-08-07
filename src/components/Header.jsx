@@ -3,6 +3,7 @@ import styled from "styled-components";
 import SideBarIcon from "../assets/ic_round-menu.png";
 import Group from "../assets/Group 1000003732.png";
 import Rectangle from "../assets/Rectangle 42986.png";
+import { useNavigate } from "react-router-dom";
 
 const NavContainer = styled.div`
   position: fixed;
@@ -23,6 +24,7 @@ const NavLogo = styled.p`
   color: #01ecff;
   font-size: 24px;
   font-weight: 600;
+  cursor: pointer;
 `;
 
 const NavSelectCon = styled.div`
@@ -81,11 +83,19 @@ const BtnCon = styled.div`
   transform: translate(70%);
 `;
 const Header = () => {
+  const navigate = useNavigate();
+
   return (
     <>
       <NavContainer>
         <BtnCon>
-          <NavLogo>Route Porter</NavLogo>
+          <NavLogo
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Route Porter
+          </NavLogo>
           <NavSelectCon>
             <NavSelectImg src={Group} alt="Group Icon" />
             <NavSelectLeft>여행 날짜 선택</NavSelectLeft>
