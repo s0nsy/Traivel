@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import chattingbackground from "../../assets/chattingbackground.png";
 import movetochat from "../../assets/movetochat.svg";
+import { useNavigate } from 'react-router-dom';
 
 const Background = styled.div`
     display: flex;
@@ -64,7 +65,7 @@ const ListFrame = styled.div`
     margin: 0 auto;
 `;
 
-const ListItem = styled.div`
+const ListItem = styled.button`
     display: flex;
     align-items: left;
     width: 100%;
@@ -135,6 +136,7 @@ const ListFooter = styled.div`
     background: rgba(255, 255, 255, 0.30);
     box-shadow: 0px 4px 12px 2px rgba(1, 236, 255, 0.40);
     margin-top: 40px;
+    cursor: pointer;
 `;
 
 const FooterContent = styled.div`
@@ -156,7 +158,12 @@ const MoveToChatIcon = styled.img`
     height: 36px;
 `;
 
-const List = () => {
+function List(){
+    const navigate = useNavigate();
+    const handleNavigate=()=>{
+        navigate("/chat");
+    }
+
     return (
         <Background>
             <ListContainer>
@@ -174,13 +181,14 @@ const List = () => {
                         </ListItem>
                     ))}
                 </ListFrame>
-
-                <ListFooter>
+                
+                <ListFooter on onClick={() => handleNavigate()}>
                     <FooterContent>
                         <MoveToChatIcon src={movetochat} alt="Move to Chat" />
                         <div>채팅으로 돌아가기</div>
                     </FooterContent>
                 </ListFooter>
+                
             </ListContainer>
         </Background>
     );
