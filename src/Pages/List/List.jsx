@@ -54,7 +54,7 @@ const ListFrame = styled.div`
     padding: 16px 20px;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px; /* Consistent gap between items */
+    gap: 4px; 
     flex-shrink: 0;
     border-radius: 36px;
     border: 1px solid var(--Main_2, #01ECFF);
@@ -81,7 +81,6 @@ const ListItem = styled.div`
     box-sizing: border-box;
     border-radius: 28px;
 
-    /* Default margin for all items */
     margin-bottom: 0px;
 
     &:first-child {
@@ -142,7 +141,7 @@ const FooterContent = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 12px; /* Space between icon and text */
+    gap: 12px; 
     color: var(--White, #FFF);
     text-align: center;
     font-family: Pretendard;
