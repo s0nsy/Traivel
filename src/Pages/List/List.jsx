@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import chattingbackground from "../../assets/chattingbackground.png";
+import listarrow from "../../assets/listarrow.png";
 
 const Background = styled.div`
     display: flex;
