@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import chattingbackground from "../../assets/chattingbackground.png";
 import movetochat from "../../assets/movetochat.svg";
+import listarrow from "../../assets/listarrow.svg";
 import { useNavigate } from 'react-router-dom';
 
 const Background = styled.div`
@@ -55,7 +56,7 @@ const ListFrame = styled.div`
     padding: 16px 20px;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px; 
+    gap: 8px; 
     flex-shrink: 0;
     border-radius: 36px;
     border: 1px solid var(--Main_2, #01ECFF);
@@ -67,8 +68,10 @@ const ListFrame = styled.div`
 
 const ListItem = styled.button`
     display: flex;
-    align-items: left;
-    width: 100%;
+    justify-content: space-between; // ListDetails은 왼쪽, ArrowIcon은 오른쪽. 
+    align-items: center;  
+    width: 1120px;
+    height:80px;
     background: rgba(0, 0, 0, 0);
     padding: 26px 20px;
     color: #FFF;
@@ -81,16 +84,6 @@ const ListItem = styled.button`
     border: 1px solid transparent;
     box-sizing: border-box;
     border-radius: 28px;
-
-    margin-bottom: 0px;
-
-    &:first-child {
-        margin-top: 0px; 
-    }
-    
-    &:last-child {
-        margin-bottom: 0px; 
-    }
 
     &:hover {
         border-color: #01ECFF;
@@ -122,6 +115,13 @@ const ListDetailItem = styled.div`
     &:nth-child(3) {
         margin-left: 100px;
     }
+`;
+
+const ArrowIcon = styled.img`
+    width: 40px;
+    height: 40px;
+    display: ${({ isVisible }) => (isVisible ? 'block' : 'none')};
+    cursor: pointer;
 `;
 
 const ListFooter = styled.div`
@@ -159,10 +159,16 @@ const MoveToChatIcon = styled.img`
 `;
 
 function List(){
+    const [hoveredIndex, setHoveredIndex] = useState(null); 
     const navigate = useNavigate();
-    const handleNavigate=()=>{
+
+    const chatNavigate = () => {
         navigate("/chat");
-    }
+    };
+
+    const detailNavigate = () => {
+        navigate("/detail");
+    };
 
     return (
         <Background>
@@ -171,18 +177,29 @@ function List(){
                 <Subtitle1>날짜와 일정을 추가한 뒤, 루트포터와 대화를 시작해보세요.</Subtitle1>
                 <ListFrame>
                     {Array.from({ length: 7 }, (_, index) => (
-                        <ListItem key={index}>
-                            <ListIndex>{index + 1}</ListIndex>
-                            <ListDetails>
-                                <ListDetailItem>제주도</ListDetailItem>
-                                <ListDetailItem>서귀포</ListDetailItem>
-                                <ListDetailItem>메모</ListDetailItem>
-                            </ListDetails>
+                        <ListItem 
+                            key={index}
+                            onMouseOver={() => setHoveredIndex(index)}
+                            onMouseOut={() => setHoveredIndex(null)}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <ListIndex>{index + 1}</ListIndex>
+                                <ListDetails>
+                                    <ListDetailItem>제주도</ListDetailItem>
+                                    <ListDetailItem>서귀포</ListDetailItem>
+                                    <ListDetailItem>메모</ListDetailItem>
+                                </ListDetails>
+                            </div>
+                            <ArrowIcon 
+                                src={listarrow} 
+                                isVisible={hoveredIndex === index} 
+                                onClick={detailNavigate} 
+                            />
                         </ListItem>
                     ))}
                 </ListFrame>
                 
-                <ListFooter on onClick={() => handleNavigate()}>
+                <ListFooter onClick={chatNavigate}>
                     <FooterContent>
                         <MoveToChatIcon src={movetochat} alt="Move to Chat" />
                         <div>채팅으로 돌아가기</div>
