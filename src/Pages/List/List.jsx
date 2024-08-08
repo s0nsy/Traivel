@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import chattingbackground from "../../assets/chattingbackground.png";
-import listarrow from "../../assets/listarrow.png";
+import movetochat from "../../assets/movetochat.svg";
 
 const Background = styled.div`
     display: flex;
@@ -54,7 +54,7 @@ const ListFrame = styled.div`
     padding: 16px 20px;
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 4px; /* Consistent gap between items */
     flex-shrink: 0;
     border-radius: 36px;
     border: 1px solid var(--Main_2, #01ECFF);
@@ -66,63 +66,96 @@ const ListFrame = styled.div`
 
 const ListItem = styled.div`
     display: flex;
-    align-items: center;
+    align-items: left;
     width: 100%;
     background: rgba(0, 0, 0, 0);
-    padding: 20px;
-    border-radius: 28px;
+    padding: 26px 20px;
     color: #FFF;
-    transition: background-color 0.3s, border 0.3s;
+    transition: background-color 0.3s, border 0.3s, box-shadow 0.3s;
     font-family: Pretendard;
     font-size: 24px;
     font-style: normal;
     font-weight: 600;
     line-height: normal;
-
-    /* 초기에는 투명한 테두리 */
     border: 1px solid transparent;
+    box-sizing: border-box;
+    border-radius: 28px;
 
-    &:hover {
-        border-color: #01ECFF; /* hover 시 테두리 색상 */
-        background: rgba(255, 255, 255, 0.20);
-        box-shadow: 0px 12px 12px 4px rgba(1, 236, 254, 0.20);
-    }
+    /* Default margin for all items */
+    margin-bottom: 0px;
 
     &:first-child {
-        margin-top: 16px;
+        margin-top: 0px; 
     }
-
+    
     &:last-child {
-        margin-bottom: 16px;
+        margin-bottom: 0px; 
     }
 
-    &:not(:first-child) {
-        margin-top: 8px;
+    &:hover {
+        border-color: #01ECFF;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.20);
+        box-shadow: 0px 12px 12px 4px rgba(1, 236, 254, 0.20);
     }
 `;
 
 const ListIndex = styled.div`
     width: 44px;
-    text-align: center;
+    text-align: left;
 `;
 
 const ListDetails = styled.div`
     display: flex;
-    align-items: center;
+    align-items: left;
+    text-align: left;
     width: 100%;
-    gap: 28px;
 `;
 
 const ListDetailItem = styled.div`
-    &:nth-child(2) {
+    &:nth-child(1) {
         margin-left: 28px;
     }
+    &:nth-child(2) {
+        margin-left: 59px;
+    }
     &:nth-child(3) {
-        margin-left: 78px;
+        margin-left: 100px;
     }
 `;
 
+const ListFooter = styled.div`
+    display: flex;
+    width: 1160px;
+    height: 73px;
+    padding: 19px 0px 18px 0px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 36px;
+    border: 1px solid var(--Main_2, #01ECFF);
+    background: rgba(255, 255, 255, 0.30);
+    box-shadow: 0px 4px 12px 2px rgba(1, 236, 255, 0.40);
+    margin-top: 40px;
+`;
 
+const FooterContent = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px; /* Space between icon and text */
+    color: var(--White, #FFF);
+    text-align: center;
+    font-family: Pretendard;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+`;
+
+const MoveToChatIcon = styled.img`
+    width: 36px;
+    height: 36px;
+`;
 
 const List = () => {
     return (
@@ -135,18 +168,23 @@ const List = () => {
                         <ListItem key={index}>
                             <ListIndex>{index + 1}</ListIndex>
                             <ListDetails>
-                                <div>제주도</div>
+                                <ListDetailItem>제주도</ListDetailItem>
                                 <ListDetailItem>서귀포</ListDetailItem>
-                                <ListDetailItem>메인 키워드 | 메모</ListDetailItem>
+                                <ListDetailItem>메모</ListDetailItem>
                             </ListDetails>
                         </ListItem>
                     ))}
                 </ListFrame>
+
+                <ListFooter>
+                    <FooterContent>
+                        <MoveToChatIcon src={movetochat} alt="Move to Chat" />
+                        <div>채팅으로 돌아가기</div>
+                    </FooterContent>
+                </ListFooter>
             </ListContainer>
         </Background>
     );
 }
 
 export default List;
-
-
