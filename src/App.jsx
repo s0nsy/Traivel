@@ -38,6 +38,46 @@ function App() {
             </div>
           }
         />
+          <Route
+          path="/location"
+          element={
+            <div>
+              <Header />
+              <Location />
+
+            </div>
+          }
+        />
+        <Route
+          path="/theme"
+          element={
+            <div>
+              <Header />
+              <Theme />
+
+            </div>
+          }
+        />
+          <Route
+          path="/cost"
+          element={
+            <div>
+              <Header />
+              <Cost />
+
+            </div>
+          }
+        />
+        <Route
+          path="/preference"
+          element={
+            <div>
+              <Header />
+              <Preference />
+
+            </div>
+          }
+        />
         <Route
           path="/main"
           element={

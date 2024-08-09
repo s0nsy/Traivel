@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom'; // useNavigate 훅을 import
 import background from '../assets/background.png';
 import flag from '../assets/flag.png';
 import selectBox from '../assets/select.png';
@@ -66,7 +67,7 @@ const CalendarWrapper = styled.div`
     z-index: 10; /* 다른 요소들 위에 표시되도록 */
 `;
 
-const Main = () => {
+const Home = () => {
     const [showCalendar, setShowCalendar] = useState(false);
     const navigate = useNavigate();
     
@@ -86,10 +87,10 @@ const Main = () => {
                         <CalendarSite />
                     </CalendarWrapper>
                 )}
-                <StartBtn src={startBtn} onClick={Main} />
+                <StartBtn src={startBtn} />
             </FirstCon>
         </Background>
     );
 }
 
-export default Main;
+export default Home;
