@@ -4,6 +4,7 @@ import 'react-calendar/dist/Calendar.css';
 import styled from 'styled-components';
 import moment from "moment";
 import bar from '../assets/bar.png';
+
 const Container = styled.div`
     display: flex;
     flex-direction: column;
@@ -15,6 +16,7 @@ const Container = styled.div`
     width: 360px;
     height: 320px;
 `;
+
 const ExtraContent = styled.div`
     display: flex;
     flex-direction: column;
@@ -32,6 +34,7 @@ const Text = styled.p`
     font-size: 16px;
     font-family: Pretendard;
 `;
+
 const StyledCalendar = styled(Calendar)`
     border-radius: 24px; /* 달력의 모서리를 둥글게 */
     overflow: hidden; /* 둥근 모서리가 잘 적용되도록 */
@@ -41,7 +44,6 @@ const StyledCalendar = styled(Calendar)`
     padding: 25px; /* 내부 여백 추가 */
     padding-bottom:50px;
    
-
     .react-calendar__tile {
         background: #014C4E; /* 배경색 변경 */
         color: white; /* 날짜 글씨 색상 변경 */
@@ -69,26 +71,41 @@ const StyledCalendar = styled(Calendar)`
         background-color:#2A2A2A;
         border-radius: 200px;
   }
-        .react-calendar__month-view__weekdays {
+    .react-calendar__month-view__weekdays {
         color:white;
     }
-    
-   
-
 `;
 
-
 const CalendarSite = () => {
-    const [value, onChange] = useState(new Date());
+    const [dates, setDates] = useState([new Date(), new Date()]); // 출발일과 도착일을 저장할 상태
+
+    const onChange = (value) => {
+        if (Array.isArray(value)) {
+            setDates(value); // 날짜 범위를 선택하면 상태를 업데이트
+        }
+    };
+
+    const formatDateRange = () => {
+        const [startDate, endDate] = dates;
+        const formattedStartDate = moment(startDate).format('MM.DD(ddd)');
+        const formattedEndDate = moment(endDate).format('MM.DD(ddd)');
+        const days = moment(endDate).diff(moment(startDate), 'days') + 1; // 선택된 일수 계산
+        return `${formattedStartDate} - ${formattedEndDate} ${days}박 ${days + 1}일`;
+    };
+
     return (
         <Container>
-            <StyledCalendar onChange={onChange} value={value} formatDay={(locale, date)=> moment(date).format("DD")} />
-                <ExtraContent>
-                    <Image src={bar}/>
-                    <Text>08.22(목) - 08.24(토) 2박 3일</Text>
-                </ExtraContent>
+            <StyledCalendar 
+                selectRange={true} // 날짜 범위 선택을 활성화
+                onChange={onChange} 
+                value={dates} 
+                formatDay={(locale, date)=> moment(date).format("DD")} 
+            />
+            <ExtraContent>
+                <Image src={bar}/>
+                <Text>{formatDateRange()}</Text>
+            </ExtraContent>
         </Container>
-        
     );
 }
 

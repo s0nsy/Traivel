@@ -8,6 +8,8 @@ import Location from "./components/Location";
 import Theme from "./components/Theme";
 import Preference from "./components/Preference";
 import Cost from "./components/Cost";
+import People from "./Pages/People";
+
 
 
 import { Routes, Route } from "react-router-dom";
@@ -87,6 +89,17 @@ function App() {
             </div>
           }
         />
+        <Route
+          path="/test"
+          element={
+            <div>
+              
+              <People />
+
+            </div>
+          }
+        />
+
         
       </Routes>
     </div>
