@@ -1,29 +1,33 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom'; 
 import background from '../assets/background.png';
 import flag from '../assets/flag.png';
 import selectBox from '../assets/선택전.png';
 import startBtn from '../assets/Start.png';
-import CalendarSite from './Calendar';
-import selected from './assets/selected.png';
+import CalendarSite from './Calendar'; // 기존 Calendar 사용
+import People from './People';  // People 컴포넌트 import
+import selectedImg from '../assets/selected.png'; 
+import Rectangle from '../assets/sidebar.png'; 
+import moment from "moment";
 
 const Background = styled.div`
     display: flex;
     width: 100%;
     height: 100vh;
     background-image: url(${background});
-    background-size: cover; /* 이미지를 뷰포트에 맞게 채우기 */
-    background-position: center center; /* 가운데 정렬 */
-    position: relative; /* 절대 위치 요소를 포함하기 위해 */
+    background-size: cover;
+    background-position: center center;
+    position: relative;
 `;
 
 const FirstCon = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center; /* 가로 방향 중앙 정렬 */
-    align-items: center; /* 세로 방향 중앙 정렬 */
+    justify-content: center;
+    align-items: center;
     width: 100%;
-    height: 100%; /* 부모 요소의 전체 높이 차지 */
+    height: 100%;
     gap: 10px;
 `;
 
@@ -48,12 +52,60 @@ const Description = styled.p`
     font-weight: 300;
 `;
 
+const SelectCon = styled.div`
+    display: flex;
+    position: relative;
+    align-items: center;
+`;
+
 const SelectBox = styled.img`
-    cursor: pointer; /* 클릭 가능한 커서 */
+    cursor: pointer;
+`;
+
+const SelectDate = styled.div`
+    position: absolute;
+    display: flex;
+    align-items: center;
+    font-family: Pretendard, sans-serif;
+    color: #FFFFFF;
+    font-size: 18px;
+    font-weight: 400;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+`;
+
+const InlineTextWrapper = styled.div`
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+`;
+
+const InlineText = styled.span`
+    white-space: nowrap;
+    cursor: pointer;
+    z-index: 2;
+`;
+
+const ArrowIcon = styled.img`
+    width: 2px;
+    height: 24px;
+    margin: 0 40px;
+`;
+
+const SelectedImg = styled.img`
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+    width: 230px;
+    height: 60px;
+    z-index: 0;
+    pointer-events: none;
 `;
 
 const StartBtn = styled.img`
-    cursor: pointer; /* 클릭 가능한 커서 */
+    cursor: pointer;
 `;
 
 const CalendarWrapper = styled.div`
@@ -63,19 +115,42 @@ const CalendarWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10; /* 다른 요소들 위에 표시되도록 */
+    z-index: 10;
 `;
 
-const SelectCon =styled.div`
-    display:flex;
-    justify-content: center;
-    `
+const Home = () => {
+    const [selectedText, setSelectedText] = useState(null); // 클릭된 텍스트의 상태
+    const [startDate, setStartDate] = useState(null); // 출발일 상태
+    const [endDate, setEndDate] = useState(null); // 도착일 상태
+    const [people, setPeople] = useState("추가");
+    const navigate = useNavigate(); 
 
-const Main = () => {
-    const [showCalendar, setShowCalendar] = useState(false);
-    const [startDate, setStartDate] =useState("MM.DD");
-    const [EndDate, setEndDate] =useState("MM.DD");
-    const [People , setPeople] =useState("추가");
+    const handleStartClick = () => {
+        navigate('/main'); 
+    };
+
+    const handleInlineTextClick = (text) => {
+        setSelectedText(selectedText === text ? null : text);
+    };
+
+    const handleDateChange = (date) => {
+        if (selectedText === 'startDate') {
+            setStartDate(date);
+        } else if (selectedText === 'endDate') {
+            setEndDate(date);
+        }
+    };
+
+    const formatDateRange = () => {
+        if (startDate && endDate) {
+            const formattedStartDate = moment(startDate).format('MM.DD');
+            const formattedEndDate = moment(endDate).format('MM.DD');
+            const days = moment(endDate).diff(moment(startDate), 'days') + 1;
+            return `${formattedStartDate} - ${formattedEndDate} ${days}박 ${days + 1}일`;
+        } else {
+            return "기간 선택";
+        }
+    };
 
     return (
         <Background>
@@ -83,19 +158,44 @@ const Main = () => {
                 <FlagImg src={flag} />
                 <Title>Route Porter</Title>
                 <Description>일정을 추가한 뒤 루트포터와 대화를 시작해보세요.</Description>
-                <SelectBox src={selectBox} onClick={() => setShowCalendar(!showCalendar)} />
                 <SelectCon>
-
+                    <SelectBox src={selectBox} onClick={() => handleInlineTextClick(null)} />
+                    <SelectDate>
+                        <InlineTextWrapper onClick={() => handleInlineTextClick('startDate')}>
+                            {selectedText === 'startDate' && <SelectedImg src={selectedImg} />}
+                            <InlineText>출발일 {startDate ? moment(startDate).format('MM.DD') : "MM.DD"}</InlineText>
+                        </InlineTextWrapper>
+                        <ArrowIcon src={Rectangle} />
+                        <InlineTextWrapper onClick={() => handleInlineTextClick('endDate')}>
+                            {selectedText === 'endDate' && <SelectedImg src={selectedImg} />}
+                            <InlineText>도착일 {endDate ? moment(endDate).format('MM.DD') : "MM.DD"}</InlineText>
+                        </InlineTextWrapper>
+                        <ArrowIcon src={Rectangle} />
+                        <InlineTextWrapper onClick={() => handleInlineTextClick('people')}>
+                            {selectedText === 'people' && <SelectedImg src={selectedImg} />}
+                            <InlineText>인원 {people}</InlineText>
+                        </InlineTextWrapper>
+                    </SelectDate>               
                 </SelectCon>
-                {showCalendar && (
+                {selectedText === 'startDate' && (
                     <CalendarWrapper>
-                        <CalendarSite />
+                        <CalendarSite onChange={handleDateChange} />
                     </CalendarWrapper>
                 )}
-                <StartBtn src={startBtn} />
+                {selectedText === 'endDate' && (
+                    <CalendarWrapper>
+                        <CalendarSite onChange={handleDateChange} />
+                    </CalendarWrapper>
+                )}
+                {selectedText === 'people' && (
+                    <CalendarWrapper>
+                        <People />
+                    </CalendarWrapper>
+                )}
+                <StartBtn src={startBtn} onClick={handleStartClick} />
             </FirstCon>
         </Background>
     );
 }
 
-export default Main;
+export default Home;
