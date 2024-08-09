@@ -16,7 +16,7 @@ const Plan = styled.div`
   width: 730px;
   height: 62px;
   margin-top: 240px;
-  padding: 0 100px 0 90px;
+  padding: 0 100px 0 75px;
   justify-content: center;
   align-items: center;
   gap: 210px;

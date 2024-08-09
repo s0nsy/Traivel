@@ -6,57 +6,67 @@ import Theme from "./components/Theme";
 import Location from "./components/Location";
 import Cost from "./components/Cost";
 import Preference from "./components/Preference";
-
 import { Routes, Route } from "react-router-dom";
+import chattingbackground from "./assets/chattingbackground.png";
+import { createGlobalStyle } from "styled-components";
+
+const GlobalStyle = createGlobalStyle`
+  body{
+  background-image: url(${chattingbackground});
+  }
+`;
 
 function App() {
   return (
-    <div className="App">
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <div>
-              <Header />
-              <Main />
-              <Footer />
-            </div>
-          }
-        />
-        <Route
-          path="/theme"
-          element={
-            <div>
-              <Theme />
-            </div>
-          }
-        />
-        <Route
-          path="/location"
-          element={
-            <div>
-              <Location />
-            </div>
-          }
-        />
-        <Route
-          path="/cost"
-          element={
-            <div>
-              <Cost />
-            </div>
-          }
-        />
-        <Route
-          path="/preference"
-          element={
-            <div>
-              <Preference />
-            </div>
-          }
-        />
-      </Routes>
-    </div>
+    <>
+      <GlobalStyle />
+      <div className="App">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div>
+                <Header />
+                <Main />
+                <Footer />
+              </div>
+            }
+          />
+          <Route
+            path="/theme"
+            element={
+              <div>
+                <Theme />
+              </div>
+            }
+          />
+          <Route
+            path="/location"
+            element={
+              <div>
+                <Location />
+              </div>
+            }
+          />
+          <Route
+            path="/cost"
+            element={
+              <div>
+                <Cost />
+              </div>
+            }
+          />
+          <Route
+            path="/preference"
+            element={
+              <div>
+                <Preference />
+              </div>
+            }
+          />
+        </Routes>
+      </div>
+    </>
   );
 }
 

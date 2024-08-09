@@ -4,6 +4,7 @@ import Vector from "../assets/Vector.svg";
 import styled from "styled-components";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import chattingbackground from "../assets/chattingbackground.png";
 
 const Body = styled.div`
   margin-top: 190px;
@@ -87,6 +88,7 @@ const Guide = styled.p`
 const Background = styled.div`
   width: 100%;
   height: 100%;
+  z-index:+2;
 `;
 
 function Main() {
