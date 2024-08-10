@@ -9,7 +9,7 @@ const RecommendationsWrapper = styled.div`
 `;
 
 const Title = styled.h2`
-  margin-bottom: 0.625rem; /* 10px -> 0.625rem */
+  margin-bottom: 0.625rem; 
   color: #ffffff;
 `;
 
@@ -17,7 +17,7 @@ const RecommendationsContainer = styled.div`
   width: 73.5rem;
   height: 23rem;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.625rem; /* 10px -> 0.625rem */
+  border-radius: 0.625rem; 
   color: #ffffff;
   position: relative;
 `;

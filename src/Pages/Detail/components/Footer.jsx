@@ -4,16 +4,16 @@ import Detail from '../../../assets/DetailFooter.png';
 import Background from '../../../assets/Detail_background.png';
 
 const FooterContainer = styled.div`
-  margin-bottom: 1.25rem; /* 20px -> 1.25rem */
+  margin-bottom: 1.25rem; 
   width: 100%;
   height: 21.75rem;
-  padding: 1.25rem; /* 20px -> 1.25rem */
-  background: url(${Background}) no-repeat center center; /* Background 이미지 설정 */
-  background-size: cover; /* 배경 이미지 크기를 컨테이너에 맞춤 */
-  border-radius: 0.625rem; /* 10px -> 0.625rem */
+  padding: 1.25rem; 
+  background: url(${Background}) no-repeat center center; 
+  background-size: cover; 
+  border-radius: 0.625rem; 
   color: #ffffff;
   text-align: left;
-  position: relative; /* 내부 박스를 절대 위치로 배치하기 위해 설정 */
+  position: relative; 
 `;
 
 const InnerBox = styled.div`
@@ -25,7 +25,7 @@ const InnerBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0; /* 내부 패딩 제거 */
+  padding: 0; 
 `;
 
 const Text = styled.p`
@@ -36,22 +36,22 @@ const Text = styled.p`
   font-weight: 600;
   color: #FFF;
   line-height: normal;
-  max-width: calc(100% - 28.38rem); /* 텍스트와 이미지 사이의 간격을 28.38rem로 설정 */
-  white-space: pre-line; /* 텍스트가 줄 바꿈을 할 수 있도록 설정 */
+  max-width: calc(100% - 28.38rem); 
+  white-space: pre-line; 
   display: flex;
   align-items: center;
 `;
 
 const Arrow = styled.span`
   font-size: 2rem;
-  margin-left: 0.3rem; /* 약간의 간격을 두어 텍스트와 화살표를 분리 */
+  margin-left: 0.3rem; 
 `;
 
 const DetailImage = styled.img`
   height: auto;
   max-height: 100%;
   max-width: 100%;
-  cursor: pointer; /* 이미지를 클릭 가능하게 시각적으로 표시 */
+  cursor: pointer; 
 `;
 
 function Footer() {

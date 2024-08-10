@@ -9,7 +9,7 @@ const AttractionsWrapper = styled.div`
 `;
 
 const Title = styled.h2`
-  margin-bottom: 0.625rem; /* 10px -> 0.625rem */
+  margin-bottom: 0.625rem; 
   color: #ffffff;
 `;
 
@@ -17,18 +17,18 @@ const AttractionsContainer = styled.div`
   display: flex;
   width: 100%;
   height: 23rem;
-  padding: 1.25rem 1rem 1.1875rem 1rem; /* 20px 16px 19px 16px -> 1.25rem 1rem 1.1875rem 1rem */
+  padding: 1.25rem 1rem 1.1875rem 1rem; 
   justify-content: space-around;
   align-items: stretch;
-  gap: 0.875rem; /* 14px -> 0.875rem */
-  border-radius: 0.75rem; /* 12px -> 0.75rem */
+  gap: 0.875rem; 
+  border-radius: 0.75rem; 
   background: rgba(255, 255, 255, 0.10);
-  position: relative; /* Positioning for arrows */
+  position: relative; 
 `;
 
 const AttractionSection = styled.div`
   flex: 1;
-  border-radius: 0.5rem; /* 8px -> 0.5rem */
+  border-radius: 0.5rem; 
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -42,8 +42,8 @@ const ImageContainer = styled.div`
   background-image: url(${Background});
   background-size: cover;
   background-position: center;
-  margin-bottom: 0.5rem; /* 8px -> 0.5rem */
-  border-radius: 0.5rem; /* 8px -> 0.5rem */
+  margin-bottom: 0.5rem; 
+  border-radius: 0.5rem; 
 `;
 
 const TextContainer = styled.div`

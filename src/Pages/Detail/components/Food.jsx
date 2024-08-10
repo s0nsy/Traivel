@@ -8,12 +8,12 @@ const FoodWrapper = styled.div`
 `;
 
 const FoodContainer = styled.div`
-  margin-bottom: 1.25rem; /* 20px -> 1.25rem */
+  margin-bottom: 1.25rem; 
   width: 73.5rem;
   height: 24rem;
-  padding: 1.25rem; /* 20px -> 1.25rem */
+  padding: 1.25rem; 
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.625rem; /* 10px -> 0.625rem */
+  border-radius: 0.625rem; 
   color: #ffffff;
   display: flex;
   justify-content: space-between;
@@ -21,16 +21,16 @@ const FoodContainer = styled.div`
 `;
 
 const Title = styled.h2`
-  margin-bottom: 0.625rem; /* 10px -> 0.625rem */
+  margin-bottom: 0.625rem; 
   color: #ffffff;
 `;
 
 const FoodItem = styled.div`
   background: rgba(255, 255, 255, 0.10);
-  border-radius: 0.625rem; /* 10px -> 0.625rem */
-  padding: 1.25rem; /* 20px -> 1.25rem */
+  border-radius: 0.625rem; 
+  padding: 1.25rem; 
   flex: 1;
-  margin: 0 0.625rem; /* 0 10px -> 0 0.625rem */
+  margin: 0 0.625rem; 
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -45,7 +45,7 @@ const FoodTitle = styled.div`
   gap: 0.625rem;
   border-radius: 1.5rem;
   border: 1px solid var(--White, #FFF);
-  margin-bottom: 0.9375rem; /* 15px -> 0.9375rem */
+  margin-bottom: 0.9375rem; 
   text-align: left;
   width: fit-content;
 `;
@@ -57,11 +57,11 @@ const FoodList = styled.ul`
   align-items: flex-start;
   gap: 1.5625rem;
   list-style: disc;
-  padding-left: 1.25rem; /* 20px -> 1.25rem */
+  padding-left: 1.25rem; 
 `;
 
 const FoodListItem = styled.li`
-  margin-bottom: 0.3125rem; /* 5px -> 0.3125rem */
+  margin-bottom: 0.3125rem; 
 `;
 
 const ArrowImageLeft = styled.img`

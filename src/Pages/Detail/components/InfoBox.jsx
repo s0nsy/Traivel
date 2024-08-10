@@ -2,14 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 import InfoBox1 from '../../../assets/InfoBox1.png';
 import InfoBox2 from '../../../assets/InfoBox2.png';
-import DetailBackground from '../../../assets/Detail_background.png'; // 배경 이미지 추가
+import DetailBackground from '../../../assets/Detail_background.png'; 
 
 const InfoBoxContainer = styled.div`
   width: 73.75rem;
   height: 17.5rem;
   flex-shrink: 0;
-  background: url(${DetailBackground}) no-repeat center center; /* 배경 이미지 설정 */
-  background-size: cover; /* 배경 이미지 크기 조정 */
+  background: url(${DetailBackground}) no-repeat center center; 
+  background-size: cover;
   position: relative;
   display: flex;
   align-items: center;
@@ -19,7 +19,7 @@ const InfoBoxContainer = styled.div`
 const Image = styled.img`
   width: 5rem;
   height: 5rem;
-  margin-right: 1rem; /* 이미지와 텍스트 사이의 간격 */
+  margin-right: 1rem; 
 `;
 
 const PositionedImage = styled.img`
@@ -28,20 +28,19 @@ const PositionedImage = styled.img`
   left: 51.75rem;
   width: auto;
   height: auto;
-  max-width: 20rem; /* 이미지 최대 너비 키움 */
-  max-height: 9rem; /* 이미지 최대 높이 키움 */
-  cursor: pointer; /* 마우스 포인터를 클릭 가능한 형태로 변경 */
+  max-width: 20rem; 
+  max-height: 9rem; 
+  cursor: pointer; 
 `;
 
 const StyledH2 = styled.h2`
   color: #ffffff;
-  margin: 0; /* 기본 여백 제거 */
-  padding: 0; /* 텍스트와 이미지 사이의 간격 제거 */
+  margin: 0; 
+  padding: 0; 
 `;
 
 function InfoBox() {
   const handleImageClick = () => {
-    // 여기에 원하는 동작을 추가하세요. 예를 들어, 새로운 페이지로 이동하거나, 팝업을 띄우는 동작 등.
     window.open('https://example.com', '_blank'); // 새 탭에서 링크 열기
   };
 

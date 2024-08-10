@@ -7,42 +7,42 @@ const MapSectionWrapper = styled.div`
 `;
 
 const Title = styled.h2`
-  margin-bottom: 0.625rem; /* 10px -> 0.625rem */
+  margin-bottom: 0.625rem; 
   color: #ffffff;
 `;
 
 const MapSectionContainer = styled.div`
-  margin-bottom: 1.25rem; /* 20px -> 1.25rem */
+  margin-bottom: 1.25rem; 
   width: 100%;
   height: 30.9375rem;
-  padding: 1.25rem; /* 20px -> 1.25rem */
+  padding: 1.25rem; 
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.625rem; /* 10px -> 0.625rem */
+  border-radius: 0.625rem; 
   color: #ffffff;
   display: flex;
-  gap: 1.25rem; /* 20px -> 1.25rem */
+  gap: 1.25rem; 
 `;
 
 const LeftContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 30%; /* 왼쪽 섹션은 전체의 30% */
-  gap: 0.625rem; /* 10px -> 0.625rem */
+  width: 30%; 
+  gap: 0.625rem; 
 `;
 
 const ImageContainer = styled.div`
   flex: 2;
   background: url(${props => props.imageUrl}) no-repeat center center;
   background-size: cover;
-  border-radius: 0.625rem; /* 10px -> 0.625rem */
+  border-radius: 0.625rem; 
   height: 100%;
 `;
 
 const TextContainer = styled.div`
   flex: 1;
-  background: rgba(0, 0, 0, 0.5); /* 텍스트 배경 */
-  padding: 0.625rem; /* 10px -> 0.625rem */
-  border-radius: 0.625rem; /* 10px -> 0.625rem */
+  background: rgba(0, 0, 0, 0.5); 
+  padding: 0.625rem; 
+  border-radius: 0.625rem; 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,9 +50,9 @@ const TextContainer = styled.div`
 `;
 
 const MapContainer = styled.div`
-  flex: 1; /* 오른쪽 지도 섹션 */
+  flex: 1; 
   width: 70%;
-  border-radius: 0.625rem; /* 10px -> 0.625rem */
+  border-radius: 0.625rem; 
   background: url(${Background}) no-repeat center center;
   background-size: cover; /* Background 이미지를 넣음 */
 `;

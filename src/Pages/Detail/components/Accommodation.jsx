@@ -9,17 +9,17 @@ const AccommodationWrapper = styled.div`
 `;
 
 const Title = styled.h2`
-  margin-bottom: 0.625rem; /* 10px -> 0.625rem */
+  margin-bottom: 0.625rem; 
   color: #ffffff;
 `;
 
 const AccommodationContainer = styled.div`
-  margin-bottom: 1.25rem; /* 20px -> 1.25rem */
+  margin-bottom: 1.25rem; 
   width: 100%;
   height: 25rem;
-  padding: 1.25rem; /* 20px -> 1.25rem */
+  padding: 1.25rem; 
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.625rem; /* 10px -> 0.625rem */
+  border-radius: 0.625rem; 
   color: #ffffff;
   position: relative;
 `;
