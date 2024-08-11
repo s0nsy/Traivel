@@ -3,6 +3,15 @@ import styled from 'styled-components';
 import Detail from '../../../assets/DetailFooter.png';
 import Background from '../../../assets/Detail_background.png';
 
+const FooterWrapper = styled.div`
+  width: 100%;
+`;
+
+const Title = styled.h2`
+  margin-bottom: 0.625rem; 
+  color: #ffffff;
+`;
+
 const FooterContainer = styled.div`
   margin-bottom: 1.25rem; 
   width: 100%;
@@ -61,6 +70,8 @@ function Footer() {
   };
 
   return (
+    <FooterWrapper>
+      <Title><h2>🧙‍♂루트 포터가 추천해드린 여행 정보가 마음에 들지 않으시나요?</h2></Title>
     <FooterContainer>
       <InnerBox>
         <Text>
@@ -69,6 +80,7 @@ function Footer() {
         <DetailImage src={Detail} alt="Detail 이미지" onClick={handleImageClick} />
       </InnerBox>
     </FooterContainer>
+    </FooterWrapper>
   );
 }
 

@@ -138,7 +138,7 @@ function Recommendations() {
 
   return (
     <RecommendationsWrapper>
-      <Title><h2>이런 교통수단을 이용하면 더욱 편리해요</h2></Title>
+      <Title><h2>🚘이런 교통수단을 이용하면 더욱 편리해요</h2></Title>
       <RecommendationsContainer>
         <ArrowImageLeft
           src={ArrowLeft}

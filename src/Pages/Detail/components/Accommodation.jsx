@@ -140,7 +140,7 @@ function Accommodation() {
 
   return (
     <AccommodationWrapper>
-      <Title><h2>요즘 많이 찾는 숙박시설을 모아봤어요</h2></Title>
+      <Title><h2>🏡요즘 많이 찾는 숙박시설을 모아봤어요</h2></Title>
       <AccommodationContainer>
         <ArrowImageLeft
           src={ArrowLeft}

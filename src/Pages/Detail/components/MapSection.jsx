@@ -60,7 +60,7 @@ const MapContainer = styled.div`
 function MapSection() {
   return (
     <MapSectionWrapper>
-      <Title><h2>서귀포시는 여기에 위치해 있어요</h2></Title>
+      <Title><h2>📍서귀포시는 여기에 위치해 있어요</h2></Title>
       <MapSectionContainer>
         <LeftContainer>
           <ImageContainer imageUrl={Background} />

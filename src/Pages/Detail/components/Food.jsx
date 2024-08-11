@@ -112,7 +112,7 @@ function Food() {
 
   return (
     <FoodWrapper>
-      <Title><h2>이런 음식들이 유명해요</h2></Title>
+      <Title><h2>🍴이런 음식들이 유명해요</h2></Title>
       <FoodContainer>
         <ArrowImageLeft
           src={ArrowLeft}

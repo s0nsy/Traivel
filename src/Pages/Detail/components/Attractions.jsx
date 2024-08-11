@@ -94,7 +94,7 @@ function Attractions() {
 
   return (
     <AttractionsWrapper>
-      <Title><h2>주요 관광지, 쇼핑 정보를 모아봤어요</h2></Title>
+      <Title><h2>🌟주요 관광지, 쇼핑 정보를 모아봤어요</h2></Title>
       <AttractionsContainer>
         <ArrowImageLeft
           src={ArrowLeft}
