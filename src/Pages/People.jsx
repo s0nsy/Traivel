@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Left from '../assets/left.png';
 import right from '../assets/right.png';
@@ -79,10 +79,15 @@ const CountCon = styled.div`
     gap: 20px; /* Minus, Text, Plus 사이의 간격 */
 `;
 
-const People = () => {
+const People = ({onPeopleChange}) => {
     const [adult, setAdult] = useState(0);
     const [child, setChild] = useState(0);
     const [infant, setInfant] = useState(0);
+
+    useEffect(()=>{
+        onPeopleChange(adult+child+infant);
+    },[adult,child,infant,onPeopleChange])
+   
 
     const handleIncrease = (type) => {
         if (type === "adult") setAdult(adult + 1);
