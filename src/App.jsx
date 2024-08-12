@@ -9,7 +9,7 @@ import Theme from "./components/Theme";
 import Preference from "./components/Preference";
 import Cost from "./components/Cost";
 import People from "./Pages/People";
-
+import Detail from "./Pages/Detail/Main";
 
 
 import { Routes, Route } from "react-router-dom";
@@ -99,7 +99,16 @@ function App() {
             </div>
           }
         />
+        <Route
+          path="/detail"
+          element={
+            <div>
+              <Header />
+              <Detail />
 
+            </div>
+          }
+        />
         
       </Routes>
     </div>
