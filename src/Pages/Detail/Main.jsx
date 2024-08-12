@@ -58,7 +58,7 @@ const PageContainer = styled.div`
   justify-content: center;
   width: 100%;
   padding: 1.25rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+  
 `;
 
 const ContentDiv = styled.div`

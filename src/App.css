@@ -1,5 +1,6 @@
-
-html {
-  background-color: #011d20e5;
+html, body {
+  background: linear-gradient(180deg, #001516 0%, #084B50 100%);
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
-
