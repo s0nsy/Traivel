@@ -5,8 +5,8 @@ import background from '../assets/background.png';
 import flag from '../assets/flag.png';
 import selectBox from '../assets/선택전.png';
 import startBtn from '../assets/Start.png';
-import CalendarSite from './Calendar'; // 기존 Calendar 사용
-import People from './People';  // People 컴포넌트 import
+import CalendarSite from '../Pages/Calendar';  
+import People from './People';  
 import selectedImg from '../assets/selected.png'; 
 import Rectangle from '../assets/sidebar.png'; 
 import moment from "moment";
@@ -118,10 +118,10 @@ const CalendarWrapper = styled.div`
     z-index: 10;
 `;
 
-const Home = () => {
-    const [selectedText, setSelectedText] = useState(null); // 클릭된 텍스트의 상태
-    const [startDate, setStartDate] = useState(null); // 출발일 상태
-    const [endDate, setEndDate] = useState(null); // 도착일 상태
+const Home = ({ setSelectedDateRange, setSelectedPeople }) => {
+    const [selectedText, setSelectedText] = useState(null); 
+    const [startDate, setStartDate] = useState(null); 
+    const [endDate, setEndDate] = useState(null); 
     const [people, setPeople] = useState("추가");
     const navigate = useNavigate(); 
 
@@ -136,21 +136,24 @@ const Home = () => {
     const handleDateChange = (date) => {
         if (selectedText === 'startDate') {
             setStartDate(date);
+            setSelectedText('endDate'); // 출발일 선택 후 도착일 선택으로 자동 전환
         } else if (selectedText === 'endDate') {
             setEndDate(date);
+            const dateRange = `${moment(startDate).format('MM.DD')} - ${moment(date).format('MM.DD')} `;
+            setSelectedDateRange(dateRange); // 날짜 범위를 상위 컴포넌트로 전달
         }
     };
 
-    const formatDateRange = () => {
-        if (startDate && endDate) {
-            const formattedStartDate = moment(startDate).format('MM.DD');
-            const formattedEndDate = moment(endDate).format('MM.DD');
-            const days = moment(endDate).diff(moment(startDate), 'days') + 1;
-            return `${formattedStartDate} - ${formattedEndDate} ${days}박 ${days + 1}일`;
-        } else {
-            return "기간 선택";
-        }
+    const handlePeopleChange = (count) => {
+        setPeople(count);
+        setSelectedPeople(count);
     };
+
+    const dateRange = startDate && endDate 
+        ? `${moment(startDate).format('MM.DD')} - ${moment(endDate).format('MM.DD')} ${moment(endDate).diff(moment(startDate), 'days')}박 ${moment(endDate).diff(moment(startDate), 'days') + 1}일`
+        : startDate 
+        ? `${moment(startDate).format('MM.DD')} -`
+        : "날짜를 선택하세요";
 
     return (
         <Background>
@@ -179,17 +182,17 @@ const Home = () => {
                 </SelectCon>
                 {selectedText === 'startDate' && (
                     <CalendarWrapper>
-                        <CalendarSite onChange={handleDateChange} />
+                        <CalendarSite onChange={handleDateChange} dateRange={dateRange} />
                     </CalendarWrapper>
                 )}
                 {selectedText === 'endDate' && (
                     <CalendarWrapper>
-                        <CalendarSite onChange={handleDateChange} />
+                        <CalendarSite onChange={handleDateChange} dateRange={dateRange} />
                     </CalendarWrapper>
                 )}
                 {selectedText === 'people' && (
                     <CalendarWrapper>
-                        <People />
+                        <People onPeopleChange={handlePeopleChange} />
                     </CalendarWrapper>
                 )}
                 <StartBtn src={startBtn} onClick={handleStartClick} />

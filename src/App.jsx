@@ -1,5 +1,5 @@
-
 import "./App.css";
+import React, { useState } from "react";
 import Header from "./components/Header";
 import Main from "./components/Main";
 import List from "./Pages/List/List";
@@ -11,120 +11,64 @@ import Cost from "./components/Cost";
 import People from "./Pages/People";
 import Detail from "./Pages/Detail/Main";
 import Chat from "./Pages/Chat";
-
-
 import { Routes, Route } from "react-router-dom";
 
-
 function App() {
+  const [selectedDateRange, setSelectedDateRange] = useState("");
+  const [selectedPeople, setSelectedPeople] = useState("추가");
+
   return (
     <div className="App">
+      <Header selectedDateRange={selectedDateRange} selectedPeople={selectedPeople} />
       <Routes>
         <Route
           path="/"
           element={
-            <div>
-              <Header />
-              <Home />
-
-            </div>
+            <Home
+              setSelectedDateRange={setSelectedDateRange}
+              setSelectedPeople={setSelectedPeople}
+            />
           }
         />
         <Route
           path="/main"
-          element={
-            <div>
-              <Header />
-              <Main />
-
-            </div>
-          }
+          element={<Main />}
         />
-          <Route
+        <Route
           path="/main/location"
-          element={
-            <div>
-              <Header />
-              <Location />
-
-            </div>
-          }
+          element={<Location />}
         />
         <Route
           path="/theme"
-          element={
-            <div>
-              <Header />
-              <Theme />
-
-            </div>
-          }
+          element={<Theme />}
         />
-          <Route
+        <Route
           path="/main/cost"
-          element={
-            <div>
-              <Header />
-              <Cost />
-
-            </div>
-          }
+          element={<Cost />}
         />
         <Route
           path="/main/preference"
-          element={
-            <div>
-              <Header />
-              <Preference />
-
-            </div>
-          }
+          element={<Preference />}
         />
         <Route
           path="/lists"
-          element={
-            <div>
-              <Header />
-              <List />
-
-            </div>
-          }
+          element={<List />}
         />
         <Route
           path="/test"
-          element={
-            <div>
-              
-              <People />
-
-            </div>
-          }
+          element={<People />}
         />
         <Route
           path="/detail"
-          element={
-            <div>
-              <Header />
-              <Detail />
-
-            </div>
-          }
+          element={<Detail />}
         />
         <Route
           path="/chat"
-          element={
-            <div>
-              <Header />
-              <Chat />
-
-            </div>
-          }
+          element={<Chat />}
         />
-        
       </Routes>
     </div>
   );
 }
-
 
 export default App;
