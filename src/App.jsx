@@ -1,73 +1,121 @@
-import "./App.css";
 import Header from "./components/Header";
-import Main from "./components/Main";
-import Footer from "./components/Footer";
-import Theme from "./components/Theme";
+import Body from "./components/Body";
+import List from "./Pages/List";
+import Home from "./Pages/Home";
 import Location from "./components/Location";
-import Cost from "./components/Cost";
+import Theme from "./components/Theme";
 import Preference from "./components/Preference";
+import Cost from "./components/Cost";
+import Output from "./components/Output";
+import People from "./Pages/People";
+import chattingbackground from "./assets/chattingbackground.png"; 
 import { Routes, Route } from "react-router-dom";
-import chattingbackground from "./assets/chattingbackground.png";
 import { createGlobalStyle } from "styled-components";
 
-const GlobalStyle = createGlobalStyle`
-  body{
-  background-image: url(${chattingbackground});
-  }
+const Global = createGlobalStyle`
+ body {;
+    background: var(--chat-style, linear-gradient(180deg, #001516 0%, #084B50 100%));
 `;
-
 function App() {
   return (
     <>
-      <GlobalStyle />
-      <div className="App">
-        <Routes>
+    <Global/>   
+     <div className="App">
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <div>
+              <Header />
+              <Home />
+
+            </div>
+          }
+        />
+        <Route
+          path="/main"
+          element={
+            <div>
+              <Header />
+              <Body />
+            </div>
+          }
+        />
           <Route
-            path="/"
-            element={
-              <div>
-                <Header />
-                <Main />
-                <Footer />
-              </div>
-            }
-          />
+          path="/location"
+          element={
+            <div>
+              <Header />
+              <Location />
+            </div>
+          }
+        />
+        <Route
+          path="/theme"
+          element={
+            <div>
+              <Header />
+              <Theme />
+
+            </div>
+          }
+        />
           <Route
-            path="/theme"
-            element={
-              <div>
-                <Theme />
-              </div>
-            }
-          />
-          <Route
-            path="/location"
-            element={
-              <div>
-                <Location />
-              </div>
-            }
-          />
-          <Route
-            path="/cost"
-            element={
-              <div>
-                <Cost />
-              </div>
-            }
-          />
-          <Route
-            path="/preference"
-            element={
-              <div>
-                <Preference />
-              </div>
-            }
-          />
-        </Routes>
-      </div>
+          path="/cost"
+          element={
+            <div>
+              <Header />
+              <Cost />
+
+            </div>
+          }
+        />
+        <Route
+          path="/preference"
+          element={
+            <div>
+              <Header />
+              <Preference />
+            </div>
+          }
+        />
+        <Route
+          path="/lists"
+          element={
+            <div>
+              <Header />
+              <List />
+            </div>
+          }
+        />
+        <Route
+          path="/test"
+          element={
+            <div>
+              
+              <People />
+
+            </div>
+          }
+        />
+        <Route
+          path="/route"
+          element={
+            <div>
+              <Header/>
+              <Output/>
+            </div>
+          }
+        
+        />
+
+        
+      </Routes>
+    </div>
     </>
+
   );
 }
+
 
 export default App;

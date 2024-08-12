@@ -1,10 +1,10 @@
 import React from "react";
 import Icon from "../assets/Icon.svg";
 import Vector from "../assets/Vector.svg";
+import Footer from "./Footer";
 import styled from "styled-components";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import chattingbackground from "../assets/chattingbackground.png";
 
 const Body = styled.div`
   margin-top: 190px;
@@ -105,13 +105,13 @@ function Main() {
         navigate("/theme");
         break;
       case 1:
-        navigate("location");
+        navigate("/location");
         break;
       case 2:
-        navigate("cost");
+        navigate("/cost");
         break;
       case 3:
-        navigate("preference");
+        navigate("/preference");
         break;
       default:
         navigate("/");
@@ -133,6 +133,7 @@ function Main() {
         </Suggest>
         <Guide>멋진 일정을 계획하기 위해 루트포터 가이드를 이용해보세요.</Guide>
       </Body>
+      <Footer/>
     </Background>
   );
 }
