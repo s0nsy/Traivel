@@ -48,6 +48,9 @@ const StyledCalendar = styled(Calendar)`
         background: #014C4E; /* 배경색 변경 */
         color: white; /* 날짜 글씨 색상 변경 */
     }
+        .react-calendar__navigation {
+        margin-bottom: -20px; /* 년월과 일 사이 간격 조정 */
+    }
     .react-calendar__navigation button {
         color: white; /* 내비게이션 버튼 글씨 색상 변경 */
         border: none; /* 내비게이션 버튼 테두리 제거 */
@@ -74,6 +77,11 @@ const StyledCalendar = styled(Calendar)`
     .react-calendar__month-view__weekdays {
         color:white;
     }
+    .react-calendar__month-view__weekdays {
+    abbr {
+      display:none;
+    }
+  }
 `;
 
 const CalendarSite = () => {

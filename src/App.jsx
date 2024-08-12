@@ -10,6 +10,7 @@ import Preference from "./components/Preference";
 import Cost from "./components/Cost";
 import People from "./Pages/People";
 import Detail from "./Pages/Detail/Main";
+import Chat from "./Pages/Chat";
 
 
 import { Routes, Route } from "react-router-dom";
@@ -40,7 +41,7 @@ function App() {
           }
         />
           <Route
-          path="/location"
+          path="/main/location"
           element={
             <div>
               <Header />
@@ -60,7 +61,7 @@ function App() {
           }
         />
           <Route
-          path="/cost"
+          path="/main/cost"
           element={
             <div>
               <Header />
@@ -70,7 +71,7 @@ function App() {
           }
         />
         <Route
-          path="/preference"
+          path="/main/preference"
           element={
             <div>
               <Header />
@@ -105,6 +106,16 @@ function App() {
             <div>
               <Header />
               <Detail />
+
+            </div>
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            <div>
+              <Header />
+              <Chat />
 
             </div>
           }
