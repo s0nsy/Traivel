@@ -8,7 +8,6 @@ import Preference from "./components/Preference";
 import Cost from "./components/Cost";
 import Output from "./components/Output";
 import People from "./Pages/People";
-import chattingbackground from "./assets/chattingbackground.png"; 
 import { Routes, Route } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 

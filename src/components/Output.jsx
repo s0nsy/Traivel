@@ -8,6 +8,7 @@ import Back from "../assets/back.svg";
 import Share from "../assets/share.svg";
 import DayLists from "./DayLists";
 import { useNavigate } from "react-router-dom";
+
 const RouteContainer = styled.div``;
 const Frame1 = styled.div`
   margin-left: 350px;
@@ -19,8 +20,8 @@ const Frame1 = styled.div`
   position: relative; /
   border: 1px solid var(--Main_2, #01ecff);
   background: rgba(255, 255, 255, 0.05);
-  display: flex; /* 플렉스 컨테이너로 설정 */
-  align-items: center; /* 수직 정렬을 가운데로 설정 */
+  display: flex; 
+  align-items: center; 
 `;
 const Img1 = styled.img`
   width: 30px;
@@ -29,8 +30,8 @@ const Img1 = styled.img`
 `;
 const Img2 = styled.div`
   display: flex;
-  justify-content: center; /* 수평 가운데 정렬 */
-  align-items: center; /* 수직 가운데 정렬 */
+  justify-content: center;
+  align-items: center;
   position: relative;
   left: 15px;
   width: 370px;
@@ -64,6 +65,8 @@ const Img5 = styled.img`
   height: 30px;
   margin-top: 2px;
   margin-right: 7px;
+  cursor: pointer;
+  
 `;
 const Img6 = styled.img`
   width: 2px;
@@ -76,6 +79,8 @@ const Img7 = styled.img`
   height: 30px;
   margin-top: 2px;
   margin-right: 7px;
+  cursor: pointer;
+  
 `;
 
 const Header = styled.div`
@@ -156,8 +161,8 @@ const Guide2 = styled.div`
   position: relative;
   bottom: 70px;
   display: flex;
-  flex-wrap: wrap; /* 자식 요소들이 넘칠 때 줄 바꿈 */
-  justify-content: flex-start; /* 왼쪽 정렬 */
+  flex-wrap: wrap;
+  justify-content: flex-start;
   align-items: center;
 `;
 
@@ -181,15 +186,15 @@ const Guide3 = styled.div`
   font-size: 18px;
   font-style: normal;
   font-weight: 400;
-  line-height: 28px; /* 116.667% */
+  line-height: 28px;
 `;
 const Guide4 = styled.div`
-color: #FFF;
-font-family: Pretendard;
-font-size: 18px;
-font-style: normal;
-font-weight: 600;
-line-height: 28px; /* 1
+  color: #fff;
+  font-family: Pretendard;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px;
 `;
 const Guide5 = styled.div`
   color: #fff;
@@ -202,9 +207,9 @@ const Guide5 = styled.div`
 
 const C = styled.div`
   display: inline-flex;
-  margin-left: 350px;
+  margin-left: 330px;
   margin-top: 20px;
-  padding: 16px 150px;
+  padding: 16px 200px;
   justify-content: center;
   align-items: center;
   border-radius: 36px;
@@ -221,6 +226,8 @@ const ChatOrShare1 = styled.div`
   font-style: normal;
   font-weight: 500;
   line-height: 36px; /* 112.5% */
+  cursor: pointer;
+  
 `;
 const ChatOrShare2 = styled.div`
   color: #fff;
@@ -230,6 +237,8 @@ const ChatOrShare2 = styled.div`
   font-style: normal;
   font-weight: 500;
   line-height: 36px; /* 112.5% */
+  cursor: pointer;
+  
 `;
 const Frame2 = styled.div``;
 
@@ -283,9 +292,7 @@ function Output() {
     navigate("/chat");
   };
 
-  const Sharing = () => {
-    navigate("/share");
-  };
+
 
   return (
     <RouteContainer>
@@ -317,11 +324,11 @@ function Output() {
         <Guide5>를 눌러 루트를 공유해보세요</Guide5>
       </B>
       <C>
-        <Img5 src={Back}></Img5>
+        <Img5 src={Back} onClick={Chattting}></Img5>
         <ChatOrShare1 onClick={Chattting}>채팅으로</ChatOrShare1>
         <Img6 src={Shortline2}></Img6>
-        <Img7 src={Share}></Img7>
-        <ChatOrShare2 onClick={Sharing}>공유하기</ChatOrShare2>
+        <Img7 src={Share} ></Img7>
+        <ChatOrShare2 >공유하기</ChatOrShare2>
       </C>
       <D>
         <Frame2>

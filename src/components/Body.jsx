@@ -4,16 +4,21 @@ import Vector from "../assets/Vector.svg";
 import Footer from "./Footer";
 import styled from "styled-components";
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+const Background = styled.div`
+  height: 100vh;
+  position: relative;
+`;
 
 const Body = styled.div`
-  margin-top: 190px;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 40vh;
   flex-direction: column;
   position: relative;
+  top: 200px;
+  z-index: 1;
 `;
 
 const IconImg = styled.img`
@@ -21,17 +26,14 @@ const IconImg = styled.img`
   height: 80px;
   margin-top: 25px;
   filter: drop-shadow(0px 4px 4px rgba(1, 236, 254, 0.2));
-  z-index: 1;
 `;
 
 const VectorImg = styled.img`
   position: absolute;
-  z-index: -1;
-  width: 700px;
-  height: 500px;
-  margin-right: 45px;
-  margin-top: 50px;
-  display: block;
+  right: 555px; 
+  z-index: 0;
+  width: 650px;
+  height: 350px;
 `;
 
 const Recommend = styled.p`
@@ -41,6 +43,7 @@ const Recommend = styled.p`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  z-index: 1;
 `;
 
 const Suggest = styled.div`
@@ -48,9 +51,11 @@ const Suggest = styled.div`
   justify-content: center;
   align-items: center;
   gap: 25px;
+  z-index: 1;
 `;
 
 const Button = styled.button`
+margin:20px 0;
   padding: 20px;
   border-radius: 20px;
   border: 1px solid var(--Main_2, #01ecff);
@@ -73,22 +78,19 @@ const Button = styled.button`
   &:hover {
     background: rgba(0, 0, 0, 0.5);
   }
+  z-index: 1;
 `;
 
 const Guide = styled.p`
   color: var(--White, #fff);
+  margin-top:20px;
   text-align: center;
   font-family: Pretendard;
   font-size: 18px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-`;
-
-const Background = styled.div`
-  width: 100%;
-  height: 100%;
-  z-index:+2;
+  z-index: 1;
 `;
 
 function Main() {
@@ -98,7 +100,9 @@ function Main() {
     "이동 및 경비",
     "여행 취향",
   ]);
+
   const navigate = useNavigate();
+
   const handleNavigate = (i) => {
     switch (i) {
       case 0:
@@ -118,6 +122,7 @@ function Main() {
         break;
     }
   };
+
   return (
     <Background>
       <Body>
@@ -127,13 +132,15 @@ function Main() {
         <Suggest>
           {sentense.map((a, i) => {
             return (
-              <Button onClick={() => handleNavigate(i)}>{sentense[i]}</Button>
+              <Button key={i} onClick={() => handleNavigate(i)}>
+                {sentense[i]}
+              </Button>
             );
           })}
         </Suggest>
         <Guide>멋진 일정을 계획하기 위해 루트포터 가이드를 이용해보세요.</Guide>
       </Body>
-      <Footer/>
+      <Footer />
     </Background>
   );
 }
