@@ -2,12 +2,14 @@ import React from "react";
 import { DayData } from "./DayData";
 import styled from "styled-components";
 import Circle from "../assets/circle.png";
-import Line from "../assets/line.png";
 import ShortLine from "../assets/Frame 2085666344.png";
 import Icon from "../assets/travel-icon.png";
+import { Link } from "react-router-dom";
 
-const TotalContainer = styled.div``;
 
+
+const TotalContainer = styled.div`
+`;
 const DayContainer = styled.div``;
 
 const DayDate = styled.div`
@@ -66,7 +68,6 @@ const PlanImg2 = styled.img`
   margin: 10px 6px;
 `;
 
-
 const PlanDetail = styled.div`
   color: #fff;
   font-family: Pretendard;
@@ -78,17 +79,14 @@ const PlanDetail = styled.div`
 `;
 
 const TipContainer = styled.div`
-  margin-left: 350px;
-  margin-top: 20px;
+  margin: 20px 0 0 350px;
   color: #fff;
-  margin-left: 350px;
 `;
 
 const TipFrame = styled.div`
+  margin-top: 10px;
   width: 1000px;
   flex-shrink: 0;
-  margin-top: 20px;
-
   border-radius: 12px;
   border: 1px solid var(--Main_2, #01ecff);
   background: rgba(255, 255, 255, 0.05);
@@ -96,7 +94,7 @@ const TipFrame = styled.div`
 `;
 
 const TipSubHeader = styled.div`
-  margin: 10px 0;
+  margin: 15px 0;
 `;
 const TipHeader = styled.div`
   display: flex;
@@ -109,9 +107,9 @@ const TipHeader = styled.div`
 
 const TipTitle = styled.div`
   font-family: Pretendard;
-  font-size: 18px;
+  font-size: 20px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 28px; /* 116.667% */
 `;
 

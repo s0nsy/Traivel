@@ -7,11 +7,8 @@ import Shortline2 from "../assets/short-line.png";
 import Back from "../assets/back.svg";
 import Share from "../assets/share.svg";
 import DayLists from "./DayLists";
-
-const RouteContainer = styled.div`
-
-
-`;
+import { useNavigate } from "react-router-dom";
+const RouteContainer = styled.div``;
 const Frame1 = styled.div`
   margin-left: 350px;
   margin-top: 20px;
@@ -270,7 +267,6 @@ const KeywordItem = styled.div`
   box-shadow: 0px 4px 8px 4px rgba(0, 0, 0, 0.1);
 `;
 
-
 function Output() {
   const [keyword] = useState([
     "서귀포",
@@ -281,7 +277,15 @@ function Output() {
     "날 것 못먹음",
   ]);
 
-  const [day] = useState(["1일차", "2일차", "3일차"]);
+  const navigate = useNavigate();
+
+  const Chattting = () => {
+    navigate("/chat");
+  };
+
+  const Sharing = () => {
+    navigate("/share");
+  };
 
   return (
     <RouteContainer>
@@ -314,10 +318,10 @@ function Output() {
       </B>
       <C>
         <Img5 src={Back}></Img5>
-        <ChatOrShare1>채팅으로</ChatOrShare1>
+        <ChatOrShare1 onClick={Chattting}>채팅으로</ChatOrShare1>
         <Img6 src={Shortline2}></Img6>
         <Img7 src={Share}></Img7>
-        <ChatOrShare2>공유하기</ChatOrShare2>
+        <ChatOrShare2 onClick={Sharing}>공유하기</ChatOrShare2>
       </C>
       <D>
         <Frame2>

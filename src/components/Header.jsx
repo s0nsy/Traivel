@@ -50,12 +50,12 @@ const NavSelect = styled.p`
 
 const NavSelectLeft = styled(NavSelect)`
   left: 25%;
-  transform: translate(-50%, -127%);
+  transform: translate(-50%, -50%);
 `;
 
 const NavSelectRight = styled(NavSelect)`
   right: 25%;
-  transform: translate(50%, -127%);
+  transform: translate(50%, -50%);
 `;
 
 const SideRectangle = styled.img`
