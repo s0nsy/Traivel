@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom'; // useNavigate 훅을 import
 import background from '../assets/background.png';
 import flag from '../assets/flag.png';
 import selectBox from '../assets/선택전.png';
@@ -10,6 +11,9 @@ import People from './People';
 import selectedImg from '../assets/selected.png'; 
 import Rectangle from '../assets/sidebar.png'; 
 import moment from "moment";
+import CalendarSite from './Calendar';
+import { useNavigate } from 'react-router-dom';
+
 
 const Background = styled.div`
     display: flex;
@@ -154,6 +158,13 @@ const Home = ({ setSelectedDateRange, setSelectedPeople }) => {
         : startDate 
         ? `${moment(startDate).format('MM.DD')} -`
         : "날짜를 선택하세요";
+const Home = () => {
+    const [showCalendar, setShowCalendar] = useState(false);
+    const navigate = useNavigate();
+    
+    const Main = () => {
+        navigate('/main');
+    }
 
     return (
         <Background>

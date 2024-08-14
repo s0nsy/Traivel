@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import button2 from "../assets/button2.png";
+import { useNavigate } from "react-router-dom";
 
 const FooterContainer = styled.div`
   display: flex;
@@ -8,6 +9,9 @@ const FooterContainer = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
+  top:100px;
+  cursor: pointer;
+  
 `;
 
 const Start = styled.div`
@@ -34,12 +38,17 @@ const Button = styled.img`
   cursor: pointer;
   z-index: +2;
   position: absolute;
-  margin-left: 820px;
+  margin-left: 650px;
 `;
 
 function Footer3() {
+  const navigate = useNavigate();
+
+
   return (
-    <FooterContainer>
+    <FooterContainer onClick={()=>{
+      navigate("/chat");
+    }}>
       <Start>시작하기</Start>
       <Button src={button2}></Button>
     </FooterContainer>

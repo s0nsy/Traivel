@@ -1,7 +1,16 @@
+
 import React from 'react';
 import styled from 'styled-components';
 import flag from '../assets/flag.png';
 import sendIcon from '../assets/send-icon.png';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import flag from '../assets/flag.png';
+import sendIcon from '../assets/send-icon.png';
+import { addUserResponse, clearResponses } from './features/chatSlice';
+
+
 const TitleCon = styled.div`
   display: flex;
   flex-direction: column;
@@ -96,12 +105,14 @@ const ChatInputContainer = styled.div`
   box-shadow: 0px 4px 12px 2px rgba(1, 236, 255, 0.4);
   display: flex;
   align-items: center;
+
   justify-content: space-between; /* 양쪽 끝으로 정렬 */
   box-sizing: border-box;
 `;
 
 const ChatInputField = styled.input`
   flex: 1; /* 입력 필드가 가능한 모든 공간을 차지 */
+
   background: transparent;
   border: none;
   color: #FFFFFF;
@@ -122,6 +133,29 @@ const ChatInputWrapper = styled.div`
 `;
 
 const Chat = () => {
+
+  const [currentInput, setCurrentInput] = useState('');
+  const dispatch = useDispatch();
+  const userResponses = useSelector((state) => state.chat.userResponses);
+
+  const handleSend = () => {
+    if (currentInput.trim() !== '') {
+      dispatch(addUserResponse(currentInput));
+      setCurrentInput('');
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setCurrentInput(e.target.value);
+  };
+
+  const handleSubmit = () => {
+    console.log('User responses:', userResponses);
+    // 여기에 백엔드로 데이터를 전송하는 코드를 추가할 수 있습니다.
+    // 예: axios.post('/api/submit', { responses: userResponses });
+  };
+
+
   return (
     <>
       <TitleCon>
@@ -129,6 +163,12 @@ const Chat = () => {
         <Detail>필요한 상세조건을 입력하여 더 구체적인 여행 계획을 세울 수 있습니다.</Detail>
       </TitleCon>
       <ChatContainer>
+        {userResponses.map((response, index) => (
+          <UserChatCon key={index}>
+            <UserChatBox>{response}</UserChatBox>
+          </UserChatCon>
+        ))}
+
         <ChatCon>
           <ChatImg src={flag} alt="flag" />
           <ChatBox>여행 예산은 어느정도 인가요?</ChatBox>
@@ -143,8 +183,24 @@ const Chat = () => {
           <SendIcon src={sendIcon} alt="send" />
         </ChatInputContainer>
       </ChatInputWrapper>
-    </>
+      </ChatContainer>
+      <ChatInputWrapper>
+        <ChatInputContainer>
+          <ChatInputField
+            placeholder="메시지를 입력하세요..."
+            value={currentInput}
+            onChange={handleInputChange}
+            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          />
+          <SendIcon src={sendIcon} alt="send" onClick={handleSend} />
+        </ChatInputContainer>
+      </ChatInputWrapper>
+      <button onClick={handleSubmit}>Submit</button>
+
+    />
   );
 };
 
+
 export default Chat;
+

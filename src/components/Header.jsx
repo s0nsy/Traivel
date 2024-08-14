@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import SideBarIcon from "../assets/ic_round-menu.png";
 import Group from "../assets/Group 1000003732.png";
-import Rectangle from "../assets/Rectangle 42986.png";
+import Rectangle from "../assets/short-line.png";
 import { useNavigate } from "react-router-dom";
 
 const NavContainer = styled.div`
@@ -49,12 +49,12 @@ const NavSelect = styled.p`
 
 const NavSelectLeft = styled(NavSelect)`
   left: 25%;
-  transform: translate(-50%, -127%);
+  transform: translate(-50%, -50%);
 `;
 
 const NavSelectRight = styled(NavSelect)`
   right: 25%;
-  transform: translate(50%, -127%);
+  transform: translate(50%, -50%);
 `;
 
 const SideRectangle = styled.img`

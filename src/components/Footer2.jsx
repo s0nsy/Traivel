@@ -4,17 +4,19 @@ import buttonImg from "../assets/button.png";
 
 const FooterContainer = styled.div`
   display: flex;
-  padding: 16px 380px 10px 380px;
   justify-content: center;
   align-items: center;
+  padding: 16px;
   position: relative;
+  top:100px;
+  width: 100%; 
 `;
 
 const Guide = styled.div`
   display: flex;
   width: 730px;
   height: 62px;
-  padding: 0 100px 0 90px;
+  padding: 0 100px 0 75px;
   justify-content: center;
   align-items: center;
   gap: 210px;
@@ -29,14 +31,14 @@ const Guide = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  text-indent: -430px;
+  text-indent: -330px;
 `;
 
 const Button = styled.img`
   cursor: pointer;
   z-index: +2;
   position: absolute;
-  margin-left: 820px;
+  margin-left: 650px;
 `;
 
 function Footer2() {

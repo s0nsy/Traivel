@@ -5,6 +5,10 @@ import Icon from "../assets/Icon.svg";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+const CostContainer = styled.div`
+  position: relative;
+  top: 90px;
+`;
 
 const Guide1 = styled.h3`
   color: var(--White, #fff);
@@ -16,19 +20,18 @@ const Guide1 = styled.h3`
   line-height: normal;
   position: relative;
   padding: 0;
-  top: 30px;
 `;
 
 const Guide2 = styled.p`
+  margin: 10px 0 40px 0;
   color: var(--White, #fff);
   text-align: center;
-  position:relative;
+  position: relative;
   padding: 0;
   font-family: Pretendard;
-  font-size: 24px;
+  font-size: 17px;
   font-style: normal;
   font-weight: 300;
-  p
   line-height: normal;
 `;
 
@@ -49,7 +52,8 @@ const IconImg = styled.img`
 const Button = styled.button`
   border-radius: 20px;
   border: 1px solid var(--Main_2, #01ecff);
-  background: ${({isCost})=>(isCost?'rgba(0,0,0,0.5)':'rgba(0,0,0,0.1)')};
+  background: ${({ isCost }) =>
+    isCost ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.1)"};
   display: flex;
   width: 280px;
   height: 55px;
@@ -69,6 +73,7 @@ const Button = styled.button`
   &:hover{
     background: rgba(0, 0, 0, 0.5);
   
+
 `;
 
 const Cover = styled.div`
@@ -107,7 +112,9 @@ const P = styled.div`
   padding-right: 20px;
 `;
 
-const Background = styled.div``;
+const Background = styled.div`
+  height: 100vh;
+`;
 
 const Question = styled.div`
   display: inline-flex;
@@ -158,7 +165,7 @@ const Guide3 = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 190px;
+  margin-top: 120px;
 `;
 
 function Cost() {
@@ -190,8 +197,9 @@ function Cost() {
   };
 
   return (
-      <Background>
-        <Header />
+    <Background>
+      <Header />
+      <CostContainer>
         <Guide1>루트포터 가이드</Guide1>
         <Guide2>궁금한 점이 있다면 루트포터에게 물어보세요.</Guide2>
         <Lump>
@@ -204,8 +212,7 @@ function Cost() {
             <Suggest>
               {sentense.map((a, i) => {
                 return (
-                  <Button onClick={() => handleNavigate(i)}
-                  isCost={i===2}>
+                  <Button onClick={() => handleNavigate(i)} isCost={i === 2}>
                     {sentense[i]}
                   </Button>
                 );
@@ -226,8 +233,9 @@ function Cost() {
         <Guide3>
           필요한 상세조건을 입력하여 더 구체적인 여행 계획을 세울 수 있습니다.
         </Guide3>
-        <Footer2 />
-      </Background>
+      </CostContainer>
+      <Footer2 />
+    </Background>
   );
 }
 

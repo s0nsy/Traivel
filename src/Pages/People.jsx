@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Left from '../assets/left.png';
@@ -22,6 +23,8 @@ const BoxCon = styled.div`
 const Header = styled.div`
     display: flex;
     align-items: center;
+
+    margin-bottom: 20px;
 `;
 
 const ArrowImg = styled.img`
@@ -46,17 +49,20 @@ const PeopleCon = styled.div`
     margin: 10px 0;
     padding: 0 25px; /* 양쪽에 패딩을 추가하여 좌우 여백을 만듦 */
     width: 100%; /* 부모 컨테이너의 전체 너비 사용 */
+    margin: 10px 0;
 `;
 
 const Minus = styled.img`
     width: 40px;
     height: 40px;
+    margin: 0 30px;
     cursor: pointer;
 `;
 
 const Plus = styled.img`
     width: 40px;
     height: 40px;
+    margin: 0 30px;
     cursor: pointer;
 `;
 
@@ -80,6 +86,12 @@ const CountCon = styled.div`
 `;
 
 const People = ({onPeopleChange}) => {
+    height: 2px;
+    margin: 10px 0;
+;
+}
+
+const People = () => {
     const [adult, setAdult] = useState(0);
     const [child, setChild] = useState(0);
     const [infant, setInfant] = useState(0);
@@ -115,6 +127,9 @@ const People = ({onPeopleChange}) => {
                     <Text>{adult}</Text>
                     <Plus src={plus} onClick={() => handleIncrease("adult")} />
                 </CountCon>
+                <Minus src={minus} onClick={() => handleDecrease("adult")} />
+                <Text>{adult}</Text>
+                <Plus src={plus} onClick={() => handleIncrease("adult")} />
             </PeopleCon>
             <BarImg src={bar} />
             <PeopleCon>
@@ -124,6 +139,9 @@ const People = ({onPeopleChange}) => {
                     <Text>{child}</Text>
                     <Plus src={plus} onClick={() => handleIncrease("child")} />
                 </CountCon>
+                <Minus src={minus} onClick={() => handleDecrease("child")} />
+                <Text>{child}</Text>
+                <Plus src={plus} onClick={() => handleIncrease("child")} />
             </PeopleCon>
             <BarImg src={bar} />
             <PeopleCon>
@@ -133,9 +151,13 @@ const People = ({onPeopleChange}) => {
                     <Text>{infant}</Text>
                     <Plus src={plus} onClick={() => handleIncrease("infant")} />
                 </CountCon>
+                <Minus src={minus} onClick={() => handleDecrease("infant")} />
+                <Text>{infant}</Text>
+                <Plus src={plus} onClick={() => handleIncrease("infant")} />
             </PeopleCon>
         </BoxCon>
     );
 };
 
 export default People;
+
