@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Left from '../assets/left.png';
@@ -23,7 +22,6 @@ const BoxCon = styled.div`
 const Header = styled.div`
     display: flex;
     align-items: center;
-
     margin-bottom: 20px;
 `;
 
@@ -49,7 +47,6 @@ const PeopleCon = styled.div`
     margin: 10px 0;
     padding: 0 25px; /* 양쪽에 패딩을 추가하여 좌우 여백을 만듦 */
     width: 100%; /* 부모 컨테이너의 전체 너비 사용 */
-    margin: 10px 0;
 `;
 
 const Minus = styled.img`
@@ -85,21 +82,16 @@ const CountCon = styled.div`
     gap: 20px; /* Minus, Text, Plus 사이의 간격 */
 `;
 
-const People = ({onPeopleChange}) => {
-    height: 2px;
-    margin: 10px 0;
-;
-}
-
-const People = () => {
+const People = ({ onPeopleChange }) => {
     const [adult, setAdult] = useState(0);
     const [child, setChild] = useState(0);
     const [infant, setInfant] = useState(0);
 
-    useEffect(()=>{
-        onPeopleChange(adult+child+infant);
-    },[adult,child,infant,onPeopleChange])
-   
+    useEffect(() => {
+        if (onPeopleChange) {
+            onPeopleChange(adult + child + infant);
+        }
+    }, [adult, child, infant, onPeopleChange]);
 
     const handleIncrease = (type) => {
         if (type === "adult") setAdult(adult + 1);
@@ -116,48 +108,38 @@ const People = () => {
     return (
         <BoxCon>
             <Header>
-                <ArrowImg src={Left} />
+                <ArrowImg src={Left} alt="left arrow" />
                 <Text>인원</Text>
-                <ArrowImg src={right} />
+                <ArrowImg src={right} alt="right arrow" />
             </Header>
             <PeopleCon>
                 <PeopleText>성인(13세이상)</PeopleText>
                 <CountCon>
-                    <Minus src={minus} onClick={() => handleDecrease("adult")} />
+                    <Minus src={minus} onClick={() => handleDecrease("adult")} alt="minus" />
                     <Text>{adult}</Text>
-                    <Plus src={plus} onClick={() => handleIncrease("adult")} />
+                    <Plus src={plus} onClick={() => handleIncrease("adult")} alt="plus" />
                 </CountCon>
-                <Minus src={minus} onClick={() => handleDecrease("adult")} />
-                <Text>{adult}</Text>
-                <Plus src={plus} onClick={() => handleIncrease("adult")} />
             </PeopleCon>
-            <BarImg src={bar} />
+            <BarImg src={bar} alt="bar" />
             <PeopleCon>
                 <PeopleText>어린이(2~12세)</PeopleText>
                 <CountCon>
-                    <Minus src={minus} onClick={() => handleDecrease("child")} />
+                    <Minus src={minus} onClick={() => handleDecrease("child")} alt="minus" />
                     <Text>{child}</Text>
-                    <Plus src={plus} onClick={() => handleIncrease("child")} />
+                    <Plus src={plus} onClick={() => handleIncrease("child")} alt="plus" />
                 </CountCon>
-                <Minus src={minus} onClick={() => handleDecrease("child")} />
-                <Text>{child}</Text>
-                <Plus src={plus} onClick={() => handleIncrease("child")} />
             </PeopleCon>
-            <BarImg src={bar} />
+            <BarImg src={bar} alt="bar" />
             <PeopleCon>
                 <PeopleText>유아(2세 미만)</PeopleText>
                 <CountCon>
-                    <Minus src={minus} onClick={() => handleDecrease("infant")} />
+                    <Minus src={minus} onClick={() => handleDecrease("infant")} alt="minus" />
                     <Text>{infant}</Text>
-                    <Plus src={plus} onClick={() => handleIncrease("infant")} />
+                    <Plus src={plus} onClick={() => handleIncrease("infant")} alt="plus" />
                 </CountCon>
-                <Minus src={minus} onClick={() => handleDecrease("infant")} />
-                <Text>{infant}</Text>
-                <Plus src={plus} onClick={() => handleIncrease("infant")} />
             </PeopleCon>
         </BoxCon>
     );
 };
 
 export default People;
-

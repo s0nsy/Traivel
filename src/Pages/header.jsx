@@ -40,7 +40,6 @@ const NavSelectImg = styled.img`
 const NavSelect = styled.p`
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
     font-family: Pretendard, sans-serif;
     color: #FFFFFF;
     font-size: 0.9rem;
