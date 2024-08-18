@@ -177,7 +177,7 @@ const Chat = () => {
   const chatContainerRef = useRef(null);
 
   useEffect(() => {
-    // 메시지가 추가될 때마다 가장 아래로 스크롤
+    
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
