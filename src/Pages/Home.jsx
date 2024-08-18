@@ -96,7 +96,7 @@ const ArrowIcon = styled.img`
 const SelectedImg = styled.img`
     position: absolute;
     top: 50%;
-    left:  ${({ selected }) => selected === 'startDate' ? '50%' : selected === 'endDate' ? '60%' : '120%'};
+    left:  ${({ selected }) => selected === 'startDate' ? '50%' : selected === 'endDate' ? '60%' : '160%'};
     transform: translate(-60%, -50%);
     width: ${({ selected }) => selected === 'startDate' ? '250px' : selected === 'endDate' ? '230px' : '230px'};
     height: 60px;
