@@ -41,8 +41,7 @@ const NavSelectImg = styled.img`
 
 const NavSelect = styled.p`
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 80%;
   font-family: Pretendard, sans-serif;
   color: #ffffff;
   font-size: 0.9rem;
@@ -82,30 +81,29 @@ const BtnCon = styled.div`
   gap: 15px;
   transform: translate(70%);
 `;
-const Header = () => {
+
+const Header = ({ selectedDateRange, selectedPeople }) => {
   const navigate = useNavigate();
 
   return (
-    <>
-      <NavContainer>
-        <BtnCon>
-          <NavLogo
-            onClick={() => {
-              navigate("/");
-            }}
-          >
-            Route Porter
-          </NavLogo>
-          <NavSelectCon>
-            <NavSelectImg src={Group} alt="Group Icon" />
-            <NavSelectLeft>여행 날짜 선택</NavSelectLeft>
-            <SideRectangle src={Rectangle} alt="Separator" />
-            <NavSelectRight>인원 선택</NavSelectRight>
-          </NavSelectCon>
-        </BtnCon>
-        <SideBarBtn src={SideBarIcon} alt="Sidebar Icon" />
-      </NavContainer>
-    </>
+    <NavContainer>
+      <BtnCon>
+        <NavLogo
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          Route Porter
+        </NavLogo>
+        <NavSelectCon>
+          <NavSelectImg src={Group} alt="Group Icon" />
+          <NavSelectLeft>{'날짜 '+selectedDateRange || "여행 날짜 선택"}</NavSelectLeft>
+          <SideRectangle src={Rectangle} alt="Separator" />
+          <NavSelectRight>{'인원 '+selectedPeople || "인원 선택"}</NavSelectRight>
+        </NavSelectCon>
+      </BtnCon>
+      <SideBarBtn src={SideBarIcon} alt="Sidebar Icon" />
+    </NavContainer>
   );
 };
 
