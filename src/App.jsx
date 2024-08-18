@@ -1,16 +1,17 @@
-import Header from "./components/Header";
-import Body2 from "./components/Body2";
-import List from "./Pages/List";
-import Home from "./Pages/Home";
-import Location from "./components/Location";
-import Theme from "./components/Theme";
-import Preference from "./components/Preference";
-import Cost from "./components/Cost";
-import Output from "./components/Output";
-import People from "./Pages/People";
-import { Routes, Route } from "react-router-dom";
-import { createGlobalStyle } from "styled-components";
-import { useState } from "react";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import Body from './components/Body2'; // Body2는 Body로 수정되었습니다.
+import List from './Pages/List';
+import Home from './Pages/Home';
+import Location from './components/Location';
+import Theme from './components/Theme';
+import Preference from './components/Preference';
+import Cost from './components/Cost';
+import Output from './components/Output';
+import People from './Pages/People';
+import { createGlobalStyle } from 'styled-components';
+import './App.css';
 
 const Global = createGlobalStyle`
   body {
@@ -19,9 +20,6 @@ const Global = createGlobalStyle`
 `;
 
 function App() {
-  const [selectedDateRange, setSelectedDateRange] = useState("");
-  const [selectedPeople, setSelectedPeople] = useState("추가");
-
   return (
     <>
       <Global />
@@ -41,7 +39,7 @@ function App() {
             element={
               <div>
                 <Header />
-                <Body2   />
+                <Body />
               </div>
             }
           />
