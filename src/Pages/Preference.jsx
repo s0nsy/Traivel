@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import Header from "./Header";
-import Footer2 from "./Footer2";
-import Footer3 from "./Footer3";
+import Header from "../components/Header";
+import Footer2 from "../components/Onboard/Footer2";
+import Footer3 from "../components/Onboard/Footer3";
 import Icon from "../assets/Icon.svg";
 import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { clickButton } from '../redux/buttonSlice'; 
+import { clickButton } from "../store/buttonSlice";
 
 const PreferenceContainer = styled.div`
   position: relative;
@@ -225,7 +225,7 @@ function Preference() {
 
   return (
     <Background>
-      <Header />
+      
       <PreferenceContainer>
         <Guide1>루트포터 가이드</Guide1>
         <Guide2>궁금한 점이 있다면 루트포터에게 물어보세요.</Guide2>

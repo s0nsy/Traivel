@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import background from '../assets/background.png';
-import flag from '../assets/flag.png';
-import selectBox from '../assets/선택전.png';
-import startBtn from '../assets/Start.png';
-import CalendarSite from './Calendar';
-import selectedImg from '../assets/selected.png';
-import Rectangle from '../assets/sidebar.png';
-import moment from 'moment';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import background from "../assets/background.png";
+import flag from "../assets/flag.png";
+import selectBox from "../assets/선택전.png";
+import startBtn from "../assets/Start.png";
+import CalendarSite from "../components/Main/Calendar";
+import People from "../components/Main/People";
+import selectedImg from "../assets/selected.png";
+import Rectangle from "../assets/sidebar.png";
+import moment from "moment";
 
 const Background = styled.div`
   display: flex;
@@ -70,7 +71,7 @@ const SelectDate = styled.div`
   font-size: 18px;
   font-weight: 400;
   top: 50%;
-  left: 50%;
+  left: 48%;
   transform: translate(-50%, -50%);
 `;
 
@@ -95,9 +96,15 @@ const ArrowIcon = styled.img`
 const SelectedImg = styled.img`
   position: absolute;
   top: 50%;
-  left: 40%;
-  transform: translate(-50%, -50%);
-  width: 230px;
+  left: ${({ selected }) =>
+    selected === "startDate" ? "50%" : selected === "endDate" ? "60%" : "160%"};
+  transform: translate(-60%, -50%);
+  width: ${({ selected }) =>
+    selected === "startDate"
+      ? "250px"
+      : selected === "endDate"
+      ? "230px"
+      : "230px"};
   height: 60px;
   z-index: 0;
   pointer-events: none;
@@ -117,59 +124,105 @@ const CalendarWrapper = styled.div`
   z-index: 10;
 `;
 
-
-const Home = () => {
-  const [showCalendar, setShowCalendar] = useState(false);
+const Home = ({ setSelectedDateRange, setSelectedPeople }) => {
   const [selectedText, setSelectedText] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [people, setPeople] = useState(1); // Default value for people
+  const [people, setPeople] = useState("추가");
   const navigate = useNavigate();
 
+  const handleStartClick = () => {
+    navigate("/onboard");
+  };
+
   const handleInlineTextClick = (text) => {
-    setSelectedText(text);
+    setSelectedText(selectedText === text ? null : text);
   };
 
   const handleDateChange = (date) => {
-    if (selectedText === 'startDate') {
+    if (selectedText === "startDate") {
       setStartDate(date);
-    } else if (selectedText === 'endDate') {
+      setSelectedText("endDate"); // 출발일 선택 후 도착일 선택으로 자동 전환
+    } else if (selectedText === "endDate") {
       setEndDate(date);
+      const dateRange = `${moment(startDate).format("MM.DD")} - ${moment(
+        date
+      ).format("MM.DD")} `;
+      setSelectedDateRange(dateRange); // 날짜 범위를 상위 컴포넌트로 전달
     }
   };
 
-  const handleStartClick = () => {
-    navigate('/main');
+  const handlePeopleChange = (count) => {
+    setPeople(count);
+    setSelectedPeople(count);
   };
+
+  const dateRange =
+    startDate && endDate
+      ? `${moment(startDate).format("MM.DD")} - ${moment(endDate).format(
+          "MM.DD"
+        )} ${moment(endDate).diff(moment(startDate), "days")}박 ${
+          moment(endDate).diff(moment(startDate), "days") + 1
+        }일`
+      : startDate
+      ? `${moment(startDate).format("MM.DD")} -`
+      : "날짜를 선택하세요";
 
   return (
     <Background>
       <FirstCon>
         <FlagImg src={flag} />
         <Title>Route Porter</Title>
-        <Description>일정을 추가한 뒤 루트포터와 대화를 시작해보세요.</Description>
+        <Description>
+          일정을 추가한 뒤 루트포터와 대화를 시작해보세요.
+        </Description>
         <SelectCon>
-          <SelectBox src={selectBox} onClick={() => handleInlineTextClick(null)} />
+          <SelectBox
+            src={selectBox}
+            onClick={() => handleInlineTextClick(null)}
+          />
           <SelectDate>
-            <InlineTextWrapper onClick={() => handleInlineTextClick('startDate')}>
-              {selectedText === 'startDate' && <SelectedImg src={selectedImg} />}
-              <InlineText>출발일 {startDate ? moment(startDate).format('MM.DD') : "MM.DD"}</InlineText>
+            <InlineTextWrapper
+              onClick={() => handleInlineTextClick("startDate")}
+            >
+              {selectedText === "startDate" && (
+                <SelectedImg src={selectedImg} selected="startDate" />
+              )}
+              <InlineText>
+                출발일 {startDate ? moment(startDate).format("MM.DD") : "MM.DD"}
+              </InlineText>
             </InlineTextWrapper>
             <ArrowIcon src={Rectangle} />
-            <InlineTextWrapper onClick={() => handleInlineTextClick('endDate')}>
-              {selectedText === 'endDate' && <SelectedImg src={selectedImg} />}
-              <InlineText>도착일 {endDate ? moment(endDate).format('MM.DD') : "MM.DD"}</InlineText>
+            <InlineTextWrapper onClick={() => handleInlineTextClick("endDate")}>
+              {selectedText === "endDate" && (
+                <SelectedImg src={selectedImg} selected="endDate" />
+              )}
+              <InlineText>
+                도착일 {endDate ? moment(endDate).format("MM.DD") : "MM.DD"}
+              </InlineText>
             </InlineTextWrapper>
             <ArrowIcon src={Rectangle} />
-            <InlineTextWrapper onClick={() => handleInlineTextClick('people')}>
-              {selectedText === 'people' && <SelectedImg src={selectedImg} />}
+            <InlineTextWrapper onClick={() => handleInlineTextClick("people")}>
+              {selectedText === "people" && (
+                <SelectedImg src={selectedImg} selected="people" />
+              )}
               <InlineText>인원 {people}</InlineText>
             </InlineTextWrapper>
           </SelectDate>
         </SelectCon>
-        {selectedText === 'startDate' && (
+        {selectedText === "startDate" && (
           <CalendarWrapper>
-            <CalendarSite onChange={handleDateChange} dateRange={[startDate, endDate]} />
+            <CalendarSite onChange={handleDateChange} dateRange={dateRange} />
+          </CalendarWrapper>
+        )}
+        {selectedText === "endDate" && (
+          <CalendarWrapper>
+            <CalendarSite onChange={handleDateChange} dateRange={dateRange} />
+          </CalendarWrapper>
+        )}
+        {selectedText === "people" && (
+          <CalendarWrapper>
+            <People onPeopleChange={handlePeopleChange} />
           </CalendarWrapper>
         )}
         <StartBtn src={startBtn} onClick={handleStartClick} />

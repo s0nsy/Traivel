@@ -9,7 +9,7 @@ import Shortline1 from "../assets/Rectangle 42987.png";
 import Shortline2 from "../assets/short-line.png";
 import Back from "../assets/back.svg";
 import Share from "../assets/share.svg";
-import DayLists from "./DayLists";
+import DayLists from "../components/Output/DayLists";
 import { useNavigate } from "react-router-dom";
 
 const RouteContainer = styled.div``;

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Left from '../assets/left.png';
-import right from '../assets/right.png';
-import minus from '../assets/minus.png';
-import plus from '../assets/plus.png';
-import bar from '../assets/bar.png';
+import Left from '../../assets/left.png';
+import right from '../../assets/right.png';
+import minus from '../../assets/minus.png';
+import plus from '../../assets/plus.png';
+import bar from '../../assets/bar.png';
 
 const BoxCon = styled.div`
     display: flex;
@@ -22,6 +22,7 @@ const BoxCon = styled.div`
 const Header = styled.div`
     display: flex;
     align-items: center;
+    margin-bottom: 20px;
 `;
 
 const ArrowImg = styled.img`
@@ -51,12 +52,14 @@ const PeopleCon = styled.div`
 const Minus = styled.img`
     width: 40px;
     height: 40px;
+    margin: 0 30px;
     cursor: pointer;
 `;
 
 const Plus = styled.img`
     width: 40px;
     height: 40px;
+    margin: 0 30px;
     cursor: pointer;
 `;
 
@@ -79,15 +82,16 @@ const CountCon = styled.div`
     gap: 20px; /* Minus, Text, Plus 사이의 간격 */
 `;
 
-const People = ({onPeopleChange}) => {
+const People = ({ onPeopleChange }) => {
     const [adult, setAdult] = useState(0);
     const [child, setChild] = useState(0);
     const [infant, setInfant] = useState(0);
 
-    useEffect(()=>{
-        onPeopleChange(adult+child+infant);
-    },[adult,child,infant,onPeopleChange])
-   
+    useEffect(() => {
+        if (onPeopleChange) {
+            onPeopleChange(adult + child + infant);
+        }
+    }, [adult, child, infant, onPeopleChange]);
 
     const handleIncrease = (type) => {
         if (type === "adult") setAdult(adult + 1);
@@ -104,34 +108,34 @@ const People = ({onPeopleChange}) => {
     return (
         <BoxCon>
             <Header>
-                <ArrowImg src={Left} />
+                <ArrowImg src={Left} alt="left arrow" />
                 <Text>인원</Text>
-                <ArrowImg src={right} />
+                <ArrowImg src={right} alt="right arrow" />
             </Header>
             <PeopleCon>
                 <PeopleText>성인(13세이상)</PeopleText>
                 <CountCon>
-                    <Minus src={minus} onClick={() => handleDecrease("adult")} />
+                    <Minus src={minus} onClick={() => handleDecrease("adult")} alt="minus" />
                     <Text>{adult}</Text>
-                    <Plus src={plus} onClick={() => handleIncrease("adult")} />
+                    <Plus src={plus} onClick={() => handleIncrease("adult")} alt="plus" />
                 </CountCon>
             </PeopleCon>
-            <BarImg src={bar} />
+            <BarImg src={bar} alt="bar" />
             <PeopleCon>
                 <PeopleText>어린이(2~12세)</PeopleText>
                 <CountCon>
-                    <Minus src={minus} onClick={() => handleDecrease("child")} />
+                    <Minus src={minus} onClick={() => handleDecrease("child")} alt="minus" />
                     <Text>{child}</Text>
-                    <Plus src={plus} onClick={() => handleIncrease("child")} />
+                    <Plus src={plus} onClick={() => handleIncrease("child")} alt="plus" />
                 </CountCon>
             </PeopleCon>
-            <BarImg src={bar} />
+            <BarImg src={bar} alt="bar" />
             <PeopleCon>
                 <PeopleText>유아(2세 미만)</PeopleText>
                 <CountCon>
-                    <Minus src={minus} onClick={() => handleDecrease("infant")} />
+                    <Minus src={minus} onClick={() => handleDecrease("infant")} alt="minus" />
                     <Text>{infant}</Text>
-                    <Plus src={plus} onClick={() => handleIncrease("infant")} />
+                    <Plus src={plus} onClick={() => handleIncrease("infant")} alt="plus" />
                 </CountCon>
             </PeopleCon>
         </BoxCon>

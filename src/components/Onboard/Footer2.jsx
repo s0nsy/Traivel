@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import buttonImg from "../assets/button.png";
+import buttonImg from "../../assets/button.png";
 
 const FooterContainer = styled.div`
   display: ${({ isVisible }) =>

@@ -1,0 +1,88 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import Detail from '../../assets/DetailFooter.png';
+import Background from '../../assets/Detail_background.png';
+
+const FooterWrapper = styled.div`
+  width: 100%;
+`;
+
+const Title = styled.h2`
+  margin-bottom: 0.625rem; 
+  color: #ffffff;
+`;
+
+const FooterContainer = styled.div`
+  margin-bottom: 1.25rem; 
+  width: 100%;
+  height: 21.75rem;
+  padding: 1.25rem; 
+  background: url(${Background}) no-repeat center center; 
+  background-size: cover; 
+  border-radius: 0.625rem; 
+  color: #ffffff;
+  text-align: left;
+  position: relative; 
+`;
+
+const InnerBox = styled.div`
+  position: absolute;
+  top: 5.56rem;
+  left: 7.31rem;
+  right: 6.56rem;
+  bottom: 5.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0; 
+`;
+
+const Text = styled.p`
+  margin: 0;
+  font-size: 2rem;
+  font-family: Pretendard, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  color: #FFF;
+  line-height: normal;
+  max-width: calc(100% - 28.38rem); 
+  white-space: pre-line; 
+  display: flex;
+  align-items: center;
+`;
+
+const Arrow = styled.span`
+  font-size: 2rem;
+  margin-left: 0.3rem; 
+`;
+
+const DetailImage = styled.img`
+  height: auto;
+  max-height: 100%;
+  max-width: 100%;
+  cursor: pointer; 
+`;
+
+function Footer() {
+  const navigate = useNavigate(); 
+  const handleImageClick = () => {
+    navigate('/chat');
+  };
+
+  return (
+    <FooterWrapper>
+      <Title><h2>🧙‍♂루트 포터가 추천해드린 여행 정보가 마음에 들지 않으시나요?</h2></Title>
+    <FooterContainer onClick={handleImageClick}>
+      <InnerBox>
+        <Text>
+          다른 여행지를 추천받으러{'\n'}채팅창으로 돌아가기 →
+        </Text>
+        <DetailImage src={Detail} alt="Detail 이미지"  />
+      </InnerBox>
+    </FooterContainer>
+    </FooterWrapper>
+  );
+}
+
+export default Footer;

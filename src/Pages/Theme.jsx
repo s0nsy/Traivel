@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import Header from "./Header";
-import Footer2 from "./Footer2";
-import Footer3 from "./Footer3";
+import Header from "../components/Header";
+import Footer2 from "../components/Onboard/Footer2";
+import Footer3 from "../components/Onboard/Footer3";
 import Icon from "../assets/Icon.svg";
 import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { clickButton } from '../redux/buttonSlice'; 
+import { clickButton } from "../store/buttonSlice";
 
-const LocationContainer = styled.div`
+const ThemeContainer = styled.div`
   position: relative;
   top: 90px;
 `;
@@ -155,7 +155,7 @@ const Question = styled.div`
 `;
 
 const Answer = styled.div`
-  width: 700px;
+  width: 790px;
   white-space: normal;
   display: block;
   padding: 16px 20px;
@@ -181,8 +181,6 @@ const Answer1 = styled.div`
   margin-top: 20px;
 `;
 
-const Answer2 = styled.div``;
-
 const Guide3 = styled.div`
   color: var(--White, #fff);
   font-family: Pretendard;
@@ -193,10 +191,13 @@ const Guide3 = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 130px;
+  margin-top: 150px;
 `;
 
-function Location() {
+
+
+
+function Theme() {
   const [sentense] = useState([
     "시작하기",
     "좋은 답변",
@@ -210,17 +211,20 @@ function Location() {
 
   const handleNavigate = (i) => {
     const routes = ["/theme", "/location", "/cost", "/preference"];
+    const buttonName = sentense[i].toLowerCase().replace(/\s+/g, "");
+
     navigate(routes[i] || "/");
-    dispatch(clickButton(sentense[i].toLowerCase().replace(/\s+/g, "")));
+    dispatch(clickButton(buttonName));
   };
+
   const allButtonsClicked = sentense.every(
     (text) => clickedButtons[text.toLowerCase().replace(/\s+/g, "")]
   );
 
   return (
     <Background>
-      <Header />
-      <LocationContainer>
+      
+      <ThemeContainer>
         <Guide1>루트포터 가이드</Guide1>
         <Guide2>궁금한 점이 있다면 루트포터에게 물어보세요.</Guide2>
         <Lump>
@@ -236,9 +240,7 @@ function Location() {
                   key={i}
                   onClick={() => handleNavigate(i)}
                   isClicked={
-                    clickedButtons[
-                      sentense[i].toLowerCase().replace(/\s+/g, "")
-                    ]
+                    clickedButtons[text.toLowerCase().replace(/\s+/g, "")]
                   }
                 >
                   {text}
@@ -247,27 +249,22 @@ function Location() {
             </Suggest>
           </Cover>
         </Lump>
-        <Question>
-          AI에게 어떻게 답변하면 더 좋은 결과를 얻을 수 있나요?
-        </Question>
+        <Question>루트포터는 어떻게 사용하면 되나요?</Question>
         <Lump2>
           <IconImg src={Icon} alt="icon" />
           <Answer>
-            루트포터는 좋은 답변들이 있을 때 더욱 개인에 딱 맞는 답변을 드릴 수
-            있습니다.
+            루트포터는 여러분의 현재 상황과 취향에 맞게 여행지를 추천해주는
+            서비스입니다.
             <Answer1>
-              어떤 답변을 해야할지 모르겠다면, 각 질문의 예시에서 제공하는
-              내용들을 참고해보세요!
+              루트포터가 여러분의 취향을 더 잘 파악하고 답변할 수 있게
+              루트포터의 질문에 최대한 상세히 답변해주세요!
             </Answer1>
-            <Answer2>
-              모든 답변은 단어의 형태로 답변해주시는게 가장 좋습니다.
-            </Answer2>
           </Answer>
         </Lump2>
         <Guide3>
           필요한 상세조건을 입력하여 더 구체적인 여행 계획을 세울 수 있습니다.
         </Guide3>
-      </LocationContainer>
+      </ThemeContainer>
       <Footer3
         isVisible={allButtonsClicked}
         onClick={() => navigate("/chat")}
@@ -277,4 +274,4 @@ function Location() {
   );
 }
 
-export default Location;
+export default Theme;
