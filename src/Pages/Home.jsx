@@ -71,7 +71,7 @@ const SelectDate = styled.div`
     font-size: 18px;
     font-weight: 400;
     top: 50%;
-    left: 50%;
+    left: 48%;
     transform: translate(-50%, -50%);
 `;
 
@@ -96,9 +96,9 @@ const ArrowIcon = styled.img`
 const SelectedImg = styled.img`
     position: absolute;
     top: 50%;
-    left: 40%;
-    transform: translate(-50%, -50%);
-    width: 230px;
+    left:  ${({ selected }) => selected === 'startDate' ? '50%' : selected === 'endDate' ? '60%' : '120%'};
+    transform: translate(-60%, -50%);
+    width: ${({ selected }) => selected === 'startDate' ? '250px' : selected === 'endDate' ? '230px' : '230px'};
     height: 60px;
     z-index: 0;
     pointer-events: none;
@@ -165,17 +165,17 @@ const Home = ({ setSelectedDateRange, setSelectedPeople }) => {
                     <SelectBox src={selectBox} onClick={() => handleInlineTextClick(null)} />
                     <SelectDate>
                         <InlineTextWrapper onClick={() => handleInlineTextClick('startDate')}>
-                            {selectedText === 'startDate' && <SelectedImg src={selectedImg} />}
+                            {selectedText === 'startDate' && <SelectedImg src={selectedImg} selected="startDate" />}
                             <InlineText>출발일 {startDate ? moment(startDate).format('MM.DD') : "MM.DD"}</InlineText>
                         </InlineTextWrapper>
                         <ArrowIcon src={Rectangle} />
                         <InlineTextWrapper onClick={() => handleInlineTextClick('endDate')}>
-                            {selectedText === 'endDate' && <SelectedImg src={selectedImg} />}
+                            {selectedText === 'endDate' && <SelectedImg src={selectedImg} selected="endDate" />}
                             <InlineText>도착일 {endDate ? moment(endDate).format('MM.DD') : "MM.DD"}</InlineText>
                         </InlineTextWrapper>
                         <ArrowIcon src={Rectangle} />
                         <InlineTextWrapper onClick={() => handleInlineTextClick('people')}>
-                            {selectedText === 'people' && <SelectedImg src={selectedImg} />}
+                            {selectedText === 'people' && <SelectedImg src={selectedImg} selected="people" />}
                             <InlineText>인원 {people}</InlineText>
                         </InlineTextWrapper>
                     </SelectDate>               
