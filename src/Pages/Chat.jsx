@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import flag from '../assets/flag.png';
 import sendIcon from '../assets/send-icon.png';
-import { addUserResponse } from '../redux/chatSlice';
+import { addUserResponse } from '../store/chatSlice';
 
 const TitleCon = styled.div`
   display: flex;

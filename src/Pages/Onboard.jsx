@@ -1,7 +1,7 @@
 import React from "react";
 import Icon from "../assets/Icon.svg";
 import Vector from "../assets/Vector.svg";
-import Footer from "./Footer";
+import Footer from "../components/Onboard/Footer";
 import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -93,7 +93,7 @@ const Guide = styled.p`
   z-index: 1;
 `;
 
-function Main() {
+function Onboard() {
   const [sentense] = useState([
     "여행 테마",
     "선호하는 지역",
@@ -145,4 +145,4 @@ function Main() {
   );
 }
 
-export default Main;
+export default Onboard;

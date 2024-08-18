@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import InfoBox from './components/InfoBox';
-import MapSection from './components/MapSection';
-import Recommendations from './components/Recommendations';
-import Accommodation from './components/Accommodation';
-import Food from './components/Food';
-import Attractions from './components/Attractions';
-import Footer from './components/Footer';
+import InfoBox from '../components/Detail/InfoBox';
+import MapSection from '../components/Detail/MapSection';
+import Recommendations from '../components/Detail/Recommendations';
+import Accommodation from '../components/Detail/Accommodation';
+import Food from '../components/Detail/Food';
+import Attractions from '../components/Detail/Attractions';
+import Footer from '../components/Detail/Footer';
 
 const HeaderTextContainer = styled.div`
   display: flex;
@@ -70,7 +70,7 @@ const ContentDiv = styled.div`
   gap: 4rem;
 `;
 
-const MainPage = () => {
+const Detail = () => {
   const destination = '서귀포'; // 백엔드에서 받아오는 예시 데이터
   const mapImage = 'path_to_map_image';
   const recommendations = ['렌터카 1', '렌터카 2', '렌터카 3'];
@@ -123,4 +123,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default Detail;

@@ -1,12 +1,11 @@
 import React from "react";
-import Header from "./Header";
-import Footer2 from "./Footer2";
+import Header from "../components/Main/header";
+import Footer2 from "../components/Onboard/Footer2";
 import Icon from "../assets/Icon.svg";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-
-const ThemeContainer = styled.div`
+const CostContainer = styled.div`
   position: relative;
   top: 90px;
 `;
@@ -53,8 +52,8 @@ const IconImg = styled.img`
 const Button = styled.button`
   border-radius: 20px;
   border: 1px solid var(--Main_2, #01ecff);
-  background: ${({ isTheme }) =>
-    isTheme ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.1)"};
+  background: ${({ isCost }) =>
+    isCost ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.1)"};
   display: flex;
   width: 280px;
   height: 55px;
@@ -169,7 +168,7 @@ const Guide3 = styled.div`
   margin-top: 120px;
 `;
 
-function Theme() {
+function Cost() {
   const [sentense] = useState([
     "여행 테마",
     "선호하는 지역",
@@ -199,8 +198,8 @@ function Theme() {
 
   return (
     <Background>
-      <Header />
-      <ThemeContainer>
+      
+      <CostContainer>
         <Guide1>루트포터 가이드</Guide1>
         <Guide2>궁금한 점이 있다면 루트포터에게 물어보세요.</Guide2>
         <Lump>
@@ -213,7 +212,7 @@ function Theme() {
             <Suggest>
               {sentense.map((a, i) => {
                 return (
-                  <Button onClick={() => handleNavigate(i)} isTheme={i === 0}>
+                  <Button onClick={() => handleNavigate(i)} isCost={i === 2}>
                     {sentense[i]}
                   </Button>
                 );
@@ -234,10 +233,10 @@ function Theme() {
         <Guide3>
           필요한 상세조건을 입력하여 더 구체적인 여행 계획을 세울 수 있습니다.
         </Guide3>
-      </ThemeContainer>
+      </CostContainer>
       <Footer2 />
     </Background>
   );
 }
 
-export default Theme;
+export default Cost;

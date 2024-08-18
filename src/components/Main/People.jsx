@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Left from '../assets/left.png';
-import right from '../assets/right.png';
-import minus from '../assets/minus.png';
-import plus from '../assets/plus.png';
-import bar from '../assets/bar.png';
+import Left from '../../assets/left.png';
+import right from '../../assets/right.png';
+import minus from '../../assets/minus.png';
+import plus from '../../assets/plus.png';
+import bar from '../../assets/bar.png';
 
 const BoxCon = styled.div`
     display: flex;

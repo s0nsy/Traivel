@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Hotel from '../../../assets/Accommodation1.png';
-import ArrowLeft from '../../../assets/Arrow.png';
-import ArrowRight from '../../../assets/ArrowRight.png';
+import Hotel from '../../assets/Accommodation1.png';
+import ArrowLeft from '../../assets/Arrow.png';
+import ArrowRight from '../../assets/ArrowRight.png';
 
 const AccommodationWrapper = styled.div`
   width: 100%;

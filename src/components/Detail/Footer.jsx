@@ -1,7 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import Detail from '../../../assets/DetailFooter.png';
-import Background from '../../../assets/Detail_background.png';
+import Detail from '../../assets/DetailFooter.png';
+import Background from '../../assets/Detail_background.png';
 
 const FooterWrapper = styled.div`
   width: 100%;
@@ -64,20 +65,20 @@ const DetailImage = styled.img`
 `;
 
 function Footer() {
+  const navigate = useNavigate(); 
   const handleImageClick = () => {
-    // 여기서 원하는 동작을 수행할 수 있습니다.
-    window.location.href = 'https://example.com'; // 예시: 클릭 시 다른 페이지로 이동
+    navigate('/chat');
   };
 
   return (
     <FooterWrapper>
       <Title><h2>🧙‍♂루트 포터가 추천해드린 여행 정보가 마음에 들지 않으시나요?</h2></Title>
-    <FooterContainer>
+    <FooterContainer onClick={handleImageClick}>
       <InnerBox>
         <Text>
           다른 여행지를 추천받으러{'\n'}채팅창으로 돌아가기 →
         </Text>
-        <DetailImage src={Detail} alt="Detail 이미지" onClick={handleImageClick} />
+        <DetailImage src={Detail} alt="Detail 이미지"  />
       </InnerBox>
     </FooterContainer>
     </FooterWrapper>

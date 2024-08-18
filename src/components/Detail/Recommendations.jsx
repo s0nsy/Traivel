@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Car from '../../../assets/recommendation1.png';
-import ArrowLeft from '../../../assets/Arrow.png';
-import ArrowRight from '../../../assets/ArrowRight.png';
+import Car from '../../assets/recommendation1.png';
+import ArrowLeft from '../../assets/Arrow.png';
+import ArrowRight from '../../assets/ArrowRight.png';
 
 const RecommendationsWrapper = styled.div`
   width: 73.5rem;

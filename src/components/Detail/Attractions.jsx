@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Background from '../../../assets/Detail_background.png';
-import ArrowLeft from '../../../assets/Arrow.png';
-import ArrowRight from '../../../assets/ArrowRight.png';
+import Background from '../../assets/Detail_background.png';
+import ArrowLeft from '../../assets/Arrow.png';
+import ArrowRight from '../../assets/ArrowRight.png';
 
 const AttractionsWrapper = styled.div`
   width: 100%;

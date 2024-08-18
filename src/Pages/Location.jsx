@@ -1,6 +1,6 @@
 import React from "react";
-import Header from "./Header";
-import Footer2 from "./Footer2";
+import Header from "../components/Main/header";
+import Footer2 from "../components/Onboard/Footer2";
 import Icon from "../assets/Icon.svg";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -199,7 +199,7 @@ function Location() {
 
   return (
     <Background>
-      <Header />
+      
       <LocationContainer>
         <Guide1>루트포터 가이드</Guide1>
         <Guide2>궁금한 점이 있다면 루트포터에게 물어보세요.</Guide2>

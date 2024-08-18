@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import ArrowLeft from '../../../assets/Arrow.png';
-import ArrowRight from '../../../assets/ArrowRight.png';
+import ArrowLeft from '../../assets/Arrow.png';
+import ArrowRight from '../../assets/ArrowRight.png';
 
 const FoodWrapper = styled.div`
   width: 73.5rem;

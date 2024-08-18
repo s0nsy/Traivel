@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import button2 from "../assets/button2.png";
+import button2 from "../../assets/button2.png";
 import { useNavigate } from "react-router-dom";
 
 const FooterContainer = styled.div`

@@ -5,8 +5,8 @@ import background from '../assets/background.png';
 import flag from '../assets/flag.png';
 import selectBox from '../assets/선택전.png';
 import startBtn from '../assets/Start.png';
-import CalendarSite from '../Pages/Calendar';  
-import People from './People';  
+import CalendarSite from '../components/Main/Calendar';
+import People from '../components/Main/People';  
 import selectedImg from '../assets/selected.png'; 
 import Rectangle from '../assets/sidebar.png'; 
 import moment from "moment";
@@ -126,7 +126,7 @@ const Home = ({ setSelectedDateRange, setSelectedPeople }) => {
     const navigate = useNavigate(); 
 
     const handleStartClick = () => {
-        navigate('/main'); 
+        navigate('/onboard'); 
     };
 
     const handleInlineTextClick = (text) => {

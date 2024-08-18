@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Background from '../../../assets/Detail_background.png';
+import Background from '../../assets/Detail_background.png';
 
 const MapSectionWrapper = styled.div`
   width: 100%;

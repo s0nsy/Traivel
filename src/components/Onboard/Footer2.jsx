@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import button2 from "../assets/button2.png";
+import buttonImg from "../../assets/button.png";
 
 const FooterContainer = styled.div`
   display: flex;
@@ -8,11 +8,11 @@ const FooterContainer = styled.div`
   align-items: center;
   padding: 16px;
   position: relative;
-  top: 472px;
-  width: 100%;
+  top:100px;
+  width: 100%; 
 `;
 
-const Plan = styled.div`
+const Guide = styled.div`
   display: flex;
   width: 730px;
   height: 62px;
@@ -31,7 +31,7 @@ const Plan = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-
+  text-indent: -330px;
 `;
 
 const Button = styled.img`
@@ -41,13 +41,13 @@ const Button = styled.img`
   margin-left: 650px;
 `;
 
-function Footer() {
+function Footer2() {
   return (
     <FooterContainer>
-      <Plan>루트포터의 질문에 답하고 완벽한 여행 계획을 세워보세요.</Plan>
-      <Button src={button2}></Button>
+      <Guide>원하는 여행 테마를 잘 답변하려면?</Guide>
+      <Button src={buttonImg}></Button>
     </FooterContainer>
   );
 }
 
-export default Footer;
+export default Footer2;

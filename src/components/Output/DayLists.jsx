@@ -1,9 +1,9 @@
 import React from "react";
 import { DayData } from "./DayData";
 import styled from "styled-components";
-import Circle from "../assets/circle.png";
-import ShortLine from "../assets/Frame 2085666344.png";
-import Icon from "../assets/travel-icon.png";
+import Circle from "../../assets/circle.png";
+import ShortLine from "../../assets/Frame 2085666344.png";
+import Icon from "../../assets/travel-icon.png";
 import { Link } from "react-router-dom";
 
 

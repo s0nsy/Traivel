@@ -1,8 +1,9 @@
 import React from 'react';
+import{useNavigate} from "react-router-dom"
 import styled from 'styled-components';
-import InfoBox1 from '../../../assets/InfoBox1.png';
-import InfoBox2 from '../../../assets/InfoBox2.png';
-import DetailBackground from '../../../assets/Detail_background.png'; 
+import InfoBox1 from '../../assets/InfoBox1.png';
+import InfoBox2 from '../../assets/InfoBox2.png';
+import DetailBackground from '../../assets/Detail_background.png'; 
 
 const InfoBoxContainer = styled.div`
   width: 73.75rem;
@@ -40,8 +41,9 @@ const StyledH2 = styled.h2`
 `;
 
 function InfoBox() {
+  const navigate = useNavigate(); 
   const handleImageClick = () => {
-    window.open('https://example.com', '_blank'); // 새 탭에서 링크 열기
+    navigate("/output")
   };
 
   return (
