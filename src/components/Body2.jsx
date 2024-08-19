@@ -1,12 +1,12 @@
 import React from "react";
 import Icon from "../assets/Icon.svg";
 import Vector from "../assets/Vector.svg";
-import Footer from "../components/Onboard/Footer";
+import Footer from "./Footer";
 import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { clickButton } from '../store/buttonSlice'; 
+import { clickButton } from '../redux/buttonSlice'; 
 
 const Background = styled.div`
   height: 100vh;
@@ -95,7 +95,7 @@ const Guide = styled.p`
   z-index: 1;
 `;
 
-function Onboard() {
+function Body2() {
   const [sentense] = useState([
     "시작하기",
     "좋은 답변",
@@ -134,4 +134,4 @@ function Onboard() {
   );
 }
 
-export default Onboard;
+export default Body2;

@@ -1,10 +1,12 @@
-import React from "react";
-import Header from "../components/Main/header";
+import React, { useState } from "react";
+import Header from "../components/Header";
 import Footer2 from "../components/Onboard/Footer2";
+import Footer3 from "../components/Onboard/Footer3";
 import Icon from "../assets/Icon.svg";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { clickButton } from "../store/buttonSlice";
 
 const ThemeContainer = styled.div`
   position: relative;
@@ -50,11 +52,12 @@ const IconImg = styled.img`
   flex-shrink: 0;
   filter: drop-shadow(0px 4px 4px rgba(1, 236, 254, 0.2));
 `;
+
 const Button = styled.button`
   border-radius: 20px;
   border: 1px solid var(--Main_2, #01ecff);
-  background: ${({ isTheme }) =>
-    isTheme ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.1)"};
+  background: ${({ isClicked }) =>
+    isClicked ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.1)"};
   display: flex;
   width: 280px;
   height: 55px;
@@ -71,10 +74,10 @@ const Button = styled.button`
   line-height: normal;
   cursor: pointer;
   text-indent: -120px;
-  &:hover{
-    background: rgba(0, 0, 0, 0.5);
-  
 
+  &:hover {
+    background: rgba(0, 0, 0, 0.5);
+  }
 `;
 
 const Cover = styled.div`
@@ -94,6 +97,7 @@ const Lump = styled.div`
   position: relative;
   margin-left: 400px;
 `;
+
 const Lump2 = styled.div`
   display: flex;
   position: relative;
@@ -117,6 +121,15 @@ const Background = styled.div`
   height: 100vh;
 `;
 
+const fadeIn = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
+
 const Question = styled.div`
   display: inline-flex;
   padding: 14px 24px;
@@ -136,9 +149,13 @@ const Question = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  opacity: 0;
+  animation: ${fadeIn} 1s ease-in forwards;
+  animation-delay: 1s;
 `;
+
 const Answer = styled.div`
-  width: 345px;
+  width: 790px;
   white-space: normal;
   display: block;
   padding: 16px 20px;
@@ -155,7 +172,15 @@ const Answer = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  opacity: 0;
+  animation: ${fadeIn} 1s ease-in forwards;
+  animation-delay: 3s;
 `;
+
+const Answer1 = styled.div`
+  margin-top: 20px;
+`;
+
 const Guide3 = styled.div`
   color: var(--White, #fff);
   font-family: Pretendard;
@@ -166,36 +191,35 @@ const Guide3 = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 120px;
+  margin-top: 150px;
 `;
+
+
+
 
 function Theme() {
   const [sentense] = useState([
-    "여행 테마",
-    "선호하는 지역",
-    "이동 및 경비",
-    "여행 취향",
+    "시작하기",
+    "좋은 답변",
+    "여행지 추천 범위",
+    "제안 및 피드백",
   ]);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const clickedButtons = useSelector((state) => state.button.clickedButtons);
 
   const handleNavigate = (i) => {
-    switch (i) {
-      case 0:
-        navigate("/theme");
-        break;
-      case 1:
-        navigate("/location");
-        break;
-      case 2:
-        navigate("/cost");
-        break;
-      case 3:
-        navigate("/preference");
-        break;
-      default:
-        navigate("/");
-    }
+    const routes = ["/theme", "/location", "/cost", "/preference"];
+    const buttonName = sentense[i].toLowerCase().replace(/\s+/g, "");
+
+    navigate(routes[i] || "/");
+    dispatch(clickButton(buttonName));
   };
+
+  const allButtonsClicked = sentense.every(
+    (text) => clickedButtons[text.toLowerCase().replace(/\s+/g, "")]
+  );
 
   return (
     <Background>
@@ -211,31 +235,41 @@ function Theme() {
               루트포터한테 물어보시면 됩니다.
             </P>
             <Suggest>
-              {sentense.map((a, i) => {
-                return (
-                  <Button onClick={() => handleNavigate(i)} isTheme={i === 0}>
-                    {sentense[i]}
-                  </Button>
-                );
-              })}
+              {sentense.map((text, i) => (
+                <Button
+                  key={i}
+                  onClick={() => handleNavigate(i)}
+                  isClicked={
+                    clickedButtons[text.toLowerCase().replace(/\s+/g, "")]
+                  }
+                >
+                  {text}
+                </Button>
+              ))}
             </Suggest>
           </Cover>
         </Lump>
-        <Question>
-          여행 경비에 따라서 추천하는 휴양지가 많이 달라지나요?
-        </Question>
+        <Question>루트포터는 어떻게 사용하면 되나요?</Question>
         <Lump2>
           <IconImg src={Icon} alt="icon" />
           <Answer>
-            여행 경비는 여행 기간과 큰 영향을 받습니다. 이것을 잘 생각해서
-            루트포터한테 물어보시면 됩니다.
+            루트포터는 여러분의 현재 상황과 취향에 맞게 여행지를 추천해주는
+            서비스입니다.
+            <Answer1>
+              루트포터가 여러분의 취향을 더 잘 파악하고 답변할 수 있게
+              루트포터의 질문에 최대한 상세히 답변해주세요!
+            </Answer1>
           </Answer>
         </Lump2>
         <Guide3>
           필요한 상세조건을 입력하여 더 구체적인 여행 계획을 세울 수 있습니다.
         </Guide3>
       </ThemeContainer>
-      <Footer2 />
+      <Footer3
+        isVisible={allButtonsClicked}
+        onClick={() => navigate("/chat")}
+      />
+      <Footer2 isVisible={!allButtonsClicked} />
     </Background>
   );
 }
