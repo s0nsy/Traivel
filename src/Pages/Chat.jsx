@@ -6,6 +6,11 @@ import sendIcon from '../assets/send-icon.png';
 import { addUserResponse } from '../store/chatSlice';
 import recommend from '../assets/리스트 추천.png';
 import { useNavigate } from 'react-router';
+import { 
+  setPurpose, setBudget, setkeyElement, setAccommodation, 
+  settransport, setCompanion, setfavorite, setfavoriteReason, 
+  setspecialNeeds, setRecommendationType, setfreeTime, setimportantFactors 
+} from '../store/surveySlice';
 
 const TitleCon = styled.div`
   display: flex;
@@ -155,9 +160,11 @@ const Chat = () => {
   const [currentInput, setCurrentInput] = useState('');
   const [step, setStep] = useState(0);
   const dispatch = useDispatch();
-  const navigate =useNavigate();
-  const userResponses = useSelector((state) => state.chat.userResponses);
-  const [finish, setFinish] =useState(false);
+  const navigate = useNavigate();
+  const userResponses = useSelector((state) => state.survey);
+  const [finish, setFinish] = useState(false);
+  const chatContainerRef = useRef(null);
+
   const questions = [
     '이번 여행의 주된 목적은 무엇인가요? (예: 휴식, 탐험, 문화 체험, 미식 여행 등)',
     '여행 예산은 어느 정도인가요? (예: 100만원, 80~120만원)',
@@ -173,27 +180,22 @@ const Chat = () => {
     '위 질문에 대한 답변 중 가장 중요시 생각하는 것들을 단어 형태로 입력해주세요.'
   ];
 
-  const [questionResponses, setQuestionResponses] = useState([]);
-  const chatContainerRef = useRef(null);
+  const actionDispatchers = [
+    setPurpose, setBudget, setkeyElement, setAccommodation, 
+    settransport, setCompanion, setfavorite, setfavoriteReason, 
+    setspecialNeeds, setRecommendationType, setfreeTime, setimportantFactors
+  ];
 
-  useEffect(() => {
-    
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  }, [questionResponses]);
-
+ 
+  // 사용자가 메시지를 전송했을 때 실행되는 함수
   const handleSend = () => {
     if (currentInput.trim() !== '') {
-      setQuestionResponses(prev => [
-        ...prev,
-        { question: questions[step], response: currentInput }
-      ]);
-      dispatch(addUserResponse(currentInput));
+      // 현재 단계에 맞는 Redux 액션 호출
+      dispatch(actionDispatchers[step](currentInput));
+
       setCurrentInput(''); 
       if (step < questions.length - 1) {
         setStep(prev => prev + 1);
-        console.log(step)
       } else {
         setFinish(true);
         handleSubmit();
@@ -201,17 +203,50 @@ const Chat = () => {
     }
   };
 
+  // 제출 시 데이터를 서버 전송 형식으로 변환하는 함수
+  const handleSubmit = () => {
+    console.log('사용자 응답:', userResponses);
+
+    // 서버 전송에 맞게 데이터를 포맷팅
+    const submissionData = {
+      schedule: "string", // 실제 값 추가 필요
+      groupComposition: {
+        adults: 0, // 실제 논리 추가 필요
+        children: 0, // 실제 논리 추가 필요
+        infants: 0  // 실제 논리 추가 필요
+      },
+      purpose: userResponses.purpose,
+      budget: userResponses.budget,
+      keyElement: userResponses.keyElement,
+      accommodation: userResponses.accommodation,
+      transport: userResponses.transport,
+      companion: userResponses.companion,
+      favorite: userResponses.favorite,
+      favoriteReason: userResponses.favoriteReason,
+      specialNeeds: userResponses.specialNeeds,
+      recommendationType: userResponses.recommendationType,
+      freeTime: userResponses.freeTime,
+      importantFactors: userResponses.importantFactors
+    };
+
+    // 서버 요청 로직 추가 예:
+    // axios.post('/api/submit', submissionData)
+    console.log('서버로 전송할 데이터:', submissionData);
+  };
+
   const handleInputChange = (e) => {
     setCurrentInput(e.target.value);
   };
 
-  const handleSubmit = () => {
-    console.log('User responses:', userResponses);
-    // 서버로 데이터를 전송하는 로직 추가
+  const handleList = () => {
+    navigate('/lists');
   };
-  const handleList=()=>{
-    navigate('/lists')
-  }
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [step]);
   return (
     <>
       <TitleCon>
