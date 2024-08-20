@@ -1,28 +1,27 @@
 import React from "react";
-import styled from "styled-components";
-import button2 from "../../assets/button2.png";
+import styled  from "styled-components";
+import button2 from "../../assets/button.png";
 import { useNavigate } from "react-router-dom";
 
 const FooterContainer = styled.div`
-  display: flex;
+  display: ${({ isVisible }) => (isVisible ? "flex" : "none")};
   padding: 16px 380px 10px 380px;
   justify-content: center;
   align-items: center;
-  position: relative;
-  top:100px;
+  position: relative; 
+  top: 100px;
   cursor: pointer;
-  
+  z-index: 1000;
 `;
 
 const Start = styled.div`
   display: flex;
   width: 730px;
-  height: 62px;
+  height: 60px;
   padding: 0 100px 0 90px;
   justify-content: center;
   align-items: center;
   gap: 210px;
-  flex-shrink: 0;
   border-radius: 36px;
   border: 1px solid var(--Main_2, #01ecff);
   background: rgba(255, 255, 255, 0.3);
@@ -30,27 +29,23 @@ const Start = styled.div`
   color: #e6e6e6;
   font-family: Pretendard;
   font-size: 17px;
-  font-style: normal;
   font-weight: 400;
   line-height: normal;
 `;
+
 const Button = styled.img`
   cursor: pointer;
-  z-index: +2;
   position: absolute;
-  margin-left: 650px;
+  margin-left: 650px; 
 `;
 
-function Footer3() {
+function Footer3({ isVisible }) {
   const navigate = useNavigate();
 
-
   return (
-    <FooterContainer onClick={()=>{
-      navigate("/chat");
-    }}>
+    <FooterContainer isVisible={isVisible} onClick={() => navigate("/chat")}>
       <Start>시작하기</Start>
-      <Button src={button2}></Button>
+      <Button src={button2} alt="start" />
     </FooterContainer>
   );
 }

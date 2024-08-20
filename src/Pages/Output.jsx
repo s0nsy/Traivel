@@ -1,4 +1,7 @@
 import React from "react";
+import { useRef } from "react";
+import html2canvas from "html2canvas";
+import axios from "axios";
 import { useState } from "react";
 import styled from "styled-components";
 import Icon from "../assets/Icon.svg";
@@ -66,7 +69,6 @@ const Img5 = styled.img`
   margin-top: 2px;
   margin-right: 7px;
   cursor: pointer;
-  
 `;
 const Img6 = styled.img`
   width: 2px;
@@ -80,7 +82,6 @@ const Img7 = styled.img`
   margin-top: 2px;
   margin-right: 7px;
   cursor: pointer;
-  
 `;
 
 const Header = styled.div`
@@ -227,7 +228,6 @@ const ChatOrShare1 = styled.div`
   font-weight: 500;
   line-height: 36px; /* 112.5% */
   cursor: pointer;
-  
 `;
 const ChatOrShare2 = styled.div`
   color: #fff;
@@ -238,7 +238,6 @@ const ChatOrShare2 = styled.div`
   font-weight: 500;
   line-height: 36px; /* 112.5% */
   cursor: pointer;
-  
 `;
 const Frame2 = styled.div``;
 
@@ -286,16 +285,45 @@ function Output() {
     "날 것 못먹음",
   ]);
 
+  const routeRef = useRef();
+
   const navigate = useNavigate();
 
   const Chattting = () => {
     navigate("/chat");
   };
 
+  //서버에 이미지 업로드
+  const Capture = async () => {
+    if (routeRef.current) {
+      const canvas = await html2canvas(routeRef.current);
+      canvas.toBlob(async (blob) => {
+        const formData = new FormData();
+        formData.append("image", blob, "제목없음.png");
 
+        try {
+          const response = await axios.post("", formData, {
+            headers: {
+              "Context-Type": "multipart/form-data",
+            },
+          });
+          //서버에서 url 받아오기
+          const Url = response.data.Url;
+          console.log("이미지 업로드 성공", Url);
+
+          const Tag = document.createElement("img");
+          Tag.src = Url;
+          document.body.appendChild(Tag);
+          console.log("이미지 업로드 성공", response.data);
+        } catch (error) {
+          console.error("이미지 업로드 실패:", error);
+        }
+      });
+    }
+  };
 
   return (
-    <RouteContainer>
+    <RouteContainer ref={routeRef}>
       <A>
         <Img1 src={Icon} alt="Icon"></Img1>
         <Header>제주 ‘서귀포’ 지역의 2박 3일 일정을 추천드립니다!</Header>
@@ -327,8 +355,8 @@ function Output() {
         <Img5 src={Back} onClick={Chattting}></Img5>
         <ChatOrShare1 onClick={Chattting}>채팅으로</ChatOrShare1>
         <Img6 src={Shortline2}></Img6>
-        <Img7 src={Share} ></Img7>
-        <ChatOrShare2 >공유하기</ChatOrShare2>
+        <Img7 src={Share}></Img7>
+        <ChatOrShare2 onClick={Capture}>공유하기</ChatOrShare2>
       </C>
       <D>
         <Frame2>
