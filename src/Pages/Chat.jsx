@@ -22,17 +22,23 @@ const TitleCon = styled.div`
 `;
 
 const Title = styled.p`
-  font-family: Pretendard, sans-serif;
-  color: #FFFFFF;
+  color: #FFF;
+  font-family: Pretendard;
   font-size: 36px;
+  font-style: normal;
   font-weight: 500;
+  line-height: normal;
+  margin-bottom: 10px;
 `;
 
 const Detail = styled.p`
-  font-family: Pretendard, sans-serif;
-  color: #FFFFFF;
+  color: #FFF;
+  font-family: Pretendard;
   font-size: 24px;
+  font-style: normal;
   font-weight: 300;
+  line-height: normal;
+  margin-bottom: 40px;
 `;
 
 const ChatContainer = styled.div`
