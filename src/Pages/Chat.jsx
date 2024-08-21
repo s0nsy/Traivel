@@ -22,17 +22,23 @@ const TitleCon = styled.div`
 `;
 
 const Title = styled.p`
-  font-family: Pretendard, sans-serif;
-  color: #FFFFFF;
-  font-size: 30px;
+  color: #FFF;
+  font-family: Pretendard;
+  font-size: 36px;
+  font-style: normal;
   font-weight: 500;
+  line-height: normal;
+  margin-bottom: 10px;
 `;
 
 const Detail = styled.p`
-  font-family: Pretendard, sans-serif;
-  color: #FFFFFF;
-  font-size: 20px;
+  color: #FFF;
+  font-family: Pretendard;
+  font-size: 24px;
+  font-style: normal;
   font-weight: 300;
+  line-height: normal;
+  margin-bottom: 40px;
 `;
 
 const ChatContainer = styled.div`
@@ -166,6 +172,7 @@ const Chat = () => {
   const [finish, setFinish] = useState(false);
   const chatContainerRef = useRef(null);
   const [questionResponses, setQuestionResponses] = useState([]);
+  const [recommendations, setRecommendations] = useState([]); 
 
   const questions = [
     '이번 여행의 주된 목적은 무엇인가요? (예: 휴식, 탐험, 문화 체험, 미식 여행 등)',
@@ -201,8 +208,8 @@ const Chat = () => {
         setStep(prev => prev + 1);
       } else {
         try {
-          await handleSubmit(); // handleSubmit이 비동기 작업을 완료한 후
-          setFinish(true); // 그 다음에 finish 상태 업데이트
+          await handleSubmit();
+          setFinish(true);
         } catch (error) {
           console.error('Error submitting:', error);
         }
@@ -240,6 +247,8 @@ const Chat = () => {
     .then((response) => {
       // 서버로부터 받은 response 출력
       console.log('서버 응답:', response.data); // response.data를 콘솔에 출력
+      setRecommendations(response.data);
+     
     })
     .catch((error) => {
       // 에러가 발생한 경우 출력
@@ -253,7 +262,8 @@ const Chat = () => {
   };
 
   const handleList = () => {
-    navigate('/lists');
+    console.log('Navigating to list with recommendations:', recommendations); // Debugging log
+    navigate('/lists', { state: { recommendations } });
   };
 
   useEffect(() => {
