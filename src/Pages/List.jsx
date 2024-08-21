@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import chattingbackground from "../assets/chattingbackground.png";
 import movetochat from "../assets/movetochat.svg";
 import listarrow from "../assets/listarrow.svg";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Background = styled.div`
     display: flex;
@@ -157,8 +157,26 @@ const MoveToChatIcon = styled.img`
     width: 36px;
     height: 36px;
 `;
+function List() {
+    const location = useLocation();
+    const recommendations = location.state?.recommendations?.data || []; // Access the data array inside recommendations
 
-function List(){
+    console.log('Received recommendations:', recommendations);
+    console.log('Type of recommendations:', typeof recommendations);
+
+    // Check if recommendations is an array, if not, log an error
+    if (!Array.isArray(recommendations)) {
+        console.error('Error: Recommendations is not an array:', recommendations);
+        return (
+            <Background>
+                <ListContainer>
+                    <Header1>Error</Header1>
+                    <Subtitle1>Recommendations data is not in the correct format.</Subtitle1>
+                </ListContainer>
+            </Background>
+        );
+    }
+
     const [hoveredIndex, setHoveredIndex] = useState(null); 
     const navigate = useNavigate();
 
@@ -176,27 +194,31 @@ function List(){
                 <Header1>추천 여행지 리스트를 알려드려요.</Header1>
                 <Subtitle1>날짜와 일정을 추가한 뒤, 루트포터와 대화를 시작해보세요.</Subtitle1>
                 <ListFrame>
-                    {Array.from({ length: 7 }, (_, index) => (
-                        <ListItem 
-                            key={index}
-                            onMouseOver={() => setHoveredIndex(index)}
-                            onMouseOut={() => setHoveredIndex(null)}
-                        >
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <ListIndex>{index + 1}</ListIndex>
-                                <ListDetails>
-                                    <ListDetailItem>제주도</ListDetailItem>
-                                    <ListDetailItem>서귀포</ListDetailItem>
-                                    <ListDetailItem>메모</ListDetailItem>
-                                </ListDetails>
-                            </div>
-                            <ArrowIcon 
-                                src={listarrow} 
-                                isVisible={hoveredIndex === index} 
-                                onClick={detailNavigate} 
-                            />
-                        </ListItem>
-                    ))}
+                    {recommendations.length > 0 ? (
+                        recommendations.map((item, index) => (
+                            <ListItem 
+                                key={index}
+                                onMouseOver={() => setHoveredIndex(index)}
+                                onMouseOut={() => setHoveredIndex(null)}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <ListIndex>{index + 1}</ListIndex>
+                                    <ListDetails>
+                                        <ListDetailItem>{item.region}</ListDetailItem>
+                                        <ListDetailItem>{item.district}</ListDetailItem>
+                                        <ListDetailItem>{item.features.join(', ')}</ListDetailItem>
+                                    </ListDetails>
+                                </div>
+                                <ArrowIcon 
+                                    src={listarrow} 
+                                    isVisible={hoveredIndex === index} 
+                                    onClick={detailNavigate} 
+                                />
+                            </ListItem>
+                        ))
+                    ) : (
+                        <p>No recommendations available.</p>
+                    )}
                 </ListFrame>
                 
                 <ListFooter onClick={chatNavigate}>
@@ -205,7 +227,6 @@ function List(){
                         <div>채팅으로 돌아가기</div>
                     </FooterContent>
                 </ListFooter>
-                
             </ListContainer>
         </Background>
     );
