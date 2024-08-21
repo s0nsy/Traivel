@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import flag from '../assets/flag.png';
@@ -164,6 +165,7 @@ const Chat = () => {
   const userResponses = useSelector((state) => state.survey);
   const [finish, setFinish] = useState(false);
   const chatContainerRef = useRef(null);
+  const [questionResponses, setQuestionResponses] = useState([]);
 
   const questions = [
     '이번 여행의 주된 목적은 무엇인가요? (예: 휴식, 탐험, 문화 체험, 미식 여행 등)',
@@ -188,32 +190,37 @@ const Chat = () => {
 
  
   // 사용자가 메시지를 전송했을 때 실행되는 함수
-  const handleSend = () => {
+  const handleSend = async () => {
     if (currentInput.trim() !== '') {
-      // 현재 단계에 맞는 Redux 액션 호출
       dispatch(actionDispatchers[step](currentInput));
-
-      setCurrentInput(''); 
+      setQuestionResponses(prev => [...prev, { question: questions[step], response: currentInput }]);
+  
+      setCurrentInput('');
+  
       if (step < questions.length - 1) {
         setStep(prev => prev + 1);
       } else {
-        setFinish(true);
-        handleSubmit();
+        try {
+          await handleSubmit(); // handleSubmit이 비동기 작업을 완료한 후
+          setFinish(true); // 그 다음에 finish 상태 업데이트
+        } catch (error) {
+          console.error('Error submitting:', error);
+        }
       }
     }
   };
+  
 
-  // 제출 시 데이터를 서버 전송 형식으로 변환하는 함수
   const handleSubmit = () => {
     console.log('사용자 응답:', userResponses);
 
-    // 서버 전송에 맞게 데이터를 포맷팅
+    
     const submissionData = {
-      schedule: "string", // 실제 값 추가 필요
+      schedule: "string", 
       groupComposition: {
-        adults: 0, // 실제 논리 추가 필요
-        children: 0, // 실제 논리 추가 필요
-        infants: 0  // 실제 논리 추가 필요
+        adults: 0, 
+        children: 0,
+        infants: 0  
       },
       purpose: userResponses.purpose,
       budget: userResponses.budget,
@@ -228,10 +235,17 @@ const Chat = () => {
       freeTime: userResponses.freeTime,
       importantFactors: userResponses.importantFactors
     };
-
-    // 서버 요청 로직 추가 예:
-    // axios.post('/api/submit', submissionData)
     console.log('서버로 전송할 데이터:', submissionData);
+    axios.post("/api/chat", submissionData)
+    .then((response) => {
+      // 서버로부터 받은 response 출력
+      console.log('서버 응답:', response.data); // response.data를 콘솔에 출력
+    })
+    .catch((error) => {
+      // 에러가 발생한 경우 출력
+      console.error('서버 요청 중 오류 발생:', error);
+    });
+    
   };
 
   const handleInputChange = (e) => {
@@ -257,12 +271,12 @@ const Chat = () => {
       <ChatContainer ref={chatContainerRef}>
         {questionResponses.map((qr, index) => (
           <React.Fragment key={index}>
-            {/* 질문은 왼쪽 */}
+           
             <ChatCon>
               <ChatImg src={flag} alt="flag" />
               <ChatBox>{qr.question}</ChatBox>
             </ChatCon>
-            {/* 응답은 오른쪽 */}
+            
             <UserChatCon>
               <UserChatBox>{qr.response}</UserChatBox>
             </UserChatCon>
