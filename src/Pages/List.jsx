@@ -159,23 +159,9 @@ const MoveToChatIcon = styled.img`
 `;
 function List() {
     const location = useLocation();
-    const recommendations = location.state?.recommendations?.data || []; // Access the data array inside recommendations
+    const recommendations = location.state?.recommendations?.data || []; 
 
     console.log('Received recommendations:', recommendations);
-    console.log('Type of recommendations:', typeof recommendations);
-
-    // Check if recommendations is an array, if not, log an error
-    if (!Array.isArray(recommendations)) {
-        console.error('Error: Recommendations is not an array:', recommendations);
-        return (
-            <Background>
-                <ListContainer>
-                    <Header1>Error</Header1>
-                    <Subtitle1>Recommendations data is not in the correct format.</Subtitle1>
-                </ListContainer>
-            </Background>
-        );
-    }
 
     const [hoveredIndex, setHoveredIndex] = useState(null); 
     const navigate = useNavigate();
