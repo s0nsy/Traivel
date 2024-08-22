@@ -9,7 +9,7 @@ const NavContainer = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  height: 4rem;
+  height: 72px;
   z-index: 1000;
   background: linear-gradient(0deg, #013f44 -27.78%, #011e20 37.5%);
 `;

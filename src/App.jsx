@@ -14,6 +14,7 @@ import Cost from "./Pages/Cost";
 import Detail from "./Pages/Detail";
 import Chat from "./Pages/Chat";
 import Output from "./Pages/Output";
+import Loader from "./Pages/infoLoad"
 import "./App.css";
 
 // Global Styles using styled-components
@@ -46,6 +47,7 @@ function App() {
           <Route path="/detail" element={<><Detail/></>}/>
           <Route path="/lists" element={<><List/></>}/>
           <Route path="/output" element={<><Output/></>}/>
+          <Route path="/info" element={<><Loader/></>}/>
         </Routes>
       </div>
     </>
