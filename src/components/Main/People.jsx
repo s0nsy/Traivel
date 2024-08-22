@@ -65,12 +65,14 @@ const Plus = styled.img`
     cursor: pointer;
 `;
 
-const PeopleText = styled.p`
+const PeopleText = styled.div`
     font-family: Pretendard, sans-serif;
     color: #FFFFFF;
     font-size: 13px;
     font-weight: 400;
     margin: 0;
+   
+    
 `;
 
 const BarImg = styled.img`
@@ -81,8 +83,17 @@ const BarImg = styled.img`
 const CountCon = styled.div`
     display: flex;
     align-items: center;
-    gap: 20px; /* Minus, Text, Plus 사이의 간격 */
+    gap: 15px; /* Minus, Text, Plus 사이의 간격 */
+    
 `;
+
+const SubText = styled.span`
+  display: block; /* 이 부분을 block으로 처리 */
+  font-size: 14px;
+  font-weight: 400;
+  color: white;
+`;
+
 
 const People = () => {
     const dispatch = useDispatch();
@@ -105,39 +116,48 @@ const People = () => {
 
     return (
         <BoxCon>
-            <Header>
-                <ArrowImg src={Left} alt="left arrow" />
-                <Text>인원</Text>
-                <ArrowImg src={right} alt="right arrow" />
-            </Header>
-            <PeopleCon>
-                <PeopleText>성인(13세이상)</PeopleText>
-                <CountCon>
-                    <Minus src={minus} onClick={() => handleDecrease("adult")} alt="minus" />
-                    <Text>{adults}</Text>
-                    <Plus src={plus} onClick={() => handleIncrease("adult")} alt="plus" />
-                </CountCon>
-            </PeopleCon>
-            <BarImg src={bar} alt="bar" />
-            <PeopleCon>
-                <PeopleText>어린이(2~12세)</PeopleText>
-                <CountCon>
-                    <Minus src={minus} onClick={() => handleDecrease("child")} alt="minus" />
-                    <Text>{children}</Text>
-                    <Plus src={plus} onClick={() => handleIncrease("child")} alt="plus" />
-                </CountCon>
-            </PeopleCon>
-            <BarImg src={bar} alt="bar" />
-            <PeopleCon>
-                <PeopleText>유아(2세 미만)</PeopleText>
-                <CountCon>
-                    <Minus src={minus} onClick={() => handleDecrease("infant")} alt="minus" />
-                    <Text>{infants}</Text>
-                    <Plus src={plus} onClick={() => handleIncrease("infant")} alt="plus" />
-                </CountCon>
-            </PeopleCon>
+          <Header>
+            <ArrowImg src={Left} alt="left arrow" />
+            <Text>인원</Text>
+            <ArrowImg src={right} alt="right arrow" />
+          </Header>
+          <PeopleCon>
+            <PeopleText>
+              성인
+              <SubText>(13세 이상)</SubText>
+            </PeopleText>
+            <CountCon>
+              <Minus src={minus} onClick={() => handleDecrease("adult")} alt="minus" />
+              <Text>{adults}</Text>
+              <Plus src={plus} onClick={() => handleIncrease("adult")} alt="plus" />
+            </CountCon>
+          </PeopleCon>
+          <BarImg src={bar} alt="bar" />
+          <PeopleCon>
+            <PeopleText>
+              어린이
+              <SubText>(2~12세)</SubText>
+            </PeopleText>
+            <CountCon>
+              <Minus src={minus} onClick={() => handleDecrease("child")} alt="minus" />
+              <Text>{children}</Text>
+              <Plus src={plus} onClick={() => handleIncrease("child")} alt="plus" />
+            </CountCon>
+          </PeopleCon>
+          <BarImg src={bar} alt="bar" />
+          <PeopleCon>
+            <PeopleText>
+              유아
+              <SubText>(2세 미만)</SubText>
+            </PeopleText>
+            <CountCon>
+              <Minus src={minus} onClick={() => handleDecrease("infant")} alt="minus" />
+              <Text>{infants}</Text>
+              <Plus src={plus} onClick={() => handleIncrease("infant")} alt="plus" />
+            </CountCon>
+          </PeopleCon>
         </BoxCon>
-    );
-};
+      );
+    };
 
 export default People;
