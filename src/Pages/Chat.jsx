@@ -239,7 +239,8 @@ const Chat = () => {
       const response = await axios.post("/api/chat", submissionData);
   
       
-      dispatch(setRecommendations(response.data));
+      dispatch(setRecommendations(response.data)); 
+      localStorage.setItem('recommendations', JSON.stringify(response.data));
       console.log(response.data);
   
     } catch (error) {
