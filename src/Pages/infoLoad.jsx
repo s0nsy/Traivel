@@ -11,8 +11,8 @@ const LoaderWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  width: 100vw;
+  height: 60vh;
+  width: 78vw;
 `;
 
 const TextWrapper = styled.div`

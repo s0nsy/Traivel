@@ -12,6 +12,9 @@ import DayLists from "../components/Output/DayLists";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import background from "../assets/background.png";
+import infoLoad from "../Pages/infoLoad";
+import routeload from "../Pages/routeLoad";
+
 
 const RouteContainer = styled.div``;
 const Frame1 = styled.div`
@@ -334,7 +337,7 @@ function Output({ selectedDateRange, selectedPeople }) {
 
           try {
             const response = await axios.post(
-              `${PROXY}/api/routes/share`,
+            `${PROXY}/api/routes/share`,
               formData,
               {
                 headers: {

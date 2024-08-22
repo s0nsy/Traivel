@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux"; 
+import { useSelector } from "react-redux";
 import Circle from "../../assets/circle.png";
 import ShortLine from "../../assets/Frame 2085666344.png";
-import Icon from "../../assets/travel-icon.png";
 import axios from "axios";
+import Loader from "../../Pages/infoLoad";
 
 const TotalContainer = styled.div``;
 const DayContainer = styled.div``;
@@ -31,6 +31,7 @@ const DayFrame = styled.div`
 const PlanContainer = styled.div`
   color: #fff;
   display: flex;
+  flex-direction: column;
   font-family: Pretendard;
   font-size: 24px;
   font-weight: 600;
@@ -64,9 +65,22 @@ const PlanDetail = styled.div`
   color: #fff;
   font-family: Pretendard;
   font-size: 17px;
-  margin: 10px 0;
+  position: relative;
+  left: 20px;
+  margin: 5px 0;
   font-weight: 200;
   line-height: 28px;
+`;
+
+const PlanAttraction = styled.div`
+  color: #fff;
+  font-family: Pretendard;
+  font-size: 17px;
+  margin: 10px 0;
+  font-weight: 300;
+  line-height: 28px;
+  list-style-type: disc;
+  margin-left: 20px;
 `;
 
 const TipContainer = styled.div`
@@ -114,6 +128,32 @@ const TipSubTitle = styled.div`
   font-weight: 600;
   line-height: normal;
 `;
+
+const PlanDetail1 = styled.div`
+  color: #fff;
+  font-family: Pretendard;
+  font-size: 17px;
+  font-weight: 200;
+  line-height: normal;
+`;
+
+const P = styled.div`
+  color: #fff;
+  font-family: Pretendard;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: normal;
+`;
+
+const Strong = styled.div`
+  color: #fff;
+  font-family: Pretendard;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: normal;
+  position: relative;
+`;
+
 const TipDetail = styled.div`
   color: #fff;
   font-family: Pretendard;
@@ -122,31 +162,47 @@ const TipDetail = styled.div`
   line-height: normal;
 `;
 
+const PlanLump = styled.div`
+  olor: #fff;
+  display: flex;
+  align-items: center;
+  font-family: Pretendard;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 28px;
+`;
+
+const AttractionsList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const AttractionItem = styled.li`
+  margin-left: 20px; /* 리스트 아이템에 대한 간격 */
+  font-family: Pretendard;
+  font-size: 16px;
+  position: relative;
+  right: 20px;
+  color: #fff;
+`;
 function DayLists() {
   const { region, district, features } = useSelector(
     (state) => state.selectedItem
   );
-  console.log({region,district,features});
-  
-  
+  const duration = useSelector((state) => state.survey.duration);
+  const PROXY = window.location.hostname === "localhost" ? "" : "/proxy";
+
+  const [loading, setLoading] = useState(true);
   const [itinerary, setItinerary] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchItinerary = async () => {
       try {
-        console.log("Sending request with data:", {
-          destinations: [
-            {
-              region: region,
-              district: district,
-              points: features,
-            },
-          ],
-        });
-  
+        setLoading(true);
         const response = await axios.post(
-          "/api/routes",
+          `${PROXY}/api/routes`,
           {
             destinations: [
               {
@@ -162,8 +218,7 @@ function DayLists() {
             },
           }
         );
-  
-        console.log("API 응답:", response.data);
+
         if (response.data.success) {
           setItinerary(response.data.data);
           setError(null);
@@ -175,52 +230,73 @@ function DayLists() {
           "서버 에러: " +
             (error.response ? error.response.data.message : error.message)
         );
+      } finally {
+        setLoading(false);
       }
     };
-  
+
     if (region && district && features && features.length > 0) {
       fetchItinerary();
     }
   }, [region, district, features]);
+
+  const parseDuration = (duration) => {
+    const match = duration.match(/(\d+)박 (\d+)일/);
+    if (match) {
+      return parseInt(match[2], 10); // Return the number of days
+    }
+    return 0;
+  };
+
+  const days = parseDuration(duration);
+  const filteredItinerary = itinerary.slice(0, days);
+
   return (
     <TotalContainer>
+       {loading && <Loader/>}
       {error && <div>에러: {error}</div>}
-      {itinerary.length === 0 && !error && <div>일정이 없습니다.</div>}
-      {itinerary.map((day, i) => (
-        <DayContainer key={i}>
-          <DayDate>{day.day}일차</DayDate>
-          <DayFrame>
-            {day.places.map((place, index) => (
-              <PlanContainer key={index}>
-                <PlanImg1 src={Circle} alt="원" />
-                <PlanTitle>{place.name}</PlanTitle>
-                <PlanImg2 src={ShortLine} alt="짧은 선" />
-                <PlanDetail>{place.recommendations}</PlanDetail>
-              </PlanContainer>
-            ))}
-          </DayFrame>
-          <TipContainer>
-            <TipHeader>
-              <TipTitle>여행 Tip</TipTitle>
-              <TipImg src={Icon} alt="아이콘" />
-            </TipHeader>
-            <TipFrame>
-              <TipSubHeader>
-                <TipSubTitle>추천 음식</TipSubTitle>
-                <TipDetail>
-                  {day.places[0]?.popularMenu || "정보 없음"}
-                </TipDetail>
-              </TipSubHeader>
-              <TipSubHeader>
-                <TipSubTitle>추천 사항</TipSubTitle>
-                <TipDetail>
-                  {day.places[0]?.recommendations || "정보 없음"}
-                </TipDetail>
-              </TipSubHeader>
-            </TipFrame>
-          </TipContainer>
-        </DayContainer>
-      ))}
+      {itinerary.length === 0 && !error && <infoLoad />}
+      {filteredItinerary.length > 0 ? (
+        filteredItinerary.map((day, i) => (
+          <DayContainer key={i}>
+            <DayDate>{i + 1}일차</DayDate>
+            <DayFrame>
+              {day.places.map((place, index) => (
+                <PlanContainer key={index}>
+                  <PlanLump>
+                    <PlanImg1 src={Circle} alt="원" />
+                    <PlanTitle>{place.name}</PlanTitle>
+                    <PlanImg2 src={ShortLine} alt="짧은 선" />
+                    <PlanDetail1>{place.recommendations}</PlanDetail1>
+                  </PlanLump>
+                  <PlanDetail>
+                    <PlanDetail>
+                      <P>운영 시간</P> {place.hours}
+                    </PlanDetail>
+                    <PlanDetail>
+                      <P>추천 음식</P> {place.popularMenu}
+                    </PlanDetail>
+                    {place.attractions && place.attractions.length > 0 && (
+                      <PlanAttraction>
+                        <AttractionsList>
+                          <Strong>주요 명소</Strong>
+                          {place.attractions.map((attraction, attrIndex) => (
+                            <AttractionItem key={attrIndex}>
+                              {attraction}
+                            </AttractionItem>
+                          ))}
+                        </AttractionsList>
+                      </PlanAttraction>
+                    )}
+                  </PlanDetail>
+                </PlanContainer>
+              ))}
+            </DayFrame>
+          </DayContainer>
+        ))
+      ) : (
+        <div>일정이 없습니다.</div>
+      )}
     </TotalContainer>
   );
 }
