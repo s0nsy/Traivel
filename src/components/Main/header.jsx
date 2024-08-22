@@ -90,7 +90,7 @@ const Header = () => {
         <SideRectangle />
         <NavSelect>{selectedPeople}</NavSelect>
       </NavSelectCon>
-      <SideBarBtn src={SideBarIcon} alt="Sidebar Icon" />
+      
     </NavContainer>
   );
 };
