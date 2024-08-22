@@ -11,10 +11,12 @@ const selectedItemSlice = createSlice({
     setSelectedItem: (state, action) => {
       state.region = action.payload.region;
       state.district = action.payload.district;
+      state.features = action.payload.features;
     },
     clearSelectedItem: () => ({
       region: '',
       district: '',
+      features: '',
     }),
   },
 });

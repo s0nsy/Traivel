@@ -7,6 +7,7 @@ import Accommodation from '../components/Detail/Accommodation';
 import Food from '../components/Detail/Food';
 import Attractions from '../components/Detail/Attractions';
 import Footer from '../components/Detail/Footer';
+import {useSelector} from 'react-redux';
 
 const HeaderTextContainer = styled.div`
   display: flex;
@@ -77,8 +78,15 @@ const MainPage = () => {
   const [foods, setFoods] = useState([]);
   const [attractions, setAttractions] = useState([]);
 
+
+  const { region, district, features } = useSelector((state) => state.selectedItem);
+  console.log({region, district,features})
   useEffect(() => {
-    fetch('/api/detail', {
+   
+    const queryString = `?region=${encodeURIComponent(region)}&district=${encodeURIComponent(district)}&features=${encodeURIComponent(features)}`;
+  
+    
+    fetch(`/api/detail${queryString}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -87,32 +95,32 @@ const MainPage = () => {
     })
     .then(response => response.json())
     .then(data => {
+      console.log('API응답',data);
       if (data.error) {
         console.error('API Error:', data.error);
       } else {
-        // 예시로 받아온 데이터를 상태에 저장합니다.
+        
         setDestination(data.tourData.item[0].addr1 || '서귀포');
         setMapImage(data.tourData.item[0].firstimage || 'default_image_path');
         
-        // 기존 recommendations 구조에 맞춰 데이터를 생성
         const recommendationData = [
           {
             smallText: '렌트카',
             description: data.optComment.traffic || '렌터카에 대한 설명이 없습니다.',
-            links: ['사이트 1', '사이트 2', '사이트 3', '사이트 4', '사이트 5'] // 실제 추천 사이트 목록으로 대체해야 함
+            links: ['사이트 1', '사이트 2', '사이트 3', '사이트 4', '사이트 5']
           },
           {
             smallText: '대중교통',
             description: data.optComment.hotel || '대중교통에 대한 설명이 없습니다.',
-            links: ['사이트 1', '사이트 2', '사이트 3', '사이트 4', '사이트 5'] // 실제 추천 사이트 목록으로 대체해야 함
+            links: ['사이트 1', '사이트 2', '사이트 3', '사이트 4', '사이트 5']
           },
           {
             smallText: '자전거 대여',
             description: data.optComment.food || '자전거 대여에 대한 설명이 없습니다.',
-            links: ['사이트 1', '사이트 2', '사이트 3', '사이트 4', '사이트 5'] // 실제 추천 사이트 목록으로 대체해야 함
+            links: ['사이트 1', '사이트 2', '사이트 3', '사이트 4', '사이트 5']
           }
         ];
-
+  
         setRecommendations(recommendationData);
         setAccommodations([data.tourData.item[0].title]);
         setFoods([data.tourData.item[0].food]);
