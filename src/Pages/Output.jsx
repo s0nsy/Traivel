@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRef } from "react";
 import html2canvas from "html2canvas";
 import axios from "axios";
-import { useState } from "react";
 import styled from "styled-components";
 import Icon from "../assets/Icon.svg";
 import Shortline1 from "../assets/Rectangle 42987.png";
@@ -12,10 +11,14 @@ import Share from "../assets/share.svg";
 import DayLists from "../components/Output/DayLists";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import background from "../assets/background.png";
+import infoLoad from "../Pages/infoLoad";
+import routeload from "../Pages/routeLoad";
+
 
 const RouteContainer = styled.div``;
 const Frame1 = styled.div`
-  margin-left: 350px;
+  margin-left: 600px;
   margin-top: 20px;
   width: 930px;
   height: 310px;
@@ -32,7 +35,7 @@ const Img1 = styled.img`
   height: 30px;
   flex-shrink: 0;
 `;
-const Img2 = styled.div`
+const Img2 = styled.img`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -74,7 +77,7 @@ const Img5 = styled.img`
 const Img6 = styled.img`
   width: 2px;
   height: 26px;
-  margin: 0 200px;
+  margin: 0 190px;
   background: var(--White_O50, rgba(255, 255, 255, 0.5));
 `;
 const Img7 = styled.img`
@@ -171,7 +174,7 @@ const A = styled.div`
   margin-top: 90px;
   display: flex;
   justify-content: left;
-  margin-left: 350px;
+  margin-left: 600px;
   align-items: center;
 `;
 
@@ -182,6 +185,7 @@ const B = styled.div`
   margin-top: 20px;
 `;
 const Guide3 = styled.div`
+  margin-left: 250px;
   color: #fff;
   font-family: Pretendard;
   font-size: 18px;
@@ -208,9 +212,9 @@ const Guide5 = styled.div`
 
 const C = styled.div`
   display: inline-flex;
-  margin-left: 330px;
+  margin-left: 600px;
   margin-top: 20px;
-  padding: 16px 200px;
+  padding: 16px 160px;
   justify-content: center;
   align-items: center;
   border-radius: 36px;
@@ -239,7 +243,9 @@ const ChatOrShare2 = styled.div`
   line-height: 36px; /* 112.5% */
   cursor: pointer;
 `;
-const Frame2 = styled.div``;
+const Frame2 = styled.div`
+  margin-left: 250px;
+`;
 
 const D = styled.div`
   display: flex;
@@ -276,10 +282,21 @@ const KeywordItem = styled.div`
 `;
 
 function Output({ selectedDateRange, selectedPeople }) {
+  const [dayListsData, setDayListsData] = useState([]);
+
   const importantFactors = useSelector(
     (state) => state.survey.importantFactors
   );
+  const PROXY = window.location.hostname === "localhost" ? "" : "/proxy";
+  const adults = useSelector((state) => state.survey.adults);
+  const children = useSelector((state) => state.survey.children);
+  const infants = useSelector((state) => state.survey.infants);
+
+  const totalPeople = adults + children + infants;
+
   const selectedItem = useSelector((state) => state.selectedItem);
+  const duration = useSelector((state) => state.survey.duration);
+  const schedule = useSelector((state) => state.survey.schedule);
 
   console.log("Important Factors:", importantFactors);
 
@@ -288,16 +305,13 @@ function Output({ selectedDateRange, selectedPeople }) {
   const routeRef = useRef();
 
   const navigate = useNavigate();
-  const [region, setRegion] = useState("강원도"); // Example default value
-  const [city, setCity] = useState("속초"); // Example default value
-  const [points, setPoints] = useState([
-    "아름다운 해변",
-    "설악산 국립공원",
-    "청초호",
-  ]); // Examp
 
   const Chattting = () => {
     navigate("/chat");
+  };
+
+  const handleDayListsData = (data) => {
+    setDayListsData(data);
   };
 
   const Capture = async () => {
@@ -308,7 +322,7 @@ function Output({ selectedDateRange, selectedPeople }) {
 
       try {
         const canvas = await html2canvas(routeRef.current, {
-          scale: 1.5,
+          scale: 1.0,
         });
 
         canvas.toBlob(async (blob) => {
@@ -322,11 +336,15 @@ function Output({ selectedDateRange, selectedPeople }) {
           console.log("FormData 내용:", formData.get("image"));
 
           try {
-            const response = await axios.post("/api/routes/share", formData, {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            });
+            const response = await axios.post(
+            `${PROXY}/api/routes/share`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
 
             console.log("서버 응답:", response.data);
 
@@ -355,21 +373,20 @@ function Output({ selectedDateRange, selectedPeople }) {
     <RouteContainer ref={routeRef}>
       <A>
         <Img1 src={Icon} alt="Icon"></Img1>
-        <Header>{selectedItem.region} ‘{selectedItem.district}’ 지역의 2박 3일 일정을 추천드립니다!</Header>
+        <Header>
+          {selectedItem.region} ‘{selectedItem.district}’ 지역의 {duration}{" "}
+          일정을 추천드립니다!
+        </Header>
       </A>
       <Frame1>
-        <Img2>관광정보 사이트 이미지</Img2>
+        <Img2 src={background}></Img2>
         <Word>
           <A1>
             <P1>여행 일정 및 인원</P1>
             <Guide1>
-              <P2>
-                {selectedDateRange
-                  ? `날짜 ${selectedDateRange}`
-                  : "출발일 - 도착일"}
-              </P2>
+              <P2>{schedule}</P2>
               <Img3 src={Shortline1} alt="shortline"></Img3>
-              <P3>{selectedPeople ? `인원 ${selectedPeople}` : "인원 추가"}</P3>
+              <P3>{totalPeople}명</P3>
             </Guide1>
           </A1>
           <P4>여행 키워드</P4>
@@ -402,7 +419,12 @@ function Output({ selectedDateRange, selectedPeople }) {
       </C>
       <D>
         <Frame2>
-          <DayLists region={region} city={city} points={points} />
+          <DayLists
+            region={selectedItem.region}
+            district={selectedItem.district}
+            features={selectedItem.features}
+            onDataChange={handleDayListsData}
+          />
         </Frame2>
       </D>
     </RouteContainer>

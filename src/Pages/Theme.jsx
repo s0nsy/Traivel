@@ -160,7 +160,7 @@ const Question = styled.div`
 
 
 const Answer = styled.div`
-  width: 900px;
+  width: 1100px;
   white-space: normal;
   display: block;
   padding: 16px 20px;

@@ -5,16 +5,19 @@ const selectedItemSlice = createSlice({
   initialState: {
     region: '',
     district: '',   
-    features: '',
+    features:[],
   },
   reducers: {
     setSelectedItem: (state, action) => {
       state.region = action.payload.region;
       state.district = action.payload.district;
+      state.features = action.payload.features;
+      
     },
     clearSelectedItem: () => ({
       region: '',
       district: '',
+      features:[],
     }),
   },
 });
