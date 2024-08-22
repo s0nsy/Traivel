@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import styled,{keyframes} from 'styled-components';
@@ -25,14 +24,14 @@ const TitleCon = styled.div`
 const Title = styled.p`
   font-family: Pretendard, sans-serif;
   color: #FFFFFF;
-  font-size: 30px;
+  font-size: 36px;
   font-weight: 500;
 `;
 
 const Detail = styled.p`
   font-family: Pretendard, sans-serif;
   color: #FFFFFF;
-  font-size: 20px;
+  font-size: 29px;
   font-weight: 300;
 `;
 
@@ -76,8 +75,8 @@ const ChatCon = styled.div`
 `;
 
 const ChatImg = styled.img`
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
 `;
 
 const ChatBox = styled.div`
@@ -89,8 +88,9 @@ const ChatBox = styled.div`
   color: #FFFFFF;
   display: flex;
   align-items: center;
-  padding: 12px 16px; /* 내부 여백을 조정 */
+  padding: 12px 16px;
   word-wrap: break-word; /* 긴 텍스트를 줄바꿈 */
+  font-size:20px;
 `;
 
 const UserChatCon = styled.div`
@@ -112,8 +112,9 @@ const UserChatBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 30px; /* 내부 여백을 조정 */
+  padding: 12px 16px; /* 내부 여백을 조정 */
   word-wrap: break-word; /* 긴 텍스트를 줄바꿈 */
+  font-size:20px;
 `;
 
 const ChatInputContainer = styled.div`
@@ -122,7 +123,7 @@ const ChatInputContainer = styled.div`
   left: 50%;
   transform: translateX(-50%);
   width: 1160px;
-  height: 60px;
+  height: 72px;
   padding: 16px 27px;
   border-radius: 36px;
   border-top: 1px solid #01ECFF;
@@ -139,13 +140,13 @@ const ChatInputField = styled.input`
   background: transparent;
   border: none;
   color: #FFFFFF;
-  font-size: 16px;
+  font-size: 20px;
   outline: none;
 `;
 
 const SendIcon = styled.img`
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
 `;
 const Recommend = styled.div`
@@ -154,7 +155,7 @@ const Recommend = styled.div`
   left: 50%;
   transform: translateX(-50%);
   width: 1160px;
-  height: 60px;
+  height: 72px;
   padding: 16px 27px;
   border-radius: 36px;
   border-top: 1px solid #01ECFF;
@@ -165,7 +166,7 @@ const Recommend = styled.div`
   align-items: center;
   justify-content: space-between; /* 공간을 양쪽 끝으로 분배 */
   color: #FFFFFF; /* 텍스트 색상을 흰색으로 설정 */
-  font-size: 18px; /* 글씨 크기 설정 */
+  font-size: 20px; /* 글씨 크기 설정 */
   box-sizing: border-box;
 `;
 
@@ -175,8 +176,8 @@ const RecommendText = styled.div`
 `;
 
 const SendIconStyled = styled.img`
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   margin-left: auto; /* 아이콘을 오른쪽 끝으로 밀어내기 */
 `;
@@ -196,8 +197,8 @@ const DotLoader = styled.div`
   margin-left: auto; /* 아이콘 자리 맞추기 */
 
   div {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     background-color: #ffffff;
     border-radius: 50%;
     display: inline-block;

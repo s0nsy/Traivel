@@ -98,25 +98,21 @@ const ArrowIcon = styled.img`
 `;
 
 const SelectedImg = styled.img`
-position: absolute;
-top: 50%;
-left: ${({ selected }) =>
-  selected === "startDate"
-    ? "calc(0% + 10px)" // Adjusted based on first section
-    : selected === "endDate"
-    ? "calc(33.3% + 10px)" // Adjusted based on second section
-    : "calc(66.6% + 10px)"}; // Adjusted based on third section
-transform: translateX(-10%);
-width: ${({ selected }) =>
-  selected === "startDate"
-    ? "calc(33.3% - 20px)" // Width of first section minus padding
-    : selected === "endDate"
-    ? "calc(33.3% - 20px)" // Width of second section minus padding
-    : "calc(33.3% - 20px)"}; // Width of third section minus padding
-height: 60px;
-z-index: 1;
-pointer-events: none;
-transition: left 0.3s ease, width 0.3s ease;
+  position: absolute;
+  top: 50%;
+  left: ${({ selected }) =>
+    selected === "startDate"
+      ? "calc(40%)" // Center the image at 25% of the container width minus offset
+      : selected === "endDate"
+      ? "calc(50% - 0px)" // Center the image at 50% of the container width minus offset
+      : "calc(75% - 0px)" // Center the image at 75% of the container width minus offset
+  };
+  transform: translate(-50%, -50%);
+  width: 230px;
+  height: 60px;
+  z-index: 1;
+  pointer-events: none;
+  transition: left 0.3s ease;
 `;
 
 const StartBtn = styled.img`
