@@ -1,15 +1,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import styled from 'styled-components';
+import styled,{keyframes} from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import flag from '../assets/flag.png';
 import sendIcon from '../assets/send-icon.png';
-import { addUserResponse } from '../store/chatSlice';
-import recommend from '../assets/리스트 추천.png';
+import send from '../assets/send.png';
 import { useNavigate } from 'react-router';
 import { 
-  setAdults,setChildren,setInfants,setPurpose, setBudget, setkeyElement, setAccommodation, 
+  setPurpose, setBudget, setkeyElement, setAccommodation, 
   settransport, setCompanion, setfavorite, setfavoriteReason, 
   setspecialNeeds, setRecommendationType, setfreeTime, setimportantFactors 
 } from '../store/surveySlice';
@@ -149,20 +148,75 @@ const SendIcon = styled.img`
   height: 36px;
   cursor: pointer;
 `;
-const Recommend = styled.img`
-  position: fixed; /* 화면에 고정 */
-  bottom: 20px; /* 화면의 하단에서 20px 위에 위치 */
-  left: 50%; /* 수평 가운데 */
-  transform: translateX(-50%); /* 정확히 가운데로 이동 */
+const Recommend = styled.div`
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 1160px;
-  height: 7.7vh;
-  cursor: pointer; /* 클릭 가능하도록 설정 */
+  height: 60px;
+  padding: 16px 27px;
+  border-radius: 36px;
+  border-top: 1px solid #01ECFF;
+  background: #FFFFFF4D;
+  box-shadow: 4px 4px 12px 2px #01ECFF66;
+  cursor: pointer; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 공간을 양쪽 끝으로 분배 */
+  color: #FFFFFF; /* 텍스트 색상을 흰색으로 설정 */
+  font-size: 18px; /* 글씨 크기 설정 */
+  box-sizing: border-box;
+`;
+
+const RecommendText = styled.div`
+  text-align: center;
+  flex-grow: 1;
+`;
+
+const SendIconStyled = styled.img`
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  margin-left: auto; /* 아이콘을 오른쪽 끝으로 밀어내기 */
+`;
+const bounce = keyframes`
+  0%, 80%, 100% { 
+    transform: scale(0);
+  } 
+  40% { 
+    transform: scale(1.0);
+  }
+`;
+
+const DotLoader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto; /* 아이콘 자리 맞추기 */
+
+  div {
+    width: 8px;
+    height: 8px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: inline-block;
+    animation: ${bounce} 1.4s infinite ease-in-out both;
+    
+    &:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+    &:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+  }
 `;
 
 const Chat = () => {
   
   const [currentInput, setCurrentInput] = useState('');
   const [step, setStep] = useState(0);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userResponses = useSelector((state) => state.survey);
@@ -206,11 +260,15 @@ const Chat = () => {
       if (step < questions.length - 1) {
         setStep(prev => prev + 1);
       } else {
+        setLoading(true);
         try {
           await handleSubmit(); 
           setFinish(true); 
         } catch (error) {
           console.error('Error submitting:', error);
+        }
+        finally {
+          setLoading(false); 
         }
       }
     }
@@ -295,8 +353,20 @@ const Chat = () => {
         )}
       </ChatContainer>
 
-      {finish ? (
-        <Recommend src={recommend} onClick={handleList} />
+      {loading ? (
+        <Recommend>
+          <RecommendText>로딩 중입니다... 잠시만 기다려주세요.</RecommendText>
+          <DotLoader>
+            <div></div>
+            <div></div>
+            <div></div>
+          </DotLoader>
+        </Recommend>
+      ) : finish ? (
+        <Recommend onClick={handleList}>
+          <RecommendText>이제 루트포터로 여행지 리스트를 추천해드릴게요.</RecommendText>
+          <SendIconStyled src={send} alt="send" onClick={handleList} />
+        </Recommend>
       ) : (
         <ChatInputContainer>
           <ChatInputField
@@ -308,7 +378,6 @@ const Chat = () => {
           <SendIcon src={sendIcon} alt="send" onClick={handleSend} />
         </ChatInputContainer>
       )}
-      
     </>
   );
 };
