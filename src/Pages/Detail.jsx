@@ -70,25 +70,16 @@ const ContentDiv = styled.div`
   gap: 4rem;
 `;
 
-const ErrorMessage = styled.div`
-  color: red;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 2rem;
-`;
-
 const MainPage = () => {
-  const [destination, setDestination] = useState('');
+  const [destination, setDestination] = useState('서귀포'); 
   const [mapImage, setMapImage] = useState('');
   const [recommendations, setRecommendations] = useState([]);
   const [accommodations, setAccommodations] = useState([]);
   const [foods, setFoods] = useState([]);
   const [attractions, setAttractions] = useState([]);
-  const [error, setError] = useState(null);
 
   const { region, district, features } = useSelector((state) => state.selectedItem);
 
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -119,7 +110,7 @@ const MainPage = () => {
           throw new Error('Invalid data structure from API');
         }
   
-        setDestination(tourData.addr1 || '서귀포');
+        setDestination(tourData.addr1 || '서귀포');  // addr1을 받아오면 그 값으로 업데이트
         setMapImage(tourData.firstimage || 'default_image_path');
   
         const recommendationData = [
@@ -146,15 +137,12 @@ const MainPage = () => {
         setAttractions([tourData]);
       } catch (error) {
         console.error('API Error:', error.message);
-        setError(error.message);
       }
     };
   
     fetchData();
   }, [region, district, features]);
   
-  
-
   return (
     <>
       <PageContainer>
@@ -188,18 +176,12 @@ const MainPage = () => {
             </HeaderText>
           </HeaderTextContainer>
 
-          {error ? (
-            <ErrorMessage>데이터를 불러오는데 실패했습니다: {error}</ErrorMessage>
-          ) : (
-            <>
-              <InfoBox destination={destination} />
-              <MapSection mapImage={mapImage} description="서귀포시는 여기에 위치해 있어요" />
-              <Recommendations recommendations={recommendations} />
-              <Accommodation accommodations={accommodations} />
-              <Food foods={foods} />
-              <Attractions attractions={attractions} />
-            </>
-          )}
+          <InfoBox destination={destination} />
+          <MapSection destination={destination} mapImage={mapImage} />
+          <Recommendations recommendations={recommendations} />
+          <Accommodation accommodations={accommodations} />
+          <Food foods={foods} />
+          <Attractions attractions={attractions} />
           <Footer />
         </ContentDiv>
       </PageContainer>

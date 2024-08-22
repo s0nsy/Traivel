@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import { useNavigate } from 'react-router-dom'; 
 import InfoBox1 from '../../assets/InfoBox1.png';
 import InfoBox2 from '../../assets/InfoBox2.png';
 import DetailBackground from '../../assets/Detail_background.png'; 
@@ -40,18 +40,18 @@ const StyledH2 = styled.h2`
   padding: 0; 
 `;
 
-function InfoBox() {
-  const navigate = useNavigate(); // Initialize the navigate function
+function InfoBox({ destination }) {
+  const navigate = useNavigate(); 
 
   const handleImageClick = () => {
-    navigate('/route'); 
+    navigate('/output'); 
   };
 
   return (
     <InfoBoxContainer>
       <Image src={InfoBox1} alt="여행 이미지" />
       <StyledH2>
-        루트 포터가 짜주는<br /> 2박 3일 서귀포 여행 일정<br /> 1초만에 보러가기
+        루트 포터가 짜주는<br /> 2박 3일 {destination} 여행 일정<br /> 1초만에 보러가기
       </StyledH2>
       <PositionedImage src={InfoBox2} alt="추가 이미지" onClick={handleImageClick} />
     </InfoBoxContainer>
