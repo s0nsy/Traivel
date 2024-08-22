@@ -94,6 +94,7 @@ const ArrowImageRight = styled.img`
 `;
 
 function Food({ foods }) {
+  console.log(foods)
   const [currentPage, setCurrentPage] = useState(0); // 페이지 상태
 
   const handleNextPage = () => {

@@ -116,6 +116,7 @@ const ArrowImageRight = styled.img`
 `;
 
 const Recommendations = ({ recommendations }) => {
+  console.log(recommendations);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageContent, setPageContent] = useState([]);
 

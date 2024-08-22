@@ -115,6 +115,7 @@ const ArrowImageRight = styled.img`
 `;
 
 const Accommodation = ({ accommodations }) => {
+  console.log(accommodations);
   const [currentPage, setCurrentPage] = useState(0);
 
   const handleNextPage = () => {
