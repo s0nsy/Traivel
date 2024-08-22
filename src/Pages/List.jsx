@@ -3,11 +3,10 @@ import styled from "styled-components";
 import chattingbackground from "../assets/chattingbackground.png";
 import movetochat from "../assets/movetochat.svg";
 import listarrow from "../assets/listarrow.svg";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { setSelectedItem } from "../store/selectedItemSlice";
-import { useDispatch } from "react-redux";
-import  {useSelector} from 'react-redux';
-
+import { setRecommendations } from '../store/surveySlice';
 
 const Background = styled.div`
   display: flex;
@@ -72,7 +71,7 @@ const ListFrame = styled.div`
 
 const ListItem = styled.button`
   display: flex;
-  justify-content: space-between; // ListDetails은 왼쪽, ArrowIcon은 오른쪽.
+  justify-content: space-between;
   align-items: center;
   width: 1120px;
   height: 80px;
@@ -91,7 +90,6 @@ const ListItem = styled.button`
 
   &:hover {
     border-color: #01ecff;
-    border-radius: 28px;
     background: rgba(255, 255, 255, 0.2);
     box-shadow: 0px 12px 12px 4px rgba(1, 236, 254, 0.2);
   }
@@ -162,83 +160,88 @@ const MoveToChatIcon = styled.img`
   height: 36px;
 `;
 
-
-
-
-
-
-
 function List() {
-  const navigate = useNavigate();
-
-  // Redux 스토어에서 recommendations 가져오기
-  const recommendations = useSelector((state) => state.survey.recommendations);
-  console.log("Recommendations in List:", recommendations);
-
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-
-  const chatNavigate = () => {
-    navigate("/chat");
-  };
-
-
-  const detailNavigate = () => {
-    navigate("/detail");
-  };
-
-
-  return (
-    <Background>
-      <ListContainer>
-        <Header1>추천 여행지 리스트를 알려드려요.</Header1>
-        <Subtitle1>
-          날짜와 일정을 추가한 뒤, 루트포터와 대화를 시작해보세요.
-        </Subtitle1>
-        <ListFrame>
-          {recommendations.length > 0 ? (
-            recommendations.map((item, index) => (
-
-              <ListItem
-                key={index}
-                onMouseOver={() => setHoveredIndex(index)}
-                onMouseOut={() => setHoveredIndex(null)}
-              >
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <ListIndex>{index + 1}</ListIndex>
-                  <ListDetails>
-                    <ListDetailItem>{item.region}</ListDetailItem>
-                    <ListDetailItem>{item.district}</ListDetailItem>
-                    <ListDetailItem>{item.features.join(", ")}</ListDetailItem>
-                  </ListDetails>
-                </div>
-                <ArrowIcon
-                  src={listarrow}
-                  isVisible={hoveredIndex === index}
-                  onClick={()=>{
-                    detailNavigate();
-                    handleItemClick(item);
-                  }}
-                  onClick={() => navigate("/detail")}
-                />
-              </ListItem>
-            ))
-          ) : (
-            <p>No recommendations available.</p>
-          )}
-        </ListFrame>
-
-        <ListFooter onClick={chatNavigate}>
-          <FooterContent>
-            <MoveToChatIcon src={movetochat} alt="Move to Chat" />
-            <div>채팅으로 돌아가기</div>
-          </FooterContent>
-        </ListFooter>
-      </ListContainer>
-    </Background>
-  );
-}
-
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    
+    useEffect(() => {
+      const storedRecommendations = localStorage.getItem('recommendations');
+      if (storedRecommendations) {
+        const parsedData = JSON.parse(storedRecommendations);
+        
+        if (parsedData && parsedData.data && Array.isArray(parsedData.data)) {
+          dispatch(setRecommendations(parsedData.data));
+        }
+      }
+    }, [dispatch]);
+  
+    // Redux store에서 recommendations 가져오기
+    const recommendations = useSelector((state) => state.survey.recommendations);
+    const recommendationsArray = Array.isArray(recommendations) ? recommendations : [];
+    
+    console.log("Recommendations in List:", recommendationsArray);
+  
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+    
+    const chatNavigate = () => {
+      navigate("/chat");
+    };
+  
+    const detailNavigate = () => {
+      navigate("/detail");
+    };
+  
+    const handleItemClick = (item) => {
+      dispatch(setSelectedItem(item));
+    };
+  
+    return (
+      <Background>
+        <ListContainer>
+          <Header1>추천 여행지 리스트를 알려드려요.</Header1>
+          <Subtitle1>
+            날짜와 일정을 추가한 뒤, 루트포터와 대화를 시작해보세요.
+          </Subtitle1>
+          <ListFrame>
+            {recommendationsArray.length > 0 ? (
+              recommendationsArray.map((item, index) => (
+                <ListItem
+                  key={index}
+                  onMouseOver={() => setHoveredIndex(index)}
+                  onMouseOut={() => setHoveredIndex(null)}
+                >
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <ListIndex>{index + 1}</ListIndex>
+                    <ListDetails>
+                      <ListDetailItem>{item.region || 'N/A'}</ListDetailItem>
+                      <ListDetailItem>{item.district || 'N/A'}</ListDetailItem>
+                      <ListDetailItem>{item.features ? item.features.join(", ") : 'N/A'}</ListDetailItem>
+                    </ListDetails>
+                  </div>
+                  <ArrowIcon
+                    src={listarrow}
+                    isVisible={hoveredIndex === index}
+                    onClick={() => {
+                      detailNavigate();
+                      handleItemClick(item);
+                    }}
+                  />
+                </ListItem>
+              ))
+            ) : (
+              <p>No recommendations available.</p>
+            )}
+          </ListFrame>
+  
+          <ListFooter onClick={chatNavigate}>
+            <FooterContent>
+              <MoveToChatIcon src={movetochat} alt="Move to Chat" />
+              <div>채팅으로 돌아가기</div>
+            </FooterContent>
+          </ListFooter>
+        </ListContainer>
+      </Background>
+    );
+  }
+  
 export default List;
-
-
-
