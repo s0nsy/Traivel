@@ -98,20 +98,25 @@ const ArrowIcon = styled.img`
 `;
 
 const SelectedImg = styled.img`
-  position: absolute;
-  top: 50%;
-  left: ${({ selected }) =>
-    selected === "startDate" ? "50%" : selected === "endDate" ? "60%" : "160%"};
-  transform: translate(-60%, -50%);
-  width: ${({ selected }) =>
-    selected === "startDate"
-      ? "250px"
-      : selected === "endDate"
-      ? "230px"
-      : "230px"};
-  height: 60px;
-  z-index: 0;
-  pointer-events: none;
+position: absolute;
+top: 50%;
+left: ${({ selected }) =>
+  selected === "startDate"
+    ? "calc(0% + 10px)" // Adjusted based on first section
+    : selected === "endDate"
+    ? "calc(33.3% + 10px)" // Adjusted based on second section
+    : "calc(66.6% + 10px)"}; // Adjusted based on third section
+transform: translateX(-10%);
+width: ${({ selected }) =>
+  selected === "startDate"
+    ? "calc(33.3% - 20px)" // Width of first section minus padding
+    : selected === "endDate"
+    ? "calc(33.3% - 20px)" // Width of second section minus padding
+    : "calc(33.3% - 20px)"}; // Width of third section minus padding
+height: 60px;
+z-index: 1;
+pointer-events: none;
+transition: left 0.3s ease, width 0.3s ease;
 `;
 
 const StartBtn = styled.img`
@@ -133,7 +138,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Redux에서 필요한 상태 불러오기
+  
   const startDate = useSelector((state) => state.survey.startDate);
   const endDate = useSelector((state) => state.survey.endDate);
   const adults = useSelector((state) => state.survey.adults);
@@ -206,7 +211,7 @@ const Home = () => {
           </SelectDate>
         </SelectCon>
 
-        {/* 선택된 날짜와 인원에 따라 컴포넌트 렌더링 */}
+        
         {selectedText === "startDate" && (
           <CalendarWrapper>
             <CalendarSite onChange={handleDateChange} dateRange={dateRange} />
