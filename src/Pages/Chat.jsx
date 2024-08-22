@@ -226,6 +226,7 @@ const Chat = () => {
   const [finish, setFinish] = useState(false);
   const chatContainerRef = useRef(null);
   const [questionResponses, setQuestionResponses] = useState([]);
+  const PROXY = window.location.hostname === 'localhost' ? '' : '/proxy';
 
   const questions = [
     '이번 여행의 주된 목적은 무엇인가요? (예: 휴식, 탐험, 문화 체험, 미식 여행 등)',
@@ -261,9 +262,11 @@ const Chat = () => {
         setStep(prev => prev + 1);
       } else {
         setLoading(true);
+        setFinish(true); 
         try {
+          
           await handleSubmit(); 
-          setFinish(true); 
+          
         } catch (error) {
           console.error('Error submitting:', error);
         }
@@ -294,7 +297,7 @@ const Chat = () => {
         importantFactors: userResponses.importantFactors,
       };
   
-      const response = await axios.post("/api/chat", submissionData);
+      const response = await axios.post(`${PROXY}/api/chat`, submissionData);
   
       
       dispatch(setRecommendations(response.data)); 
