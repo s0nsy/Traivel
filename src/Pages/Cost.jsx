@@ -10,7 +10,7 @@ import { clickButton } from "../store/buttonSlice";
 
 const CostContainer = styled.div`
   position: relative;
-  top: 90px;
+  top: 125px;
 `;
 
 const Guide1 = styled.h3`
@@ -32,7 +32,7 @@ const Guide2 = styled.p`
   position: relative;
   padding: 0;
   font-family: Pretendard;
-  font-size: 17px;
+  font-size: 24px;
   font-style: normal;
   font-weight: 300;
   line-height: normal;
@@ -59,28 +59,31 @@ const Button = styled.button`
   background: ${({ isClicked }) =>
     isClicked ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.1)"};
   display: flex;
-  width: 280px;
-  height: 55px;
+  width: 300px;
+  height: 75px;
   margin: 6px 0;
-  justify-content: center;
+  justify-content: flex-start; /* 버튼 내 텍스트를 왼쪽으로 정렬 */
   align-items: center;
-  flex-shrink: 0;
+  padding-left: 20px; /* 텍스트와 버튼의 왼쪽 가장자리 간의 간격 조정 */
   color: var(--White, #fff);
-  text-align: left;
+  text-align: left; /* 텍스트를 왼쪽 정렬 */
   font-family: Pretendard;
-  font-size: 17px;
+  font-size: 24px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
   cursor: pointer;
-  text-indent: -120px;
+  margin-right: 24px;
 
   &:hover {
     background: rgba(0, 0, 0, 0.5);
   }
 `;
 
+
 const Cover = styled.div`
+  width: 790px;
+  height: 368px;
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -91,28 +94,29 @@ const Cover = styled.div`
 `;
 
 const Lump = styled.div`
-  width: 620px;
-  height: 290px;
+  width: 790px;
+  height: 368px;
   display: flex;
   position: relative;
   margin-left: 400px;
+  margin-right: 24px;
 `;
 
 const Lump2 = styled.div`
   display: flex;
   position: relative;
-  top: 100px;
+  top: 106px;
   margin-left: 400px;
 `;
 
 const P = styled.div`
   color: var(--White, #fff);
   font-family: Pretendard;
-  font-size: 15px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  width: 310px;
+  width: 412px;
   margin-left: 20px;
   padding-right: 20px;
 `;
@@ -133,9 +137,6 @@ const fadeIn = keyframes`
 const Question = styled.div`
   display: inline-flex;
   padding: 14px 24px;
-  position: relative;
-  top: 40px;
-  margin-left: 900px;
   justify-content: center;
   align-items: center;
   gap: 10px;
@@ -145,17 +146,21 @@ const Question = styled.div`
   box-shadow: 0px 4px 16px 4px rgba(1, 236, 254, 0.2);
   color: var(--White, #fff);
   font-family: Pretendard;
-  font-size: 15px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
   opacity: 0;
   animation: ${fadeIn} 1s ease-in forwards;
   animation-delay: 1s;
+  position: absolute;
+  top: 515px; /* Lump의 bottom에서 여유를 둠 */
+  right: calc(50% - 580px); 
 `;
 
+
 const Answer = styled.div`
-  width: 720px;
+  width: 900px;
   white-space: normal;
   display: block;
   padding: 16px 20px;
@@ -168,7 +173,7 @@ const Answer = styled.div`
   box-shadow: 0px 4px 16px 4px rgba(1, 236, 254, 0.2);
   color: var(--White, #fff);
   font-family: Pretendard;
-  font-size: 15px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
@@ -178,20 +183,24 @@ const Answer = styled.div`
 `;
 
 const Answer1 = styled.div`
-  margin-top: 20px;
+  margin-top: 10px;
+  white-space: nowrap;
 `;
 
 const Guide3 = styled.div`
   color: var(--White, #fff);
   font-family: Pretendard;
-  font-size: 18px;
+  font-size: 24px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 150px;
+  position: absolute;
+  top: 773px;
+  left: 50%;
+  transform: translateX(-50%);
 `;
 
 function Cost() {
@@ -224,7 +233,8 @@ function Cost() {
           <IconImg src={Icon} alt="icon" />
           <Cover>
             <P>
-              여행 경비는 여행 기간과 큰 영향을 받습니다. 이것을 잘 생각해서
+              여행 경비는 여행 기간과 큰 영향을 받습니다.
+              이것을 잘 생각해서
               루트포터한테 물어보시면 됩니다.
             </P>
             <Suggest>
