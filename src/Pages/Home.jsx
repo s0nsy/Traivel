@@ -10,8 +10,10 @@ import People from "../components/Main/People";
 import selectedImg from "../assets/selected.png";
 import Rectangle from "../assets/sidebar.png";
 import moment from "moment";
+import Output from "./Output";
 import { useDispatch, useSelector } from 'react-redux';
 import { setStartDate, setEndDate, setAdults, setChildren, setInfants } from '../store/surveySlice';
+
 
 const Background = styled.div`
   display: flex;
@@ -126,6 +128,7 @@ const CalendarWrapper = styled.div`
   z-index: 10;
 `;
 
+
 const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -140,7 +143,9 @@ const Home = () => {
   const [selectedText, setSelectedText] = useState(null);
 
   const handleStartClick = () => {
+    
     navigate("/onboard");
+    
   };
 
   const handleInlineTextClick = (text) => {
@@ -175,6 +180,7 @@ const Home = () => {
   return (
     <Background>
       <FirstCon>
+
         <FlagImg src={flag} />
         <Title>Route Porter</Title>
         <Description>
@@ -218,6 +224,7 @@ const Home = () => {
         )}
         
         <StartBtn src={startBtn} onClick={handleStartClick} />
+
       </FirstCon>
     </Background>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRef } from "react";
 import html2canvas from "html2canvas";
 import axios from "axios";
@@ -11,13 +11,14 @@ import Back from "../assets/back.svg";
 import Share from "../assets/share.svg";
 import DayLists from "../components/Output/DayLists";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const RouteContainer = styled.div``;
 const Frame1 = styled.div`
   margin-left: 350px;
   margin-top: 20px;
   width: 930px;
-  height: 290px;
+  height: 310px;
   flex-shrink: 0;
   border-radius: 12px;
   position: relative; /
@@ -94,12 +95,12 @@ const Header = styled.div`
 `;
 
 const P1 = styled.div`
+  position: relative;
+  bottom: 60px;
   align-self: stretch;
   color: #fff;
-  margin-top: 40px;
   font-family: Pretendard;
   font-size: 17px;
-  margin-bottom: 150px;
   font-style: normal;
   font-weight: 500;
   line-height: 28px; /* 140% */
@@ -124,9 +125,8 @@ const P3 = styled.div`
 `;
 const P4 = styled.div`
   color: #fff;
-  margin-top: 20px;
   position: relative;
-  bottom: 80px;
+  top: 40px;
   font-family: Pretendard;
   font-size: 17px;
   font-style: normal;
@@ -136,9 +136,7 @@ const P4 = styled.div`
 
 const Guide1 = styled.div`
   position: absolute;
-  width: auto;
-  height: auto;
-  bottom: 200px;
+  top: 80px;
   padding: 4px 30px;
   display: flex;
   justify-content: center;
@@ -158,9 +156,11 @@ const Word = styled.div`
   font-size: 10px;
   margin-left: 30px;
 `;
+
+const A1 = styled.div``;
 const Guide2 = styled.div`
   position: relative;
-  bottom: 70px;
+  top: 40px;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
@@ -275,50 +275,79 @@ const KeywordItem = styled.div`
   box-shadow: 0px 4px 8px 4px rgba(0, 0, 0, 0.1);
 `;
 
-function Output() {
-  const [keyword] = useState([
-    "서귀포",
-    "하루 2끼 식사",
-    "베이커리 카페",
-    "액티비티",
-    "힐링 컨셉",
-    "날 것 못먹음",
-  ]);
+function Output({ selectedDateRange, selectedPeople }) {
+  const importantFactors = useSelector(
+    (state) => state.survey.importantFactors
+  );
+  const selectedItem = useSelector((state) => state.selectedItem);
+
+  console.log("Important Factors:", importantFactors);
+
+  const keywords = importantFactors ? importantFactors.split(/\s+/) : [];
 
   const routeRef = useRef();
 
   const navigate = useNavigate();
+  const [region, setRegion] = useState("강원도"); // Example default value
+  const [city, setCity] = useState("속초"); // Example default value
+  const [points, setPoints] = useState([
+    "아름다운 해변",
+    "설악산 국립공원",
+    "청초호",
+  ]); // Examp
 
   const Chattting = () => {
     navigate("/chat");
   };
 
-  //서버에 이미지 업로드
   const Capture = async () => {
     if (routeRef.current) {
-      const canvas = await html2canvas(routeRef.current);
-      canvas.toBlob(async (blob) => {
-        const formData = new FormData();
-        formData.append("image", blob, "제목없음.png");
+      const element = routeRef.current;
+      element.style.background =
+        "linear-gradient(180deg, #001516 0%, #084b50 100%)";
 
-        try {
-          const response = await axios.post("", formData, {
-            headers: {
-              "Context-Type": "multipart/form-data",
-            },
-          });
-          //서버에서 url 받아오기
-          const Url = response.data.Url;
-          console.log("이미지 업로드 성공", Url);
+      try {
+        const canvas = await html2canvas(routeRef.current, {
+          scale: 1.5,
+        });
 
-          const Tag = document.createElement("img");
-          Tag.src = Url;
-          document.body.appendChild(Tag);
-          console.log("이미지 업로드 성공", response.data);
-        } catch (error) {
-          console.error("이미지 업로드 실패:", error);
-        }
-      });
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            console.error("Blob 생성 실패.");
+            alert("이미지 생성 실패.");
+            return;
+          }
+          const formData = new FormData();
+          formData.append("image", blob, "share.png");
+          console.log("FormData 내용:", formData.get("image"));
+
+          try {
+            const response = await axios.post("/api/routes/share", formData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
+
+            console.log("서버 응답:", response.data);
+
+            const imageUrl = response.data.data.imageUrl;
+            console.log("이미지 업로드 성공: " + imageUrl);
+
+            const Tag = document.createElement("img");
+            Tag.src = imageUrl;
+            console.log("이미지 URL", Tag.src);
+
+            await navigator.clipboard.writeText(Tag.src);
+            alert("주소가 복사되었습니다!");
+          } catch (error) {
+            console.error("이미지 업로드 실패:", error);
+            alert("이미지 업로드에 실패.");
+          }
+        });
+      } catch (error) {
+        console.error("캔버스 캡처 실패:", error);
+        alert("화면 캡처에 실패.");
+      }
     }
   };
 
@@ -326,22 +355,28 @@ function Output() {
     <RouteContainer ref={routeRef}>
       <A>
         <Img1 src={Icon} alt="Icon"></Img1>
-        <Header>제주 ‘서귀포’ 지역의 2박 3일 일정을 추천드립니다!</Header>
+        <Header>{selectedItem.region} ‘{selectedItem.district}’ 지역의 2박 3일 일정을 추천드립니다!</Header>
       </A>
       <Frame1>
         <Img2>관광정보 사이트 이미지</Img2>
         <Word>
-          <P1>여행 일정 및 인원</P1>
-          <Guide1>
-            <P2>날짜 08.22 - 08.24</P2>
-            <Img3 src={Shortline1} alt="shortline"></Img3>
-            <P3>인원 1</P3>
-          </Guide1>
+          <A1>
+            <P1>여행 일정 및 인원</P1>
+            <Guide1>
+              <P2>
+                {selectedDateRange
+                  ? `날짜 ${selectedDateRange}`
+                  : "출발일 - 도착일"}
+              </P2>
+              <Img3 src={Shortline1} alt="shortline"></Img3>
+              <P3>{selectedPeople ? `인원 ${selectedPeople}` : "인원 추가"}</P3>
+            </Guide1>
+          </A1>
           <P4>여행 키워드</P4>
           <Guide2>
-            {keyword.map((a, i) => {
-              return <KeywordItem>{keyword[i]}</KeywordItem>;
-            })}
+            {keywords.map((keyword, i) => (
+              <KeywordItem>{keyword}</KeywordItem>
+            ))}
           </Guide2>
         </Word>
       </Frame1>
@@ -356,11 +391,18 @@ function Output() {
         <ChatOrShare1 onClick={Chattting}>채팅으로</ChatOrShare1>
         <Img6 src={Shortline2}></Img6>
         <Img7 src={Share}></Img7>
-        <ChatOrShare2 onClick={Capture}>공유하기</ChatOrShare2>
+        <ChatOrShare2
+          onClick={() => {
+            Capture();
+          }}
+        >
+          {" "}
+          공유하기
+        </ChatOrShare2>
       </C>
       <D>
         <Frame2>
-          <DayLists />
+          <DayLists region={region} city={city} points={points} />
         </Frame2>
       </D>
     </RouteContainer>

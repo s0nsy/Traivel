@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import SideBarIcon from "../../assets/ic_round-menu.png";
 import { useNavigate } from "react-router-dom";
@@ -79,6 +79,8 @@ const Header = () => {
     navigate("/");
   };
   const selectedSchedule = schedule ? schedule : "날짜 선택";
+
+  
 
   return (
     <NavContainer>
