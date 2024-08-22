@@ -102,22 +102,32 @@ const ListIndex = styled.div`
 
 const ListDetails = styled.div`
   display: flex;
+  position: relative;
+  width: 100%;
   align-items: left;
   text-align: left;
-  width: 100%;
 `;
 
 const ListDetailItem = styled.div`
   &:nth-child(1) {
     margin-left: 28px;
+    max-width: 500px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   &:nth-child(2) {
-    margin-left: 59px;
+    position: absolute;
+    left: 228px;  
+    white-space: nowrap;
   }
   &:nth-child(3) {
-    margin-left: 100px;
+    position: absolute;
+    left: 373px; 
+    white-space: nowrap;
   }
 `;
+
 
 const ArrowIcon = styled.img`
   width: 40px;
