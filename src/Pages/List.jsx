@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import chattingbackground from "../assets/chattingbackground.png";
 import movetochat from "../assets/movetochat.svg";
@@ -105,7 +105,7 @@ const ListDetails = styled.div`
     width: 100%;
 `;
 
-const ListDetailItem = styled.div`
+const ListDetailItem = styled.div` 
     &:nth-child(1) {
         margin-left: 28px;
     }
@@ -159,12 +159,29 @@ const MoveToChatIcon = styled.img`
 `;
 function List() {
     const location = useLocation();
-    const recommendations = location.state?.recommendations?.data || []; 
+    const navigate = useNavigate();
+    
+    const [recommendations, setRecommendations] = useState(() => {
+        const savedData = localStorage.getItem('recommendations');
+        return savedData ? JSON.parse(savedData) : [];
+    });
 
-    console.log('Received recommendations:', recommendations);
+    useEffect(() => {
+        if (location.state?.recommendations?.data) {
+            const data = location.state.recommendations.data;
+            console.log('Received recommendations:', data);
+            setRecommendations(data);
+            localStorage.setItem('recommendations', JSON.stringify(data));
+        }
+    }, [location.state]);
+
+    useEffect(() => {
+        if (recommendations.length === 0) {
+            console.log('No recommendations available.');
+        }
+    }, [recommendations]);
 
     const [hoveredIndex, setHoveredIndex] = useState(null); 
-    const navigate = useNavigate();
 
     const chatNavigate = () => {
         navigate("/chat");
