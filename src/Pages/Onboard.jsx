@@ -11,6 +11,7 @@ import { clickButton } from '../store/buttonSlice';
 const Background = styled.div`
   height: 100vh;
   position: relative;
+  overflow: hidden;
 `;
 
 const Body = styled.div`
@@ -28,28 +29,33 @@ const IconImg = styled.img`
   height: 80px;
   margin-top: 25px;
   filter: drop-shadow(0px 4px 4px rgba(1, 236, 254, 0.2));
+  top:268px;
 `;
 
 const VectorImg = styled.img`
   position: absolute;
-  right: 555px;
+  top:-65px;
+  left: 48%; 
+  transform: translateX(-50%); 
   z-index: 0;
-  width: 650px;
-  height: 350px;
+  width: 813px;
+  height: 555px;
 `;
 
 const Recommend = styled.p`
   color: var(--White, #fff);
   font-family: Pretendard;
-  font-size: 25px;
+  font-size: 36px;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
   z-index: 1;
+  margin-top:10px;
 `;
 
 const Suggest = styled.div`
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 25px;
@@ -63,20 +69,23 @@ const Button = styled.button`
   border: 1px solid var(--Main_2, #01ecff);
   background: rgba(0, 0, 0, 0.1);
   display: flex;
-  width: 125px;
-  height: 100px;
-  padding: 0px 22px;
+  width: 160px;
+  height: auto; 
+  min-height: 128px; 
+  padding: 16px; 
   justify-content: center;
   align-items: center;
-  flex-shrink: 0;
+  text-align: center; 
   color: var(--White, #fff);
-  text-align: center;
   font-family: Pretendard;
-  font-size: 17px;
+  font-size: 24px;
   font-style: normal;
   font-weight: 400;
-  line-height: normal;
+  line-height: 1.2; 
+  margin-top:40px;
   cursor: pointer;
+  white-space: normal;
+  word-wrap: break-word; 
   &:hover {
     background: rgba(0, 0, 0, 0.5);
   }
@@ -85,10 +94,10 @@ const Button = styled.button`
 
 const Guide = styled.p`
   color: var(--White, #fff);
-  margin-top: 20px;
+  margin-top: 29px;
   text-align: center;
   font-family: Pretendard;
-  font-size: 18px;
+  font-size: 24px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
@@ -100,7 +109,7 @@ function Onboard() {
     "시작하기",
     "좋은 답변",
     "여행지 추천 범위",
-    "제안 및 피드백",
+    "제안 <br />및 피드백", 
   ]);
 
   const navigate = useNavigate();
@@ -123,7 +132,7 @@ function Onboard() {
         <Suggest>
           {sentense.map((a, i) => (
             <Button key={i} onClick={() => handleNavigate(i)}>
-              {sentense[i]}
+              <span dangerouslySetInnerHTML={{ __html: a }} /> {/* HTML로 줄바꿈 처리 */}
             </Button>
           ))}
         </Suggest>

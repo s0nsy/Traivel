@@ -34,14 +34,14 @@ const VectorImg = styled.img`
   position: absolute;
   right: 555px;
   z-index: 0;
-  width: 650px;
-  height: 350px;
+  width: 813px;
+  height: 555px;
 `;
 
 const Recommend = styled.p`
   color: var(--White, #fff);
   font-family: Pretendard;
-  font-size: 25px;
+  font-size: 36px;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
