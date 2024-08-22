@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import InfoBox from './components/InfoBox';
-import MapSection from './components/MapSection';
-import Recommendations from './components/Recommendations';
-import Accommodation from './components/Accommodation';
-import Food from './components/Food';
-import Attractions from './components/Attractions';
-import Footer from './components/Footer';
+import InfoBox from '../components/Detail/InfoBox'
+import MapSection from '../components/Detail/MapSection';
+import Recommendations from '../components/Detail/Recommendations';
+import Accommodation from '../components/Detail/Accommodation';
+import Food from '../components/Detail/Food';
+import Attractions from '../components/Detail/Attractions';
+import Footer from '../components/Detail/Footer';
 
 const HeaderTextContainer = styled.div`
   display: flex;

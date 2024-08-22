@@ -1,21 +1,26 @@
 import React from "react";
 import styled from "styled-components";
-import buttonImg from "../assets/button.png";
+import button2 from "../../assets/button2.png";
 
 const FooterContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 16px;
-  position: relative;
-  top:100px;
-  width: 100%; 
+  position: absolute; 
+  top: 952px;
+  left: 50%; 
+  transform: translateX(-50%); 
+  cursor: pointer;
+  z-index: 1000;
+  width: 1160px;
+  height:72px;
 `;
 
-const Guide = styled.div`
+const Plan = styled.div`
   display: flex;
-  width: 730px;
-  height: 62px;
+  width: 1160px;
+  height:72px;
   padding: 0 100px 0 75px;
   justify-content: center;
   align-items: center;
@@ -27,27 +32,27 @@ const Guide = styled.div`
   box-shadow: 0px 4px 12px 2px rgba(1, 236, 255, 0.4);
   color: #e6e6e6;
   font-family: Pretendard;
-  font-size: 17px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  text-indent: -330px;
 `;
 
 const Button = styled.img`
   cursor: pointer;
-  z-index: +2;
   position: absolute;
-  margin-left: 650px;
+  left: 1746px;  
+  top: 952px;   
+  z-index: 2;
 `;
 
-function Footer2() {
+function Footer() {
   return (
     <FooterContainer>
-      <Guide>원하는 여행 테마를 잘 답변하려면?</Guide>
-      <Button src={buttonImg}></Button>
+      <Plan>루트포터의 질문에 답하고 완벽한 여행 계획을 세워보세요.</Plan>
+      <Button src={button2} />
     </FooterContainer>
   );
 }
 
-export default Footer2;
+export default Footer;

@@ -3,7 +3,9 @@ import styled from 'styled-components';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import moment from "moment";
-import bar from '../assets/bar.png';
+import bar from '../../assets/bar.png';
+import { setStartDate, setEndDate } from '../../store/surveySlice';
+import { useDispatch } from 'react-redux';
 
 const Container = styled.div`
     display: flex;
@@ -80,24 +82,39 @@ const StyledCalendar = styled(Calendar)`
 `;
 
 const CalendarSite = ({ onChange, dateRange }) => {
+    const dispatch = useDispatch();
     const [value, setValue] = useState(null);
-    
 
     const handleChange = (date) => {
         setValue(date);
-        onChange(date); // 부모 컴포넌트로 선택된 날짜 전달
+
+        // 부모 컴포넌트로 선택된 날짜 전달
+        if (onChange) {
+            onChange(date);
+        }
+
+        // Redux에 시작 날짜와 종료 날짜 업데이트
+        if (date && date.length === 2) {
+            console.log('Dispatching startDate:', date[0]);  // 콘솔 확인
+            console.log('Dispatching endDate:', date[1]);
+            dispatch(setStartDate(date[0]));
+            dispatch(setEndDate(date[1]));
+        } else if (date && date.length === 1) {
+            console.log('Dispatching startDate:', date[0]);
+            dispatch(setStartDate(date[0]));
+            dispatch(setEndDate(null));
+        }
     };
-    
 
     return (
         <Container>
-            <StyledCalendar 
+            <StyledCalendar
                 value={value}
-                onChange={handleChange} 
-                formatDay={(locale, date) => moment(date).format("DD")} 
+                onChange={handleChange}
+                formatDay={(locale, date) => moment(date).format("DD")}
             />
             <ExtraContent>
-                <Image src={bar}/>
+                <Image src={bar} />
                 <Text>{dateRange || "날짜를 선택하세요"}</Text>
             </ExtraContent>
         </Container>
