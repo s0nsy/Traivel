@@ -71,15 +71,15 @@ function Footer() {
 
   return (
     <FooterWrapper>
-      <Title><h2>🧙‍♂루트 포터가 추천해드린 여행 정보가 마음에 들지 않으시나요?</h2></Title>
-    <FooterContainer>
-      <InnerBox>
-        <Text>
-          다른 여행지를 추천받으러{'\n'}채팅창으로 돌아가기 →
-        </Text>
-        <DetailImage src={Detail} alt="Detail 이미지" onClick={handleImageClick} />
-      </InnerBox>
-    </FooterContainer>
+      <Title>🧙‍♂루트 포터가 추천해드린 여행 정보가 마음에 들지 않으시나요?</Title>
+      <FooterContainer>
+        <InnerBox>
+          <Text>
+            다른 여행지를 추천받으러{'\n'}채팅창으로 돌아가기 →
+          </Text>
+          <DetailImage src={Detail} alt="Detail 이미지" onClick={handleImageClick} />
+        </InnerBox>
+      </FooterContainer>
     </FooterWrapper>
   );
 }

@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Background from '../../../assets/Detail_background.png';
 import ArrowLeft from '../../../assets/Arrow.png';
 import ArrowRight from '../../../assets/ArrowRight.png';
 
@@ -39,7 +38,7 @@ const AttractionSection = styled.div`
 const ImageContainer = styled.div`
   flex: 1;
   width: 100%;
-  background-image: url(${Background});
+  background-image: url(${props => props.imageUrl});
   background-size: cover;
   background-position: center;
   margin-bottom: 0.5rem; 
@@ -79,6 +78,49 @@ const ArrowImageRight = styled.img`
 
 function Attractions() {
   const [currentPage, setCurrentPage] = useState(0); // 페이지 상태
+  const [pageContent, setPageContent] = useState([[], [], []]); // API로부터 받아올 페이지 콘텐츠
+
+  useEffect(() => {
+    // API로부터 데이터를 받아오는 함수
+    const fetchPageContent = async () => {
+      try {
+        const response = await fetch('/api/detail', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        // 받아온 데이터를 페이지별로 나누어서 설정합니다.
+        const fetchedContent = [
+          [
+            { text: data.tourData.item[0].title, imageUrl: data.tourData.item[0].firstimage },
+            { text: data.tourData.item[1].title, imageUrl: data.tourData.item[1].firstimage },
+            { text: data.tourData.item[2].title, imageUrl: data.tourData.item[2].firstimage },
+          ],
+          [
+            { text: data.tourData.item[3].title, imageUrl: data.tourData.item[3].firstimage },
+            { text: data.tourData.item[4].title, imageUrl: data.tourData.item[4].firstimage },
+            { text: data.tourData.item[5].title, imageUrl: data.tourData.item[5].firstimage },
+          ],
+          [
+            { text: data.tourData.item[6].title, imageUrl: data.tourData.item[6].firstimage },
+            { text: data.tourData.item[7].title, imageUrl: data.tourData.item[7].firstimage },
+            { text: data.tourData.item[8].title, imageUrl: data.tourData.item[8].firstimage },
+          ]
+        ];
+
+        setPageContent(fetchedContent);
+      } catch (error) {
+        console.error('Failed to fetch page content:', error);
+      }
+    };
+
+    fetchPageContent();
+  }, []);
 
   const handleNextPage = () => {
     if (currentPage < 2) {
@@ -92,9 +134,13 @@ function Attractions() {
     }
   };
 
+  if (pageContent[0].length === 0) {
+    return <div>로딩 중...</div>;
+  }
+
   return (
     <AttractionsWrapper>
-      <Title><h2>🌟주요 관광지, 쇼핑 정보를 모아봤어요</h2></Title>
+      <Title>🌟주요 관광지, 쇼핑 정보를 모아봤어요</Title>
       <AttractionsContainer>
         <ArrowImageLeft
           src={ArrowLeft}
@@ -103,34 +149,12 @@ function Attractions() {
           style={{ visibility: currentPage === 0 ? 'hidden' : 'visible' }} // 첫 페이지에서 숨김
         />
 
-        {currentPage === 0 && (
-          <>
-            <AttractionSection>
-              <ImageContainer />
-              <TextContainer>첫 번째 텍스트</TextContainer>
-            </AttractionSection>
-            <AttractionSection>
-              <ImageContainer />
-              <TextContainer>두 번째 텍스트</TextContainer>
-            </AttractionSection>
-            <AttractionSection>
-              <ImageContainer />
-              <TextContainer>세 번째 텍스트</TextContainer>
-            </AttractionSection>
-          </>
-        )}
-
-        {currentPage === 1 && (
-          <TextContainer style={{ margin: 'auto', fontSize: '2rem' }}>
-            두번째 페이지입니다.
-          </TextContainer>
-        )}
-
-        {currentPage === 2 && (
-          <TextContainer style={{ margin: 'auto', fontSize: '2rem' }}>
-            세번째 페이지입니다.
-          </TextContainer>
-        )}
+        {pageContent[currentPage].map((item, index) => (
+          <AttractionSection key={index}>
+            <ImageContainer imageUrl={item.imageUrl} />
+            <TextContainer>{item.text}</TextContainer>
+          </AttractionSection>
+        ))}
 
         <ArrowImageRight
           src={ArrowRight}
