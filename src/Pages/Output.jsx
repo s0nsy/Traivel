@@ -276,10 +276,14 @@ const KeywordItem = styled.div`
 `;
 
 function Output({ selectedDateRange, selectedPeople }) {
-  const userResponses = useSelector((state) => state.chat.userResponses);
-  const lastResponse = userResponses[userResponses.length - 1];
+  const importantFactors = useSelector(
+    (state) => state.survey.importantFactors
+  );
+  const selectedItem = useSelector((state) => state.selectedItem);
 
-  const keywords = lastResponse ? lastResponse.split(/\s+/) : [];
+  console.log("Important Factors:", importantFactors);
+
+  const keywords = importantFactors ? importantFactors.split(/\s+/) : [];
 
   const routeRef = useRef();
 
@@ -351,7 +355,7 @@ function Output({ selectedDateRange, selectedPeople }) {
     <RouteContainer ref={routeRef}>
       <A>
         <Img1 src={Icon} alt="Icon"></Img1>
-        <Header>제주 ‘서귀포’ 지역의 2박 3일 일정을 추천드립니다!</Header>
+        <Header>{selectedItem.region} ‘{selectedItem.district}’ 지역의 2박 3일 일정을 추천드립니다!</Header>
       </A>
       <Frame1>
         <Img2>관광정보 사이트 이미지</Img2>
