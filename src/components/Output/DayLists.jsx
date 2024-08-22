@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useSelector } from "react-redux"; 
 import Circle from "../../assets/circle.png";
 import ShortLine from "../../assets/Frame 2085666344.png";
 import Icon from "../../assets/travel-icon.png";
@@ -14,15 +15,13 @@ const DayDate = styled.div`
   color: #fff;
   font-family: Pretendard;
   font-size: 20px;
-  font-style: normal;
   font-weight: 500;
-  line-height: 36px; /* 112.5% */
+  line-height: 36px;
 `;
 
 const DayFrame = styled.div`
   margin-left: 350px;
-  width: 1000px;
-  flex-shrink: 0;
+  width: 950px;
   border-radius: 12px;
   border: 1px solid var(--Main_2, #01ecff);
   background: rgba(255, 255, 255, 0.05);
@@ -34,9 +33,8 @@ const PlanContainer = styled.div`
   display: flex;
   font-family: Pretendard;
   font-size: 24px;
-  font-style: normal;
   font-weight: 600;
-  line-height: 28px; /* 116.667% */
+  line-height: 28px;
 `;
 
 const PlanImg1 = styled.img`
@@ -50,9 +48,8 @@ const PlanTitle = styled.div`
   margin: 10px 0;
   font-family: Pretendard;
   font-size: 17px;
-  font-style: normal;
   font-weight: 600;
-  line-height: 28px; /* 116.667% */
+  line-height: 28px;
   white-space: nowrap;
   text-overflow: ellipsis;
 `;
@@ -60,7 +57,6 @@ const PlanTitle = styled.div`
 const PlanImg2 = styled.img`
   width: 3px;
   height: 28px;
-  flex-shrink: 0;
   margin: 10px 6px;
 `;
 
@@ -68,10 +64,9 @@ const PlanDetail = styled.div`
   color: #fff;
   font-family: Pretendard;
   font-size: 17px;
-  font-style: normal;
   margin: 10px 0;
   font-weight: 200;
-  line-height: 28px; /* 116.667% */
+  line-height: 28px;
 `;
 
 const TipContainer = styled.div`
@@ -81,8 +76,7 @@ const TipContainer = styled.div`
 
 const TipFrame = styled.div`
   margin-top: 10px;
-  width: 1000px;
-  flex-shrink: 0;
+  width: 950px;
   border-radius: 12px;
   border: 1px solid var(--Main_2, #01ecff);
   background: rgba(255, 255, 255, 0.05);
@@ -96,17 +90,15 @@ const TipHeader = styled.div`
   display: flex;
   font-family: Pretendard;
   font-size: 18px;
-  font-style: normal;
   font-weight: 600;
-  line-height: 28px; /* 116.667% */
+  line-height: 28px;
 `;
 
 const TipTitle = styled.div`
   font-family: Pretendard;
   font-size: 20px;
-  font-style: normal;
   font-weight: 500;
-  line-height: 28px; /* 116.667% */
+  line-height: 28px;
 `;
 
 const TipImg = styled.img`
@@ -119,7 +111,6 @@ const TipSubTitle = styled.div`
   color: #fff;
   font-family: Pretendard;
   font-size: 17px;
-  font-style: normal;
   font-weight: 600;
   line-height: normal;
 `;
@@ -127,27 +118,41 @@ const TipDetail = styled.div`
   color: #fff;
   font-family: Pretendard;
   font-size: 16px;
-  font-style: normal;
   font-weight: 200;
   line-height: normal;
 `;
 
-function DayLists({ region, city, points }) {
+function DayLists() {
+  const { region, district, features } = useSelector(
+    (state) => state.selectedItem
+  );
+  console.log({region,district,features});
+  
+  
   const [itinerary, setItinerary] = useState([]);
-  const [error, setError] = useState(null); // 상태 추가
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchItinerary = async () => {
-      console.log("API 호출 시작");
       try {
+        console.log("Sending request with data:", {
+          destinations: [
+            {
+              region: region,
+              district: district,
+              points: features,
+            },
+          ],
+        });
+  
         const response = await axios.post(
           "/api/routes",
           {
             destinations: [
               {
                 region: region,
-                district: city,
-                points: points,
+                district: district,
+                points: features,
               },
             ],
           },
@@ -157,41 +162,40 @@ function DayLists({ region, city, points }) {
             },
           }
         );
-        console.log("서버 응답:", response.data);
+  
+        console.log("API 응답:", response.data);
         if (response.data.success) {
           setItinerary(response.data.data);
-          setError(null); // 성공 시 에러 상태 초기화
+          setError(null);
         } else {
-          setError("API 호출 실패: " + response.data.message); // 에러 상태 설정
+          setError("API 호출 실패: " + response.data.message);
         }
       } catch (error) {
-        console.error(
-          "에러 발생:",
-          error.response ? error.response.data : error.message
+        setError(
+          "서버 에러: " +
+            (error.response ? error.response.data.message : error.message)
         );
-        setError("서버 에러: " + (error.response ? error.response.data.message : error.message)); // 에러 상태 설정
       }
     };
-
-    if (region && city && points && points.length > 0) {
+  
+    if (region && district && features && features.length > 0) {
       fetchItinerary();
-    } else {
-      console.warn("필수 데이터가 누락되었습니다.");
     }
-  }, [region, city, points]);
-
+  }, [region, district, features]);
   return (
     <TotalContainer>
+      {error && <div>에러: {error}</div>}
+      {itinerary.length === 0 && !error && <div>일정이 없습니다.</div>}
       {itinerary.map((day, i) => (
         <DayContainer key={i}>
-          <DayDate> {day.day}일차</DayDate>
+          <DayDate>{day.day}일차</DayDate>
           <DayFrame>
             {day.places.map((place, index) => (
               <PlanContainer key={index}>
                 <PlanImg1 src={Circle} alt="원" />
                 <PlanTitle>{place.name}</PlanTitle>
                 <PlanImg2 src={ShortLine} alt="짧은 선" />
-                <PlanDetail>{place.hours}</PlanDetail>
+                <PlanDetail>{place.recommendations}</PlanDetail>
               </PlanContainer>
             ))}
           </DayFrame>
@@ -203,11 +207,15 @@ function DayLists({ region, city, points }) {
             <TipFrame>
               <TipSubHeader>
                 <TipSubTitle>추천 음식</TipSubTitle>
-                <TipDetail>{day.places[0]?.popularMenu || '정보 없음'}</TipDetail> {/* null 체크 */}
+                <TipDetail>
+                  {day.places[0]?.popularMenu || "정보 없음"}
+                </TipDetail>
               </TipSubHeader>
               <TipSubHeader>
                 <TipSubTitle>추천 사항</TipSubTitle>
-                <TipDetail>{day.places[0]?.recommendations || '정보 없음'}</TipDetail> {/* null 체크 */}
+                <TipDetail>
+                  {day.places[0]?.recommendations || "정보 없음"}
+                </TipDetail>
               </TipSubHeader>
             </TipFrame>
           </TipContainer>
