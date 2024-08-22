@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import flag from '../assets/flag.png';
@@ -6,6 +7,11 @@ import sendIcon from '../assets/send-icon.png';
 import { addUserResponse } from '../store/chatSlice';
 import recommend from '../assets/리스트 추천.png';
 import { useNavigate } from 'react-router';
+import { 
+  setPurpose, setBudget, setkeyElement, setAccommodation, 
+  settransport, setCompanion, setfavorite, setfavoriteReason, 
+  setspecialNeeds, setRecommendationType, setfreeTime, setimportantFactors 
+} from '../store/surveySlice';
 
 const TitleCon = styled.div`
   display: flex;
@@ -16,17 +22,23 @@ const TitleCon = styled.div`
 `;
 
 const Title = styled.p`
-  font-family: Pretendard, sans-serif;
-  color: #FFFFFF;
-  font-size: 30px;
+  color: #FFF;
+  font-family: Pretendard;
+  font-size: 36px;
+  font-style: normal;
   font-weight: 500;
+  line-height: normal;
+  margin-bottom: 10px;
 `;
 
 const Detail = styled.p`
-  font-family: Pretendard, sans-serif;
-  color: #FFFFFF;
-  font-size: 20px;
+  color: #FFF;
+  font-family: Pretendard;
+  font-size: 24px;
+  font-style: normal;
   font-weight: 300;
+  line-height: normal;
+  margin-bottom: 40px;
 `;
 
 const ChatContainer = styled.div`
@@ -155,9 +167,13 @@ const Chat = () => {
   const [currentInput, setCurrentInput] = useState('');
   const [step, setStep] = useState(0);
   const dispatch = useDispatch();
-  const navigate =useNavigate();
-  const userResponses = useSelector((state) => state.chat.userResponses);
-  const [finish, setFinish] =useState(false);
+  const navigate = useNavigate();
+  const userResponses = useSelector((state) => state.survey);
+  const [finish, setFinish] = useState(false);
+  const chatContainerRef = useRef(null);
+  const [questionResponses, setQuestionResponses] = useState([]);
+  const [recommendations, setRecommendations] = useState([]); 
+
   const questions = [
     '이번 여행의 주된 목적은 무엇인가요? (예: 휴식, 탐험, 문화 체험, 미식 여행 등)',
     '여행 예산은 어느 정도인가요? (예: 100만원, 80~120만원)',
@@ -173,45 +189,88 @@ const Chat = () => {
     '위 질문에 대한 답변 중 가장 중요시 생각하는 것들을 단어 형태로 입력해주세요.'
   ];
 
-  const [questionResponses, setQuestionResponses] = useState([]);
-  const chatContainerRef = useRef(null);
+  const actionDispatchers = [
+    setPurpose, setBudget, setkeyElement, setAccommodation, 
+    settransport, setCompanion, setfavorite, setfavoriteReason, 
+    setspecialNeeds, setRecommendationType, setfreeTime, setimportantFactors
+  ];
 
-  useEffect(() => {
-    
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  }, [questionResponses]);
-
-  const handleSend = () => {
+ 
+  // 사용자가 메시지를 전송했을 때 실행되는 함수
+  const handleSend = async () => {
     if (currentInput.trim() !== '') {
-      setQuestionResponses(prev => [
-        ...prev,
-        { question: questions[step], response: currentInput }
-      ]);
-      dispatch(addUserResponse(currentInput));
-      setCurrentInput(''); 
+      dispatch(actionDispatchers[step](currentInput));
+      setQuestionResponses(prev => [...prev, { question: questions[step], response: currentInput }]);
+  
+      setCurrentInput('');
+  
       if (step < questions.length - 1) {
         setStep(prev => prev + 1);
-        console.log(step)
       } else {
-        setFinish(true);
-        handleSubmit();
+        try {
+          await handleSubmit();
+          setFinish(true);
+        } catch (error) {
+          console.error('Error submitting:', error);
+        }
       }
     }
+  };
+  
+
+  const handleSubmit = () => {
+    console.log('사용자 응답:', userResponses);
+
+    
+    const submissionData = {
+      schedule: "string", 
+      groupComposition: {
+        adults: 0, 
+        children: 0,
+        infants: 0  
+      },
+      purpose: userResponses.purpose,
+      budget: userResponses.budget,
+      keyElement: userResponses.keyElement,
+      accommodation: userResponses.accommodation,
+      transport: userResponses.transport,
+      companion: userResponses.companion,
+      favorite: userResponses.favorite,
+      favoriteReason: userResponses.favoriteReason,
+      specialNeeds: userResponses.specialNeeds,
+      recommendationType: userResponses.recommendationType,
+      freeTime: userResponses.freeTime,
+      importantFactors: userResponses.importantFactors
+    };
+    console.log('서버로 전송할 데이터:', submissionData);
+    axios.post("/api/chat", submissionData)
+    .then((response) => {
+      // 서버로부터 받은 response 출력
+      console.log('서버 응답:', response.data); // response.data를 콘솔에 출력
+      setRecommendations(response.data);
+     
+    })
+    .catch((error) => {
+      // 에러가 발생한 경우 출력
+      console.error('서버 요청 중 오류 발생:', error);
+    });
+    
   };
 
   const handleInputChange = (e) => {
     setCurrentInput(e.target.value);
   };
 
-  const handleSubmit = () => {
-    console.log('User responses:', userResponses);
-    // 서버로 데이터를 전송하는 로직 추가
+  const handleList = () => {
+    console.log('Navigating to list with recommendations:', recommendations); // Debugging log
+    navigate('/lists', { state: { recommendations } });
   };
-  const handleList=()=>{
-    navigate('/lists')
-  }
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [step]);
   return (
     <>
       <TitleCon>
@@ -222,12 +281,12 @@ const Chat = () => {
       <ChatContainer ref={chatContainerRef}>
         {questionResponses.map((qr, index) => (
           <React.Fragment key={index}>
-            {/* 질문은 왼쪽 */}
+           
             <ChatCon>
               <ChatImg src={flag} alt="flag" />
               <ChatBox>{qr.question}</ChatBox>
             </ChatCon>
-            {/* 응답은 오른쪽 */}
+            
             <UserChatCon>
               <UserChatBox>{qr.response}</UserChatBox>
             </UserChatCon>

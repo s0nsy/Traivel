@@ -10,6 +10,7 @@ import People from "../components/Main/People";
 import selectedImg from "../assets/selected.png";
 import Rectangle from "../assets/sidebar.png";
 import moment from "moment";
+import Output from "./Output";
 
 const Background = styled.div`
   display: flex;
@@ -129,10 +130,14 @@ const Home = ({ setSelectedDateRange, setSelectedPeople }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [people, setPeople] = useState("추가");
+  
+  
   const navigate = useNavigate();
 
   const handleStartClick = () => {
+    
     navigate("/onboard");
+    
   };
 
   const handleInlineTextClick = (text) => {
@@ -171,6 +176,7 @@ const Home = ({ setSelectedDateRange, setSelectedPeople }) => {
   return (
     <Background>
       <FirstCon>
+
         <FlagImg src={flag} />
         <Title>Route Porter</Title>
         <Description>
@@ -226,6 +232,7 @@ const Home = ({ setSelectedDateRange, setSelectedPeople }) => {
           </CalendarWrapper>
         )}
         <StartBtn src={startBtn} onClick={handleStartClick} />
+
       </FirstCon>
     </Background>
   );
