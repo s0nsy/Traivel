@@ -157,31 +157,27 @@ const MoveToChatIcon = styled.img`
     width: 36px;
     height: 36px;
 `;
+
 function List() {
     const location = useLocation();
     const navigate = useNavigate();
-    
+
     const [recommendations, setRecommendations] = useState(() => {
         const savedData = localStorage.getItem('recommendations');
+        console.log('Data from localStorage:', savedData);
         return savedData ? JSON.parse(savedData) : [];
     });
 
     useEffect(() => {
-        if (location.state?.recommendations?.data) {
-            const data = location.state.recommendations.data;
-            console.log('Received recommendations:', data);
-            setRecommendations(data);
-            localStorage.setItem('recommendations', JSON.stringify(data));
+        const newRecommendations = location.state?.recommendations?.data;
+        if (newRecommendations && JSON.stringify(newRecommendations) !== JSON.stringify(recommendations)) {
+            console.log('Received new recommendations:', newRecommendations);
+            setRecommendations(newRecommendations);
+            localStorage.setItem('recommendations', JSON.stringify(newRecommendations));
         }
-    }, [location.state]);
+    }, [location.state?.recommendations]);
 
-    useEffect(() => {
-        if (recommendations.length === 0) {
-            console.log('No recommendations available.');
-        }
-    }, [recommendations]);
-
-    const [hoveredIndex, setHoveredIndex] = useState(null); 
+    const [hoveredIndex, setHoveredIndex] = useState(null);
 
     const chatNavigate = () => {
         navigate("/chat");
@@ -199,7 +195,7 @@ function List() {
                 <ListFrame>
                     {recommendations.length > 0 ? (
                         recommendations.map((item, index) => (
-                            <ListItem 
+                            <ListItem
                                 key={index}
                                 onMouseOver={() => setHoveredIndex(index)}
                                 onMouseOut={() => setHoveredIndex(null)}
@@ -212,10 +208,10 @@ function List() {
                                         <ListDetailItem>{item.features.join(', ')}</ListDetailItem>
                                     </ListDetails>
                                 </div>
-                                <ArrowIcon 
-                                    src={listarrow} 
-                                    isVisible={hoveredIndex === index} 
-                                    onClick={detailNavigate} 
+                                <ArrowIcon
+                                    src={listarrow}
+                                    isVisible={hoveredIndex === index}
+                                    onClick={detailNavigate}
                                 />
                             </ListItem>
                         ))
@@ -223,7 +219,7 @@ function List() {
                         <p>No recommendations available.</p>
                     )}
                 </ListFrame>
-                
+
                 <ListFooter onClick={chatNavigate}>
                     <FooterContent>
                         <MoveToChatIcon src={movetochat} alt="Move to Chat" />
