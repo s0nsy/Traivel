@@ -1,6 +1,6 @@
 import React from 'react';
-import{useNavigate} from "react-router-dom"
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
 import InfoBox1 from '../../assets/InfoBox1.png';
 import InfoBox2 from '../../assets/InfoBox2.png';
 import DetailBackground from '../../assets/Detail_background.png'; 
@@ -41,9 +41,10 @@ const StyledH2 = styled.h2`
 `;
 
 function InfoBox() {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate(); // Initialize the navigate function
+
   const handleImageClick = () => {
-    navigate("/output")
+    navigate('/route'); // Navigate to the /route page
   };
 
   return (

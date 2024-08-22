@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import InfoBox from '../components/Detail/InfoBox';
+import InfoBox from '../components/Detail/InfoBox'
 import MapSection from '../components/Detail/MapSection';
 import Recommendations from '../components/Detail/Recommendations';
 import Accommodation from '../components/Detail/Accommodation';
@@ -58,7 +58,6 @@ const PageContainer = styled.div`
   justify-content: center;
   width: 100%;
   padding: 1.25rem;
-  
 `;
 
 const ContentDiv = styled.div`
@@ -70,13 +69,60 @@ const ContentDiv = styled.div`
   gap: 4rem;
 `;
 
-const Detail = () => {
-  const destination = '서귀포'; // 백엔드에서 받아오는 예시 데이터
-  const mapImage = 'path_to_map_image';
-  const recommendations = ['렌터카 1', '렌터카 2', '렌터카 3'];
-  const accommodations = ['호텔 1', '호텔 2', '호텔 3'];
-  const foods = ['흑돼지', '갈치조림', '전복구이', '고기국수'];
-  const attractions = ['천지연 폭포', '고기국수 맛집', '서귀포 예술의 전당'];
+const MainPage = () => {
+  const [destination, setDestination] = useState('');
+  const [mapImage, setMapImage] = useState('');
+  const [recommendations, setRecommendations] = useState([]);
+  const [accommodations, setAccommodations] = useState([]);
+  const [foods, setFoods] = useState([]);
+  const [attractions, setAttractions] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/detail', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        console.error('API Error:', data.error);
+      } else {
+        // 예시로 받아온 데이터를 상태에 저장합니다.
+        setDestination(data.tourData.item[0].addr1 || '서귀포');
+        setMapImage(data.tourData.item[0].firstimage || 'default_image_path');
+        
+        // 기존 recommendations 구조에 맞춰 데이터를 생성
+        const recommendationData = [
+          {
+            smallText: '렌트카',
+            description: data.optComment.traffic || '렌터카에 대한 설명이 없습니다.',
+            links: ['사이트 1', '사이트 2', '사이트 3', '사이트 4', '사이트 5'] // 실제 추천 사이트 목록으로 대체해야 함
+          },
+          {
+            smallText: '대중교통',
+            description: data.optComment.hotel || '대중교통에 대한 설명이 없습니다.',
+            links: ['사이트 1', '사이트 2', '사이트 3', '사이트 4', '사이트 5'] // 실제 추천 사이트 목록으로 대체해야 함
+          },
+          {
+            smallText: '자전거 대여',
+            description: data.optComment.food || '자전거 대여에 대한 설명이 없습니다.',
+            links: ['사이트 1', '사이트 2', '사이트 3', '사이트 4', '사이트 5'] // 실제 추천 사이트 목록으로 대체해야 함
+          }
+        ];
+
+        setRecommendations(recommendationData);
+        setAccommodations([data.tourData.item[0].title]);
+        setFoods([data.tourData.item[0].food]);
+        setAttractions([data.tourData.item[0].title]);
+      }
+    })
+    .catch(error => {
+      console.error('Failed to fetch data:', error);
+    });
+  }, []);
 
   return (
     <>
@@ -123,4 +169,4 @@ const Detail = () => {
   );
 };
 
-export default Detail;
+export default MainPage;

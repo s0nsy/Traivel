@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import ArrowLeft from '../../assets/Arrow.png';
 import ArrowRight from '../../assets/ArrowRight.png';
@@ -62,6 +62,15 @@ const FoodList = styled.ul`
 
 const FoodListItem = styled.li`
   margin-bottom: 0.3125rem; 
+  text-decoration: underline;
+`;
+
+const FoodLink = styled.a`
+  color: var(--White, #FFF);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const ArrowImageLeft = styled.img`
@@ -84,19 +93,70 @@ const ArrowImageRight = styled.img`
   cursor: pointer;
 `;
 
-const TextContainer = styled.div`
-  width: 100%;
-  text-align: center;
-  color: var(--White, #FFF);
-  font-family: Pretendard, sans-serif;
-  font-size: 1.2rem;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-`;
-
 function Food() {
   const [currentPage, setCurrentPage] = useState(0);
+  const [foodItems, setFoodItems] = useState([]);
+
+  useEffect(() => {
+    const fetchFoodItems = async () => {
+      try {
+        const response = await fetch('/api/detail', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        const fetchedItems = [
+          {
+            title: '흑돼지',
+            links: data.optComment?.food?.heukdwaeji || [
+              { name: '칠돈가', url: '#' },
+              { name: '돈사돈', url: '#' },
+              { name: '백년가게', url: '#' },
+              { name: '흑돼지명가', url: '#' },
+            ],
+          },
+          {
+            title: '갈치조림',
+            links: data.optComment?.food?.galchi || [
+              { name: '가게1', url: '#' },
+              { name: '가게2', url: '#' },
+              { name: '가게3', url: '#' },
+              { name: '가게4', url: '#' },
+            ],
+          },
+          {
+            title: '전복구이',
+            links: data.optComment?.food?.jeonbok || [
+              { name: '가게1', url: '#' },
+              { name: '가게2', url: '#' },
+              { name: '가게3', url: '#' },
+              { name: '가게4', url: '#' },
+            ],
+          },
+          {
+            title: '고기국수',
+            links: data.optComment?.food?.gogi || [
+              { name: '가게1', url: '#' },
+              { name: '가게2', url: '#' },
+              { name: '가게3', url: '#' },
+              { name: '가게4', url: '#' },
+            ],
+          },
+        ];
+
+        setFoodItems(fetchedItems);
+      } catch (error) {
+        console.error('Failed to fetch food items:', error);
+      }
+    };
+
+    fetchFoodItems();
+  }, []);
 
   const handleNextPage = () => {
     if (currentPage < 2) {
@@ -110,9 +170,13 @@ function Food() {
     }
   };
 
+  if (foodItems.length === 0) {
+    return <div>로딩 중...</div>;
+  }
+
   return (
     <FoodWrapper>
-      <Title><h2>🍴이런 음식들이 유명해요</h2></Title>
+      <Title>🍴이런 음식들이 유명해요</Title>
       <FoodContainer>
         <ArrowImageLeft
           src={ArrowLeft}
@@ -121,57 +185,23 @@ function Food() {
           style={{ visibility: currentPage === 0 ? 'hidden' : 'visible' }}
         />
 
-        {currentPage === 0 && (
+        {(currentPage === 0 || currentPage === 1 || currentPage === 2) && (
           <>
-            <FoodItem>
-              <FoodTitle>흑돼지</FoodTitle>
-              <FoodList>
-                <FoodListItem>칠돈가</FoodListItem>
-                <FoodListItem>돈사돈</FoodListItem>
-                <FoodListItem>백년가게</FoodListItem>
-                <FoodListItem>흑돼지명가</FoodListItem>
-              </FoodList>
-            </FoodItem>
-            <FoodItem>
-              <FoodTitle>갈치조림</FoodTitle>
-              <FoodList>
-                <FoodListItem>칠돈가</FoodListItem>
-                <FoodListItem>돈사돈</FoodListItem>
-                <FoodListItem>백년가게</FoodListItem>
-                <FoodListItem>흑돼지명가</FoodListItem>
-              </FoodList>
-            </FoodItem>
-            <FoodItem>
-              <FoodTitle>전복구이</FoodTitle>
-              <FoodList>
-                <FoodListItem>칠돈가</FoodListItem>
-                <FoodListItem>돈사돈</FoodListItem>
-                <FoodListItem>백년가게</FoodListItem>
-                <FoodListItem>흑돼지명가</FoodListItem>
-              </FoodList>
-            </FoodItem>
-            <FoodItem>
-              <FoodTitle>고기국수</FoodTitle>
-              <FoodList>
-                <FoodListItem>칠돈가</FoodListItem>
-                <FoodListItem>돈사돈</FoodListItem>
-                <FoodListItem>백년가게</FoodListItem>
-                <FoodListItem>흑돼지명가</FoodListItem>
-              </FoodList>
-            </FoodItem>
+            {foodItems.map((food, index) => (
+              <FoodItem key={index}>
+                <FoodTitle>{food.title}</FoodTitle>
+                <FoodList>
+                  {food.links.map((link, linkIndex) => (
+                    <FoodListItem key={linkIndex}>
+                      <FoodLink href={link.url} target="_blank" rel="noopener noreferrer">
+                        {link.name}
+                      </FoodLink>
+                    </FoodListItem>
+                  ))}
+                </FoodList>
+              </FoodItem>
+            ))}
           </>
-        )}
-
-        {currentPage === 1 && (
-          <TextContainer style={{ margin: 'auto', fontSize: '2rem' }}>
-            두번째 페이지입니다.
-          </TextContainer>
-        )}
-
-        {currentPage === 2 && (
-          <TextContainer style={{ margin: 'auto', fontSize: '2rem' }}>
-            세번째 페이지입니다.
-          </TextContainer>
         )}
 
         <ArrowImageRight
