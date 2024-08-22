@@ -11,6 +11,9 @@ import selectedImg from "../assets/selected.png";
 import Rectangle from "../assets/sidebar.png";
 import moment from "moment";
 import Output from "./Output";
+import { useDispatch, useSelector } from 'react-redux';
+import { setStartDate, setEndDate, setAdults, setChildren, setInfants } from '../store/surveySlice';
+
 
 const Background = styled.div`
   display: flex;
@@ -125,14 +128,19 @@ const CalendarWrapper = styled.div`
   z-index: 10;
 `;
 
-const Home = ({ setSelectedDateRange, setSelectedPeople }) => {
-  const [selectedText, setSelectedText] = useState(null);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [people, setPeople] = useState("추가");
-  
-  
+
+const Home = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // Redux에서 필요한 상태 불러오기
+  const startDate = useSelector((state) => state.survey.startDate);
+  const endDate = useSelector((state) => state.survey.endDate);
+  const adults = useSelector((state) => state.survey.adults);
+  const children = useSelector((state) => state.survey.children);
+  const infants = useSelector((state) => state.survey.infants);
+
+  const [selectedText, setSelectedText] = useState(null);
 
   const handleStartClick = () => {
     
@@ -146,32 +154,28 @@ const Home = ({ setSelectedDateRange, setSelectedPeople }) => {
 
   const handleDateChange = (date) => {
     if (selectedText === "startDate") {
-      setStartDate(date);
-      setSelectedText("endDate"); // 출발일 선택 후 도착일 선택으로 자동 전환
+      dispatch(setStartDate(date));
+      setSelectedText("endDate");
     } else if (selectedText === "endDate") {
-      setEndDate(date);
-      const dateRange = `${moment(startDate).format("MM.DD")} - ${moment(
-        date
-      ).format("MM.DD")} `;
-      setSelectedDateRange(dateRange); // 날짜 범위를 상위 컴포넌트로 전달
+      dispatch(setEndDate(date));
     }
   };
 
-  const handlePeopleChange = (count) => {
-    setPeople(count);
-    setSelectedPeople(count);
+  const handlePeopleChange = (totalPeople) => {
+    const { adultsCount, childrenCount, infantsCount } = totalPeople;
+    dispatch(setAdults(adultsCount));
+    dispatch(setChildren(childrenCount));
+    dispatch(setInfants(infantsCount));
   };
 
   const dateRange =
     startDate && endDate
-      ? `${moment(startDate).format("MM.DD")} - ${moment(endDate).format(
-          "MM.DD"
-        )} ${moment(endDate).diff(moment(startDate), "days")}박 ${
-          moment(endDate).diff(moment(startDate), "days") + 1
-        }일`
+      ? `${moment(startDate).format("MM.DD")} - ${moment(endDate).format("MM.DD")} ${moment(endDate).diff(moment(startDate), "days")}박 ${moment(endDate).diff(moment(startDate), "days") + 1}일`
       : startDate
       ? `${moment(startDate).format("MM.DD")} -`
       : "날짜를 선택하세요";
+
+  const peopleText = adults + children + infants > 0 ? `${adults + children + infants}명` : "추가";
 
   return (
     <Background>
@@ -183,39 +187,26 @@ const Home = ({ setSelectedDateRange, setSelectedPeople }) => {
           일정을 추가한 뒤 루트포터와 대화를 시작해보세요.
         </Description>
         <SelectCon>
-          <SelectBox
-            src={selectBox}
-            onClick={() => handleInlineTextClick(null)}
-          />
+          <SelectBox src={selectBox} onClick={() => handleInlineTextClick(null)} />
           <SelectDate>
-            <InlineTextWrapper
-              onClick={() => handleInlineTextClick("startDate")}
-            >
-              {selectedText === "startDate" && (
-                <SelectedImg src={selectedImg} selected="startDate" />
-              )}
-              <InlineText>
-                출발일 {startDate ? moment(startDate).format("MM.DD") : "MM.DD"}
-              </InlineText>
+            <InlineTextWrapper onClick={() => handleInlineTextClick("startDate")}>
+              {selectedText === "startDate" && <SelectedImg src={selectedImg} selected="startDate" />}
+              <InlineText>출발일 {startDate ? moment(startDate).format("MM.DD") : "MM.DD"}</InlineText>
             </InlineTextWrapper>
             <ArrowIcon src={Rectangle} />
             <InlineTextWrapper onClick={() => handleInlineTextClick("endDate")}>
-              {selectedText === "endDate" && (
-                <SelectedImg src={selectedImg} selected="endDate" />
-              )}
-              <InlineText>
-                도착일 {endDate ? moment(endDate).format("MM.DD") : "MM.DD"}
-              </InlineText>
+              {selectedText === "endDate" && <SelectedImg src={selectedImg} selected="endDate" />}
+              <InlineText>도착일 {endDate ? moment(endDate).format("MM.DD") : "MM.DD"}</InlineText>
             </InlineTextWrapper>
             <ArrowIcon src={Rectangle} />
             <InlineTextWrapper onClick={() => handleInlineTextClick("people")}>
-              {selectedText === "people" && (
-                <SelectedImg src={selectedImg} selected="people" />
-              )}
-              <InlineText>인원 {people}</InlineText>
+              {selectedText === "people" && <SelectedImg src={selectedImg} selected="people" />}
+              <InlineText>인원 {peopleText}</InlineText>
             </InlineTextWrapper>
           </SelectDate>
         </SelectCon>
+
+        {/* 선택된 날짜와 인원에 따라 컴포넌트 렌더링 */}
         {selectedText === "startDate" && (
           <CalendarWrapper>
             <CalendarSite onChange={handleDateChange} dateRange={dateRange} />
@@ -231,6 +222,7 @@ const Home = ({ setSelectedDateRange, setSelectedPeople }) => {
             <People onPeopleChange={handlePeopleChange} />
           </CalendarWrapper>
         )}
+        
         <StartBtn src={startBtn} onClick={handleStartClick} />
 
       </FirstCon>

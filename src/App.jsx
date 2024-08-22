@@ -24,19 +24,18 @@ const Global = createGlobalStyle`
 `;
 
 function App() {
-  const [selectedDateRange, setSelectedDateRange] = useState("");
-  const [selectedPeople, setSelectedPeople] = useState("추가");
+  
 
   return (
     <>
       <Global />
       <div className="App">       
-        <Header selectedDateRange={selectedDateRange} selectedPeople={selectedPeople} />
+        <Header/>
 
         <Routes>
           <Route
             path="/"
-            element={<Home setSelectedDateRange={setSelectedDateRange} setSelectedPeople={setSelectedPeople} />}
+            element={<Home/>}
           />
           <Route path="/onboard" element={<><Onboard/></>}/>
           <Route path="/cost" element={<><Cost/></>}/>

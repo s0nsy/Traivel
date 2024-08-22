@@ -6,6 +6,8 @@ import listarrow from "../assets/listarrow.svg";
 import { useNavigate, useLocation } from "react-router-dom";
 import { setSelectedItem } from "../store/selectedItemSlice";
 import { useDispatch } from "react-redux";
+import  {useSelector} from 'react-redux';
+
 
 const Background = styled.div`
   display: flex;
@@ -160,35 +162,18 @@ const MoveToChatIcon = styled.img`
   height: 36px;
 `;
 
+
+
+
+
+
+
 function List() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const handleItemClick = (item) => {
-    dispatch(setSelectedItem(item)); 
-  };
-
-  const [recommendations, setRecommendations] = useState(() => {
-    const savedData = localStorage.getItem("recommendations");
-    console.log("Data from localStorage:", savedData);
-    return savedData ? JSON.parse(savedData) : [];
-  });
-
-  useEffect(() => {
-    const newRecommendations = location.state?.recommendations?.data;
-    if (
-      newRecommendations &&
-      JSON.stringify(newRecommendations) !== JSON.stringify(recommendations)
-    ) {
-      console.log("Received new recommendations:", newRecommendations);
-      setRecommendations(newRecommendations);
-      localStorage.setItem(
-        "recommendations",
-        JSON.stringify(newRecommendations)
-      );
-    }
-  }, [location.state?.recommendations]);
+  // Redux 스토어에서 recommendations 가져오기
+  const recommendations = useSelector((state) => state.survey.recommendations);
+  console.log("Recommendations in List:", recommendations);
 
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -196,9 +181,11 @@ function List() {
     navigate("/chat");
   };
 
+
   const detailNavigate = () => {
     navigate("/detail");
   };
+
 
   return (
     <Background>
@@ -210,6 +197,7 @@ function List() {
         <ListFrame>
           {recommendations.length > 0 ? (
             recommendations.map((item, index) => (
+
               <ListItem
                 key={index}
                 onMouseOver={() => setHoveredIndex(index)}
@@ -230,6 +218,7 @@ function List() {
                     detailNavigate();
                     handleItemClick(item);
                   }}
+                  onClick={() => navigate("/detail")}
                 />
               </ListItem>
             ))
@@ -250,3 +239,6 @@ function List() {
 }
 
 export default List;
+
+
+
