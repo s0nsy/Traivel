@@ -4,13 +4,15 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import flag from '../assets/flag.png';
 import sendIcon from '../assets/send-icon.png';
+import { addUserResponse } from '../store/chatSlice';
 import recommend from '../assets/리스트 추천.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { 
-  setPurpose, setBudget, setkeyElement, setAccommodation, 
+  setAdults,setChildren,setInfants,setPurpose, setBudget, setkeyElement, setAccommodation, 
   settransport, setCompanion, setfavorite, setfavoriteReason, 
   setspecialNeeds, setRecommendationType, setfreeTime, setimportantFactors 
 } from '../store/surveySlice';
+import { setRecommendations } from '../store/surveySlice';
 
 const TitleCon = styled.div`
   display: flex;
@@ -21,23 +23,17 @@ const TitleCon = styled.div`
 `;
 
 const Title = styled.p`
-  color: #FFF;
-  font-family: Pretendard;
-  font-size: 36px;
-  font-style: normal;
+  font-family: Pretendard, sans-serif;
+  color: #FFFFFF;
+  font-size: 30px;
   font-weight: 500;
-  line-height: normal;
-  margin-bottom: 10px;
 `;
 
 const Detail = styled.p`
-  color: #FFF;
-  font-family: Pretendard;
-  font-size: 24px;
-  font-style: normal;
+  font-family: Pretendard, sans-serif;
+  color: #FFFFFF;
+  font-size: 20px;
   font-weight: 300;
-  line-height: normal;
-  margin-bottom: 40px;
 `;
 
 const ChatContainer = styled.div`
@@ -48,21 +44,24 @@ const ChatContainer = styled.div`
   margin-top: 20px;
   padding-left: 300px;
   padding-right: 300px;
-  height: 70vh;
-  overflow-y: auto;
-  
-  /* Custom scrollbar styling */
+  height: 70vh; /* 최대 높이 설정 */
+  overflow-y: auto; /* 스크롤바 추가 */
+  /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
   }
+
   ::-webkit-scrollbar-thumb {
     background-color: rgba(1, 236, 255, 0.8);
     border-radius: 10px;
   }
+
   ::-webkit-scrollbar-track {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
   }
+
+  /* Firefox */
   scrollbar-width: thin;
   scrollbar-color: rgba(1, 236, 255, 0.8) rgba(255, 255, 255, 0.1);
 `;
@@ -82,7 +81,7 @@ const ChatImg = styled.img`
 `;
 
 const ChatBox = styled.div`
-  max-width: 600px;
+  max-width: 600px; /* 최대 너비 제한 */
   border-radius: 24px;
   border: 1px solid var(--Main_2, #01ECFF);
   background: rgba(255, 255, 255, 0.05);
@@ -90,21 +89,21 @@ const ChatBox = styled.div`
   color: #FFFFFF;
   display: flex;
   align-items: center;
-  padding: 12px 16px;
-  word-wrap: break-word;
+  padding: 12px 16px; /* 내부 여백을 조정 */
+  word-wrap: break-word; /* 긴 텍스트를 줄바꿈 */
 `;
 
 const UserChatCon = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-end; /* 오른쪽 정렬 */
   margin-bottom: 20px;
   margin-top: 20px;
   width: 100%;
 `;
 
 const UserChatBox = styled.div`
-  max-width: 600px;
+  max-width: 600px; /* 최대 너비 제한 */
   border-radius: 24px;
   border: 1px solid var(--Main_2, #01ECFF);
   background: rgba(255, 255, 255, 0.3);
@@ -113,8 +112,8 @@ const UserChatBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 30px;
-  word-wrap: break-word;
+  padding: 12px 30px; /* 내부 여백을 조정 */
+  word-wrap: break-word; /* 긴 텍스트를 줄바꿈 */
 `;
 
 const ChatInputContainer = styled.div`
@@ -149,27 +148,29 @@ const SendIcon = styled.img`
   height: 36px;
   cursor: pointer;
 `;
-
 const Recommend = styled.img`
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: fixed; /* 화면에 고정 */
+  bottom: 20px; /* 화면의 하단에서 20px 위에 위치 */
+  left: 50%; /* 수평 가운데 */
+  transform: translateX(-50%); /* 정확히 가운데로 이동 */
   width: 1160px;
-  height: 80px;
-  cursor: pointer;
+  height: 7.7vh;
+  cursor: pointer; /* 클릭 가능하도록 설정 */
 `;
 
 const Chat = () => {
+  
   const [currentInput, setCurrentInput] = useState('');
   const [step, setStep] = useState(0);
-  const [finish, setFinish] = useState(false);
-  const [recommendations, setRecommendations] = useState([]);
-  
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userResponses = useSelector((state) => state.survey);
+  const adults = useSelector((state)=> state.survey.adults);
+  const children =useSelector((state)=> state.survey.children);
+  const infants = useSelector((state)=> state.survey.infants);
+  const [finish, setFinish] = useState(false);
   const chatContainerRef = useRef(null);
+  const [questionResponses, setQuestionResponses] = useState([]);
 
   const questions = [
     '이번 여행의 주된 목적은 무엇인가요? (예: 휴식, 탐험, 문화 체험, 미식 여행 등)',
@@ -192,69 +193,76 @@ const Chat = () => {
     setspecialNeeds, setRecommendationType, setfreeTime, setimportantFactors
   ];
 
+  const schedule = useSelector((state) => state.survey.schedule);
   
-  const handleInputChange = (e) => setCurrentInput(e.target.value);
   const handleSend = async () => {
-    if (currentInput.trim()) {
+    if (currentInput.trim() !== '') {
       dispatch(actionDispatchers[step](currentInput));
-      
+      setQuestionResponses(prev => [...prev, { question: questions[step], response: currentInput }]);
+  
+      setCurrentInput('');
+  
       if (step < questions.length - 1) {
-        setStep(step + 1);
+        setStep(prev => prev + 1);
       } else {
         try {
-          await handleSubmit();
-          setFinish(true);
+          await handleSubmit(); 
+          setFinish(true); 
         } catch (error) {
           console.error('Error submitting:', error);
         }
       }
-      setCurrentInput('');
     }
   };
+  
 
   const handleSubmit = async () => {
-    console.log('사용자 응답:', userResponses);
-
-    const submissionData = {
-      schedule: "string", 
-      groupComposition: {
-        adults: 0, 
-        children: 0,
-        infants: 0  
-      },
-      purpose: userResponses.purpose,
-      budget: userResponses.budget,
-      keyElement: userResponses.keyElement,
-      accommodation: userResponses.accommodation,
-      transport: userResponses.transport,
-      companion: userResponses.companion,
-      favorite: userResponses.favorite,
-      favoriteReason: userResponses.favoriteReason,
-      specialNeeds: userResponses.specialNeeds,
-      recommendationType: userResponses.recommendationType,
-      freeTime: userResponses.freeTime,
-      importantFactors: userResponses.importantFactors
-    };
-
     try {
+      const submissionData = {
+        schedule: schedule,
+        groupComposition: { adults: adults, children: children, infants: infants },
+        purpose: userResponses.purpose,
+        budget: userResponses.budget,
+        keyElement: userResponses.keyElement,
+        accommodation: userResponses.accommodation,
+        transport: userResponses.transport,
+        companion: userResponses.companion,
+        favorite: userResponses.favorite,
+        favoriteReason: userResponses.favoriteReason,
+        specialNeeds: userResponses.specialNeeds,
+        recommendationType: userResponses.recommendationType,
+        freeTime: userResponses.freeTime,
+        importantFactors: userResponses.importantFactors,
+      };
+  
       const response = await axios.post("/api/chat", submissionData);
-      console.log('서버 응답:', response.data); // response.data를 콘솔에 출력
-      setRecommendations(response.data);
+  
+      
+      dispatch(setRecommendations(response.data));
+      console.log(response.data);
+  
     } catch (error) {
       console.error('서버 요청 중 오류 발생:', error);
     }
   };
 
+  const handleInputChange = (e) => {
+    setCurrentInput(e.target.value);
+  };
+
   const handleList = () => {
-    navigate('/lists', { state: { recommendations } });
+    navigate('/lists');
   };
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      
+      setTimeout(() => {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      }, 100);
     }
-  }, [step]);
-
+  }, [step, finish]);
+  
   return (
     <>
       <TitleCon>
@@ -263,18 +271,21 @@ const Chat = () => {
       </TitleCon>
 
       <ChatContainer ref={chatContainerRef}>
-        {questions.slice(0, step).map((question, index) => (
+        {questionResponses.map((qr, index) => (
           <React.Fragment key={index}>
+           
             <ChatCon>
               <ChatImg src={flag} alt="flag" />
-              <ChatBox>{question}</ChatBox>
+              <ChatBox>{qr.question}</ChatBox>
             </ChatCon>
+            
             <UserChatCon>
-              <UserChatBox>{userResponses[Object.keys(userResponses)[index]]}</UserChatBox>
+              <UserChatBox>{qr.response}</UserChatBox>
             </UserChatCon>
           </React.Fragment>
         ))}
-        {!finish && step < questions.length && (
+
+        {!finish &&step < questions.length && (
           <ChatCon>
             <ChatImg src={flag} alt="flag" />
             <ChatBox>{questions[step]}</ChatBox>
@@ -295,6 +306,7 @@ const Chat = () => {
           <SendIcon src={sendIcon} alt="send" onClick={handleSend} />
         </ChatInputContainer>
       )}
+      
     </>
   );
 };

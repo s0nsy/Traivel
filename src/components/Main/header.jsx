@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import SideBarIcon from "../../assets/ic_round-menu.png";
 import { useNavigate } from "react-router-dom";
+import {useSelector} from 'react-redux';
 
 const NavContainer = styled.div`
   position: fixed;
@@ -63,20 +64,29 @@ const SideBarBtn = styled.img`
   cursor: pointer;
 `;
 
-const Header = ({ selectedDateRange, selectedPeople }) => {
+const Header = () => {
   const navigate = useNavigate();
+  const adults = useSelector((state) => state.survey.adults);
+  const children = useSelector((state) => state.survey.children);
+  const infants = useSelector((state) => state.survey.infants);
+  const schedule = useSelector((state) => state.survey.schedule);
+
+  const selectedPeople = adults || children || infants
+    ? `${adults+children+infants}명`
+    : "인원 추가";
 
   const handleLogo = () => {
     navigate("/");
   };
+  const selectedSchedule = schedule ? schedule : "날짜 선택";
 
   return (
     <NavContainer>
       <NavLogo onClick={handleLogo}>Route Porter</NavLogo>
       <NavSelectCon>
-        <NavSelect>{selectedDateRange ? `날짜 ${selectedDateRange}` : "출발일 - 도착일"}</NavSelect>
+        <NavSelect>{selectedSchedule}</NavSelect>
         <SideRectangle />
-        <NavSelect>{selectedPeople ? `인원 ${selectedPeople}` : "인원 추가"}</NavSelect>
+        <NavSelect>{selectedPeople}</NavSelect>
       </NavSelectCon>
       <SideBarBtn src={SideBarIcon} alt="Sidebar Icon" />
     </NavContainer>

@@ -5,6 +5,8 @@ import right from '../../assets/right.png';
 import minus from '../../assets/minus.png';
 import plus from '../../assets/plus.png';
 import bar from '../../assets/bar.png';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAdults, setChildren, setInfants } from '../../store/surveySlice';
 
 const BoxCon = styled.div`
     display: flex;
@@ -82,27 +84,23 @@ const CountCon = styled.div`
     gap: 20px; /* Minus, Text, Plus 사이의 간격 */
 `;
 
-const People = ({ onPeopleChange }) => {
-    const [adult, setAdult] = useState(0);
-    const [child, setChild] = useState(0);
-    const [infant, setInfant] = useState(0);
+const People = () => {
+    const dispatch = useDispatch();
 
-    useEffect(() => {
-        if (onPeopleChange) {
-            onPeopleChange(adult + child + infant);
-        }
-    }, [adult, child, infant, onPeopleChange]);
+    const adults = useSelector((state) => state.survey.adults);
+    const children = useSelector((state) => state.survey.children);
+    const infants = useSelector((state) => state.survey.infants);
 
     const handleIncrease = (type) => {
-        if (type === "adult") setAdult(adult + 1);
-        if (type === "child") setChild(child + 1);
-        if (type === "infant") setInfant(infant + 1);
+        if (type === "adult") dispatch(setAdults(adults + 1));
+        if (type === "child") dispatch(setChildren(children + 1));
+        if (type === "infant") dispatch(setInfants(infants + 1));
     };
 
     const handleDecrease = (type) => {
-        if (type === "adult" && adult > 0) setAdult(adult - 1);
-        if (type === "child" && child > 0) setChild(child - 1);
-        if (type === "infant" && infant > 0) setInfant(infant - 1);
+        if (type === "adult" && adults > 0) dispatch(setAdults(adults - 1));
+        if (type === "child" && children > 0) dispatch(setChildren(children - 1));
+        if (type === "infant" && infants > 0) dispatch(setInfants(infants - 1));
     };
 
     return (
@@ -116,7 +114,7 @@ const People = ({ onPeopleChange }) => {
                 <PeopleText>성인(13세이상)</PeopleText>
                 <CountCon>
                     <Minus src={minus} onClick={() => handleDecrease("adult")} alt="minus" />
-                    <Text>{adult}</Text>
+                    <Text>{adults}</Text>
                     <Plus src={plus} onClick={() => handleIncrease("adult")} alt="plus" />
                 </CountCon>
             </PeopleCon>
@@ -125,7 +123,7 @@ const People = ({ onPeopleChange }) => {
                 <PeopleText>어린이(2~12세)</PeopleText>
                 <CountCon>
                     <Minus src={minus} onClick={() => handleDecrease("child")} alt="minus" />
-                    <Text>{child}</Text>
+                    <Text>{children}</Text>
                     <Plus src={plus} onClick={() => handleIncrease("child")} alt="plus" />
                 </CountCon>
             </PeopleCon>
@@ -134,7 +132,7 @@ const People = ({ onPeopleChange }) => {
                 <PeopleText>유아(2세 미만)</PeopleText>
                 <CountCon>
                     <Minus src={minus} onClick={() => handleDecrease("infant")} alt="minus" />
-                    <Text>{infant}</Text>
+                    <Text>{infants}</Text>
                     <Plus src={plus} onClick={() => handleIncrease("infant")} alt="plus" />
                 </CountCon>
             </PeopleCon>

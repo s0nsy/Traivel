@@ -4,6 +4,7 @@ import chattingbackground from "../assets/chattingbackground.png";
 import movetochat from "../assets/movetochat.svg";
 import listarrow from "../assets/listarrow.svg";
 import { useNavigate, useLocation } from 'react-router-dom';
+import  {useSelector} from 'react-redux';
 
 const Background = styled.div`
     display: flex;
@@ -158,77 +159,86 @@ const MoveToChatIcon = styled.img`
     height: 36px;
 `;
 
+
+
+
+
+
+
 function List() {
-    const location = useLocation();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [recommendations, setRecommendations] = useState(() => {
-        const savedData = localStorage.getItem('recommendations');
-        console.log('Data from localStorage:', savedData);
-        return savedData ? JSON.parse(savedData) : [];
-    });
+  // Redux 스토어에서 recommendations 가져오기
+  const recommendations = useSelector((state) => state.survey.recommendations);
+  console.log("Recommendations in List:", recommendations);
 
-    useEffect(() => {
-        const newRecommendations = location.state?.recommendations?.data;
-        if (newRecommendations && JSON.stringify(newRecommendations) !== JSON.stringify(recommendations)) {
-            console.log('Received new recommendations:', newRecommendations);
-            setRecommendations(newRecommendations);
-            localStorage.setItem('recommendations', JSON.stringify(newRecommendations));
-        }
-    }, [location.state?.recommendations]);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    const [hoveredIndex, setHoveredIndex] = useState(null);
+  // recommendations.data가 배열인지 확인
+  console.log("Recommendations Data:", recommendations.data);
+  console.log("Recommendations Data isArray:", Array.isArray(recommendations.data));
 
-    const chatNavigate = () => {
-        navigate("/chat");
-    };
+  useEffect(() => {
+    // recommendations.data가 배열인지 확인하고, 배열일 때만 로딩 상태를 false로 변경
+    if (recommendations && Array.isArray(recommendations.data) && recommendations.data.length > 0) {
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+  }, [recommendations]);
 
-    const detailNavigate = () => {
-        navigate("/detail");
-    };
+  const chatNavigate = () => {
+    navigate("/chat");
+  };
 
-    return (
-        <Background>
-            <ListContainer>
-                <Header1>추천 여행지 리스트를 알려드려요.</Header1>
-                <Subtitle1>날짜와 일정을 추가한 뒤, 루트포터와 대화를 시작해보세요.</Subtitle1>
-                <ListFrame>
-                    {recommendations.length > 0 ? (
-                        recommendations.map((item, index) => (
-                            <ListItem
-                                key={index}
-                                onMouseOver={() => setHoveredIndex(index)}
-                                onMouseOut={() => setHoveredIndex(null)}
-                            >
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <ListIndex>{index + 1}</ListIndex>
-                                    <ListDetails>
-                                        <ListDetailItem>{item.region}</ListDetailItem>
-                                        <ListDetailItem>{item.district}</ListDetailItem>
-                                        <ListDetailItem>{item.features.join(', ')}</ListDetailItem>
-                                    </ListDetails>
-                                </div>
-                                <ArrowIcon
-                                    src={listarrow}
-                                    isVisible={hoveredIndex === index}
-                                    onClick={detailNavigate}
-                                />
-                            </ListItem>
-                        ))
-                    ) : (
-                        <p>No recommendations available.</p>
-                    )}
-                </ListFrame>
+  return (
+    <Background>
+      <ListContainer>
+        <Header1>추천 여행지 리스트를 알려드려요.</Header1>
+        <Subtitle1>날짜와 일정을 추가한 뒤, 루트포터와 대화를 시작해보세요.</Subtitle1>
+        <ListFrame>
+          {loading ? (
+            <p>Loading recommendations...</p>
+          ) : recommendations.data.length > 0 ? (
+            recommendations.data.map((item, index) => (
+              <ListItem
+                key={index}
+                onMouseOver={() => setHoveredIndex(index)}
+                onMouseOut={() => setHoveredIndex(null)}
+              >
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <ListIndex>{index + 1}</ListIndex>
+                  <ListDetails>
+                    <ListDetailItem>{item.region}</ListDetailItem>
+                    <ListDetailItem>{item.district}</ListDetailItem>
+                    <ListDetailItem>{item.features.join(', ')}</ListDetailItem>
+                  </ListDetails>
+                </div>
+                <ArrowIcon
+                  src={listarrow}
+                  isVisible={hoveredIndex === index}
+                  onClick={() => navigate("/detail")}
+                />
+              </ListItem>
+            ))
+          ) : (
+            <p>No recommendations available.</p>
+          )}
+        </ListFrame>
 
-                <ListFooter onClick={chatNavigate}>
-                    <FooterContent>
-                        <MoveToChatIcon src={movetochat} alt="Move to Chat" />
-                        <div>채팅으로 돌아가기</div>
-                    </FooterContent>
-                </ListFooter>
-            </ListContainer>
-        </Background>
-    );
+        <ListFooter onClick={chatNavigate}>
+          <FooterContent>
+            <MoveToChatIcon src={movetochat} alt="Move to Chat" />
+            <div>채팅으로 돌아가기</div>
+          </FooterContent>
+        </ListFooter>
+      </ListContainer>
+    </Background>
+  );
 }
 
 export default List;
+
+
+
