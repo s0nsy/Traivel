@@ -44,7 +44,7 @@ function InfoBox() {
   const navigate = useNavigate(); // Initialize the navigate function
 
   const handleImageClick = () => {
-    navigate('/route'); // Navigate to the /route page
+    navigate('/route'); 
   };
 
   return (

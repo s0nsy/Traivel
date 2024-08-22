@@ -86,89 +86,50 @@ const RecommendationLinkBox = styled.div`
   text-align: left;
   display: block;
   width: calc(100% - 4.06rem);
-  line-height: 1.5rem;
 `;
 
 const RecommendationLink = styled.a`
-  color: var(--White, #FFF);
-  font-family: Pretendard;
-  font-size: 1.5rem;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-  text-decoration-line: underline;
-  display: inline-block;
-  margin-right: 1rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #01ECFF;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const ArrowImageLeft = styled.img`
   position: absolute;
   top: 50%;
-  left: -6rem;
+  left: -2rem;
   transform: translateY(-50%);
-  width: 5rem;
-  height: 5rem;
   cursor: pointer;
 `;
 
 const ArrowImageRight = styled.img`
   position: absolute;
   top: 50%;
-  right: -6rem;
+  right: -2rem;
   transform: translateY(-50%);
-  width: 5rem;
-  height: 5rem;
   cursor: pointer;
 `;
 
-function Recommendations() {
-  const [currentPage, setCurrentPage] = useState(0); // 페이지 상태
-  const [pageContent, setPageContent] = useState([]); // API로부터 받아올 페이지 콘텐츠
+const Recommendations = ({ recommendations }) => {
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageContent, setPageContent] = useState([]);
 
   useEffect(() => {
-    // API로부터 데이터를 받아오는 함수
-    const fetchPageContent = async () => {
-      try {
-        const response = await fetch('/api/detail', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-        });
-
-        const data = await response.json();
-
-        // data.optComment가 존재하는지 확인하고 데이터 생성
-        const fetchedContent = [
-          {
-            smallText: '렌트카',
-            description: data.optComment?.traffic || '렌터카에 대한 설명이 없습니다.',
-            links: ['#사이트1', '#사이트2', '#사이트3', '#사이트4', '#사이트5'] // 실제 링크로 대체
-          },
-          {
-            smallText: '대중교통',
-            description: data.optComment?.hotel || '대중교통에 대한 설명이 없습니다.',
-            links: ['#사이트1', '#사이트2', '#사이트3', '#사이트4', '#사이트5'] // 실제 링크로 대체
-          },
-          {
-            smallText: '자전거 대여',
-            description: data.optComment?.food || '자전거 대여에 대한 설명이 없습니다.',
-            links: ['#사이트1', '#사이트2', '#사이트3', '#사이트4', '#사이트5'] // 실제 링크로 대체
-          }
-        ];
-
-        setPageContent(fetchedContent);
-      } catch (error) {
-        console.error('Failed to fetch page content:', error);
-      }
-    };
-
-    fetchPageContent();
-  }, []);
+    const fetchedContent = recommendations.map(rec => ({
+      smallText: rec.smallText,
+      description: rec.description,
+      links: rec.links,
+    }));
+    setPageContent(fetchedContent);
+  }, [recommendations]);
 
   const handleNextPage = () => {
-    if (currentPage < 2) {
+    if (currentPage < pageContent.length - 1) {
       setCurrentPage(currentPage + 1); // 다음 페이지로 이동
     }
   };
@@ -185,7 +146,7 @@ function Recommendations() {
 
   return (
     <RecommendationsWrapper>
-      <Title>🚘이런 교통수단을 이용하면 더욱 편리해요</Title>
+      <Title>🚘 이런 교통수단을 이용하면 더욱 편리해요</Title>
       <RecommendationsContainer>
         <ArrowImageLeft
           src={ArrowLeft}
@@ -200,12 +161,10 @@ function Recommendations() {
           <SmallText2>추천 사이트</SmallText2>
           <TextContainer>
             {pageContent[currentPage].description}
-            <br />
-            텍스트 최대 3줄
           </TextContainer>
           <RecommendationLinkBox>
             {pageContent[currentPage].links.map((link, index) => (
-              <RecommendationLink key={index} href="#">
+              <RecommendationLink key={index} href={link} target="_blank" rel="noopener noreferrer">
                 {link}
               </RecommendationLink>
             ))}
@@ -216,11 +175,11 @@ function Recommendations() {
           src={ArrowRight}
           alt="Right Arrow"
           onClick={handleNextPage}
-          style={{ visibility: currentPage === 2 ? 'hidden' : 'visible' }} // 마지막 페이지에서 숨김
+          style={{ visibility: currentPage === pageContent.length - 1 ? 'hidden' : 'visible' }} // 마지막 페이지에서 숨김
         />
       </RecommendationsContainer>
     </RecommendationsWrapper>
   );
-}
+};
 
 export default Recommendations;

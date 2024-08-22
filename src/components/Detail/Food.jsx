@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import ArrowLeft from '../../assets/Arrow.png';
 import ArrowRight from '../../assets/ArrowRight.png';
@@ -93,84 +93,22 @@ const ArrowImageRight = styled.img`
   cursor: pointer;
 `;
 
-function Food() {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [foodItems, setFoodItems] = useState([]);
-
-  useEffect(() => {
-    const fetchFoodItems = async () => {
-      try {
-        const response = await fetch('/api/detail', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-        });
-
-        const data = await response.json();
-
-        const fetchedItems = [
-          {
-            title: '흑돼지',
-            links: data.optComment?.food?.heukdwaeji || [
-              { name: '칠돈가', url: '#' },
-              { name: '돈사돈', url: '#' },
-              { name: '백년가게', url: '#' },
-              { name: '흑돼지명가', url: '#' },
-            ],
-          },
-          {
-            title: '갈치조림',
-            links: data.optComment?.food?.galchi || [
-              { name: '가게1', url: '#' },
-              { name: '가게2', url: '#' },
-              { name: '가게3', url: '#' },
-              { name: '가게4', url: '#' },
-            ],
-          },
-          {
-            title: '전복구이',
-            links: data.optComment?.food?.jeonbok || [
-              { name: '가게1', url: '#' },
-              { name: '가게2', url: '#' },
-              { name: '가게3', url: '#' },
-              { name: '가게4', url: '#' },
-            ],
-          },
-          {
-            title: '고기국수',
-            links: data.optComment?.food?.gogi || [
-              { name: '가게1', url: '#' },
-              { name: '가게2', url: '#' },
-              { name: '가게3', url: '#' },
-              { name: '가게4', url: '#' },
-            ],
-          },
-        ];
-
-        setFoodItems(fetchedItems);
-      } catch (error) {
-        console.error('Failed to fetch food items:', error);
-      }
-    };
-
-    fetchFoodItems();
-  }, []);
+function Food({ foods }) {
+  const [currentPage, setCurrentPage] = useState(0); // 페이지 상태
 
   const handleNextPage = () => {
     if (currentPage < 2) {
-      setCurrentPage(currentPage + 1);
+      setCurrentPage(currentPage + 1); // 다음 페이지로 이동
     }
   };
 
   const handlePrevPage = () => {
     if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+      setCurrentPage(currentPage - 1); // 이전 페이지로 이동
     }
   };
 
-  if (foodItems.length === 0) {
+  if (foods.length === 0) {
     return <div>로딩 중...</div>;
   }
 
@@ -185,24 +123,20 @@ function Food() {
           style={{ visibility: currentPage === 0 ? 'hidden' : 'visible' }}
         />
 
-        {(currentPage === 0 || currentPage === 1 || currentPage === 2) && (
-          <>
-            {foodItems.map((food, index) => (
-              <FoodItem key={index}>
-                <FoodTitle>{food.title}</FoodTitle>
-                <FoodList>
-                  {food.links.map((link, linkIndex) => (
-                    <FoodListItem key={linkIndex}>
-                      <FoodLink href={link.url} target="_blank" rel="noopener noreferrer">
-                        {link.name}
-                      </FoodLink>
-                    </FoodListItem>
-                  ))}
-                </FoodList>
-              </FoodItem>
-            ))}
-          </>
-        )}
+        {foods.slice(currentPage * 3, currentPage * 3 + 3).map((food, index) => (
+          <FoodItem key={index}>
+            <FoodTitle>{food.title}</FoodTitle>
+            <FoodList>
+              {food.links.map((link, linkIndex) => (
+                <FoodListItem key={linkIndex}>
+                  <FoodLink href={link.url} target="_blank" rel="noopener noreferrer">
+                    {link.name}
+                  </FoodLink>
+                </FoodListItem>
+              ))}
+            </FoodList>
+          </FoodItem>
+        ))}
 
         <ArrowImageRight
           src={ArrowRight}

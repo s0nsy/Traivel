@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import InfoBox from '../components/Detail/InfoBox'
+import InfoBox from '../components/Detail/InfoBox';
 import MapSection from '../components/Detail/MapSection';
 import Recommendations from '../components/Detail/Recommendations';
 import Accommodation from '../components/Detail/Accommodation';
 import Food from '../components/Detail/Food';
 import Attractions from '../components/Detail/Attractions';
 import Footer from '../components/Detail/Footer';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const HeaderTextContainer = styled.div`
   display: flex;
@@ -25,8 +25,8 @@ const HeaderText = styled.div`
   font-size: 3rem;
   font-weight: bold;
   text-align: center;
-  width: 73.75rem; 
-  color: #ffffff; 
+  width: 73.75rem;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,6 +70,13 @@ const ContentDiv = styled.div`
   gap: 4rem;
 `;
 
+const ErrorMessage = styled.div`
+  color: red;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 2rem;
+`;
+
 const MainPage = () => {
   const [destination, setDestination] = useState('');
   const [mapImage, setMapImage] = useState('');
@@ -77,60 +84,76 @@ const MainPage = () => {
   const [accommodations, setAccommodations] = useState([]);
   const [foods, setFoods] = useState([]);
   const [attractions, setAttractions] = useState([]);
-
+  const [error, setError] = useState(null);
 
   const { region, district, features } = useSelector((state) => state.selectedItem);
-  console.log({region, district,features})
-  useEffect(() => {
-   
-    const queryString = `?region=${encodeURIComponent(region)}&district=${encodeURIComponent(district)}&features=${encodeURIComponent(features)}`;
+
   
-    
-    fetch(`/api/detail${queryString}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('API응답',data);
-      if (data.error) {
-        console.error('API Error:', data.error);
-      } else {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const queryString = `?region=${encodeURIComponent(region)}&district=${encodeURIComponent(district)}&features=${encodeURIComponent(features)}`;
         
-        setDestination(data.tourData.item[0].addr1 || '서귀포');
-        setMapImage(data.tourData.item[0].firstimage || 'default_image_path');
-        
+        const response = await fetch(`/api/detail${queryString}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to fetch data from the API');
+        }
+  
+        const data = await response.json();
+  
+        console.log('API Response Data:', data);
+  
+        if (data.error) {
+          throw new Error(`API Error: ${data.error}`);
+        }
+  
+        const tourData = data?.data?.tourData?.item?.[0];
+        if (!tourData) {
+          throw new Error('Invalid data structure from API');
+        }
+  
+        setDestination(tourData.addr1 || '서귀포');
+        setMapImage(tourData.firstimage || 'default_image_path');
+  
         const recommendationData = [
           {
             smallText: '렌트카',
-            description: data.optComment.traffic || '렌터카에 대한 설명이 없습니다.',
+            description: data?.data?.optComment?.traffic || '렌터카에 대한 설명이 없습니다.',
             links: ['사이트 1', '사이트 2', '사이트 3', '사이트 4', '사이트 5']
           },
           {
             smallText: '대중교통',
-            description: data.optComment.hotel || '대중교통에 대한 설명이 없습니다.',
+            description: data?.data?.optComment?.hotel || '대중교통에 대한 설명이 없습니다.',
             links: ['사이트 1', '사이트 2', '사이트 3', '사이트 4', '사이트 5']
           },
           {
             smallText: '자전거 대여',
-            description: data.optComment.food || '자전거 대여에 대한 설명이 없습니다.',
+            description: data?.data?.optComment?.food || '자전거 대여에 대한 설명이 없습니다.',
             links: ['사이트 1', '사이트 2', '사이트 3', '사이트 4', '사이트 5']
           }
         ];
   
         setRecommendations(recommendationData);
-        setAccommodations([data.tourData.item[0].title]);
-        setFoods([data.tourData.item[0].food]);
-        setAttractions([data.tourData.item[0].title]);
+        setAccommodations([tourData]);
+        setFoods([tourData]);
+        setAttractions([tourData]);
+      } catch (error) {
+        console.error('API Error:', error.message);
+        setError(error.message);
       }
-    })
-    .catch(error => {
-      console.error('Failed to fetch data:', error);
-    });
-  }, []);
+    };
+  
+    fetchData();
+  }, [region, district, features]);
+  
+  
 
   return (
     <>
@@ -164,12 +187,19 @@ const MainPage = () => {
               요청해주신 <GradientText>{destination}</GradientText>의 여행 정보를 알아왔어요!
             </HeaderText>
           </HeaderTextContainer>
-          <InfoBox destination={destination} />
-          <MapSection mapImage={mapImage} description="서귀포시는 여기에 위치해 있어요" />
-          <Recommendations recommendations={recommendations} />
-          <Accommodation accommodations={accommodations} />
-          <Food foods={foods} />
-          <Attractions attractions={attractions} />
+
+          {error ? (
+            <ErrorMessage>데이터를 불러오는데 실패했습니다: {error}</ErrorMessage>
+          ) : (
+            <>
+              <InfoBox destination={destination} />
+              <MapSection mapImage={mapImage} description="서귀포시는 여기에 위치해 있어요" />
+              <Recommendations recommendations={recommendations} />
+              <Accommodation accommodations={accommodations} />
+              <Food foods={foods} />
+              <Attractions attractions={attractions} />
+            </>
+          )}
           <Footer />
         </ContentDiv>
       </PageContainer>
