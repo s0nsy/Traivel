@@ -93,9 +93,9 @@ const Accommodation = ({ accommodations }) => {
 
   const currentAccommodation = accommodations[currentPage];
 
-  // "목록" 부분을 분리
-  const accommodationDescription = currentAccommodation.split("[목록]")[0].trim();
-  const accommodationList = currentAccommodation.split("[목록]")[1]
+  // 객체 내에서 특정 필드를 사용하도록 수정 (예: `description` 필드에 `[목록]` 포함)
+  const accommodationDescription = currentAccommodation.description.split("[목록]")[0].trim();
+  const accommodationList = currentAccommodation.description.split("[목록]")[1]
     ?.split("\n")
     .filter((item) => item.trim() !== "") || [];
 
@@ -117,11 +117,15 @@ const Accommodation = ({ accommodations }) => {
           {/* 숙박시설 목록 */}
           <AccommodationLinkBox>
             {accommodationList.length > 0 ? (
-              accommodationList.map((link, index) => (
-                <AccommodationLink key={index}>
-                  {link.trim()}
-                </AccommodationLink>
-              ))
+              accommodationList.map((link, index) => {
+                // 각 목록 항목에서 텍스트와 URL을 분리
+                const [text, url] = link.split(" - ");
+                return (
+                  <AccommodationLink key={index} href={url} target="_blank" rel="noopener noreferrer">
+                    {text}
+                  </AccommodationLink>
+                );
+              })
             ) : (
               <div>숙박 목록이 없습니다.</div>
             )}
@@ -140,4 +144,3 @@ const Accommodation = ({ accommodations }) => {
 };
 
 export default Accommodation;
-

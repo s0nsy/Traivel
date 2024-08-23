@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import styled from 'styled-components';
-import ArrowLeft from '../../assets/Arrow.png';
-import ArrowRight from '../../assets/ArrowRight.png';
+import ArrowLeftIcon from '../../assets/Arrow.png'; // 화살표 이미지 경로
+import ArrowRightIcon from '../../assets/ArrowRight.png'; // 화살표 이미지 경로
 
 // Styled components
 const FoodWrapper = styled.div`
@@ -67,8 +67,12 @@ const ArrowImageRight = styled.img`
 `;
 
 function Food({ foods }) {
-  console.log(foods);
   const [currentPage, setCurrentPage] = useState(0); // 페이지 상태
+
+  // 디버깅: 전달된 foods 데이터 확인
+  useEffect(() => {
+    console.log('Received foods:', foods);
+  }, [foods]);
 
   const handleNextPage = () => {
     if (currentPage < Math.ceil(foods.length / 3) - 1) {
@@ -82,7 +86,7 @@ function Food({ foods }) {
     }
   };
 
-  if (foods.length === 0) {
+  if (!foods || foods.length === 0) {
     return <div>로딩 중...</div>;
   }
 
@@ -94,33 +98,37 @@ function Food({ foods }) {
       <Title>🍴 이런 음식들이 유명해요</Title>
       <FoodContainer>
         <ArrowImageLeft
-          src={ArrowLeft}
-          alt="Left Arrow"
+          src={ArrowLeftIcon}
+          alt="이전 페이지로 이동"
           onClick={handlePrevPage}
-          style={{ visibility: currentPage === 0 ? 'hidden' : 'visible' }}
+          style={{ visibility: currentPage === 0 ? "hidden" : "visible" }}
         />
 
         {currentFoods.map((food, index) => (
           <FoodItem key={index}>
+            {/* 음식 제목 */}
             <FoodTitle>{food.title}</FoodTitle>
+            {/* 음식에 대한 가게 목록 */}
             <FoodList>
-              {food.links.map((link, linkIndex) => (
-                <FoodListItem key={linkIndex}>
-                  <FoodLink href={link.url} target="_blank" rel="noopener noreferrer">
-                    {link.name}
-                  </FoodLink>
-                </FoodListItem>
-              ))}
+              {Array.isArray(food.links) && food.links.length > 0 ? (
+                food.links.map((link, linkIndex) => (
+                  <FoodListItem key={linkIndex}>
+                    <FoodLink href="#">{link}</FoodLink> {/* 가게 이름 텍스트만 표시 */}
+                  </FoodListItem>
+                ))
+              ) : (
+                <FoodListItem>가게 목록이 없습니다.</FoodListItem>
+              )}
             </FoodList>
           </FoodItem>
         ))}
 
         <ArrowImageRight
-          src={ArrowRight}
-          alt="Right Arrow"
+          src={ArrowRightIcon}
+          alt="다음 페이지로 이동"
           onClick={handleNextPage}
           style={{
-            visibility: currentPage === Math.ceil(foods.length / 3) - 1 ? 'hidden' : 'visible',
+            visibility: currentPage === Math.ceil(foods.length / 3) - 1 ? "hidden" : "visible",
           }}
         />
       </FoodContainer>
