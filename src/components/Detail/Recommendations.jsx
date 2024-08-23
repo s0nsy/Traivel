@@ -115,83 +115,48 @@ const ArrowImageRight = styled.img`
   cursor: pointer;
 `;
 
-const Recommendations = ({ recommendations }) => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pageContent, setPageContent] = useState([]);
+function Recommendations({ recommendation }) {
+  const [tip, setTip] = useState("");
+  const [links, setLinks] = useState([]);
 
   useEffect(() => {
-    // 데이터를 처리하여 'tip'과 'links'를 분리
-    const fetchedContent = recommendations.map(rec => {
-      const parts = rec.recommendation.split("[목록]");
-      const tip = parts[0].trim(); // "교통수단:" 이후 부분을 가져옴
-      const links = parts[1] ? parts[1].split('\n').filter(line => line.trim() !== '') : []; // 목록 처리
+    // 디버깅: 전달된 recommendation 데이터를 출력
+    console.log('Received recommendation:', recommendation);
 
-      return {
-        smallText: rec.smallText || '교통수단', // 제목 부분
-        tip: tip || '이용할 수 있는 다양한 교통수단이 있습니다.',
-        links: links.map(link => {
-          const [title, url] = link.split(': '); // 링크 텍스트와 URL을 분리
-          return { title: title.trim(), url: url.trim() };
-        }),
-      };
-    });
+    // 데이터가 있는 경우에만 처리
+    if (recommendation) {
+      // "[목록]"을 기준으로 데이터 분리
+      const parts = recommendation.split("[목록]");
+      const tipPart = parts[0]?.trim() || ""; // 교통수단 추천 텍스트
+      const linksPart = parts[1] ? parts[1].split("\n").filter((line) => line.trim() !== "") : []; // URL 목록
 
-    setPageContent(fetchedContent);
-  }, [recommendations]);
+      // 디버깅: 분리된 tip과 links 데이터를 출력
+      console.log('Parsed tip:', tipPart);
+      console.log('Parsed links:', linksPart);
 
-  const handleNextPage = () => {
-    if (currentPage < pageContent.length - 1) {
-      setCurrentPage(currentPage + 1); // 다음 페이지로 이동
+      setTip(tipPart);
+      setLinks(linksPart);
     }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1); // 이전 페이지로 이동
-    }
-  };
-
-  if (pageContent.length === 0) {
-    return <div>로딩 중...</div>;
-  }
+  }, [recommendation]);
 
   return (
     <RecommendationsWrapper>
-      <Title>🚘 이런 교통수단을 이용하면 더욱 편리해요</Title>
+      <Title>🚘 교통수단 추천</Title>
       <RecommendationsContainer>
-        <ArrowImageLeft
-          src={ArrowLeft}
-          alt="Left Arrow"
-          onClick={handlePrevPage}
-          style={{ visibility: currentPage === 0 ? 'hidden' : 'visible' }} // 첫 페이지에서 숨김
-        />
+        {/* 교통수단 추천 TIP */}
+        <TextContainer>{tip}</TextContainer>
 
-        <>
-          <SmallText>{pageContent[currentPage].smallText}</SmallText>
-          <CarImage src={Car} alt="교통수단 이미지" />
-          <SmallText2>교통수단 추천 TIP</SmallText2>
-          <TextContainer>
-            {pageContent[currentPage].tip}
-          </TextContainer>
-          <RecommendationLinkBox>
-            {pageContent[currentPage].links.map((link, index) => (
-              <RecommendationLink key={index} href={link.url} target="_blank" rel="noopener noreferrer">
-                {link.title}
-              </RecommendationLink>
-            ))}
-          </RecommendationLinkBox>
-        </>
-
-        <ArrowImageRight
-          src={ArrowRight}
-          alt="Right Arrow"
-          onClick={handleNextPage}
-          style={{ visibility: currentPage === pageContent.length - 1 ? 'hidden' : 'visible' }} // 마지막 페이지에서 숨김
-        />
+        {/* 교통수단 목록 */}
+        <RecommendationLinkBox>
+          {links.map((link, index) => (
+            <RecommendationLink key={index} href={link} target="_blank" rel="noopener noreferrer">
+              {link}
+            </RecommendationLink>
+          ))}
+        </RecommendationLinkBox>
       </RecommendationsContainer>
     </RecommendationsWrapper>
   );
-};
+}
 
 export default Recommendations;
-
