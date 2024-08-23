@@ -7,6 +7,7 @@ import Accommodation from '../components/Detail/Accommodation';
 import Food from '../components/Detail/Food';
 import Attractions from '../components/Detail/Attractions';
 import Footer from '../components/Detail/Footer';
+import InfoLoad from './infoLoad'; // 로딩 컴포넌트 추가
 import { useSelector } from 'react-redux';
 
 const HeaderTextContainer = styled.div`
@@ -39,19 +40,6 @@ const GradientText = styled.span`
   -webkit-text-fill-color: transparent;
 `;
 
-const SvgGraphic = styled.svg`
-  width: 15rem;
-  height: 10.24094rem;
-  flex-shrink: 0;
-  stroke-width: 2px;
-  stroke: rgba(0, 227, 241, 0.4);
-  position: absolute;
-  left: 0rem;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 0;
-`;
-
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -70,14 +58,8 @@ const ContentDiv = styled.div`
   gap: 4rem;
 `;
 
-
-
-
-
-
-
-
 const MainPage = () => {
+  const [loading, setLoading] = useState(true); // 로딩 상태 관리
   const [recommendations, setRecommendations] = useState([]);
   const [accommodations, setAccommodations] = useState([]);
   const [foods, setFoods] = useState([]);
@@ -112,9 +94,6 @@ const MainPage = () => {
 
         // gptComment에서 recommendations, accommodations, foods를 설정
         if (data.gptComment) {
-          
-
-          // 상태에 들어갈 데이터가 문자열인지 확인
           const trafficRecommendation = Array.isArray(data.gptComment.traffic) 
             ? data.gptComment.traffic 
             : [{ description: data.gptComment.traffic }];
@@ -130,43 +109,48 @@ const MainPage = () => {
           setRecommendations(trafficRecommendation);       
           setAccommodations(hotelAccommodation);          
           setFoods(foodList);
-         
         } else {
           console.warn('gptComment data is missing or empty');
         }
 
         // attractions에 tourData를 설정
         setAttractions(tourData);
+
+        // 데이터 로딩 완료 후 로딩 상태 해제
+        setLoading(false);
       } catch (error) {
         console.error('API Error:', error.message);
+        setLoading(false); // 오류 발생 시에도 로딩 상태 해제
       }
     };
   
     fetchData();
   }, [region, district, features]);
 
-  
-  return (
-    <>
-      <PageContainer>
-        <ContentDiv>
-          <HeaderTextContainer>
-            <HeaderText>
-              요청해주신 <GradientText>{district}</GradientText>의 여행 정보를 알아왔어요!
-            </HeaderText>
-          </HeaderTextContainer>
+  if (loading) {
+    return <InfoLoad />; // 로딩 상태일 때 InfoLoad 컴포넌트를 표시
+  }
 
-          <InfoBox destination={district} />
-          <MapSection destination={district} mapImage={mapImage} />
-          <Recommendations recommendations={recommendations} />
-          <Accommodation accommodations={accommodations} />
-          <Food foods={foods} />
-          <Attractions attractions={attractions} />
-          <Footer />
-        </ContentDiv>
-      </PageContainer>
-    </>
+  return (
+    <PageContainer>
+      <ContentDiv>
+        <HeaderTextContainer>
+          <HeaderText>
+            요청해주신 <GradientText>{district}</GradientText>의 여행 정보를 알아왔어요!
+          </HeaderText>
+        </HeaderTextContainer>
+
+        <InfoBox destination={district} />
+        <MapSection destination={district} mapImage={mapImage} />
+        <Recommendations recommendations={recommendations} />
+        <Accommodation accommodations={accommodations} />
+        <Food foods={foods} />
+        <Attractions attractions={attractions} />
+        <Footer />
+      </ContentDiv>
+    </PageContainer>
   );
 };
 
 export default MainPage;
+
