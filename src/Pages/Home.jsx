@@ -101,17 +101,18 @@ const SelectedImg = styled.img`
   position: absolute;
   top: 50%;
   left: ${({ selected }) =>
-    selected === "startDate" ? "50%" : selected === "endDate" ? "60%" : "160%"};
-  transform: translate(-60%, -50%);
-  width: ${({ selected }) =>
     selected === "startDate"
-      ? "250px"
+      ? "calc(40%)" // Center the image at 25% of the container width minus offset
       : selected === "endDate"
-      ? "230px"
-      : "230px"};
+      ? "calc(50% - 0px)" // Center the image at 50% of the container width minus offset
+      : "calc(75% - 0px)" // Center the image at 75% of the container width minus offset
+  };
+  transform: translate(-50%, -50%);
+  width: 230px;
   height: 60px;
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
+  transition: left 0.3s ease;
 `;
 
 const StartBtn = styled.img`
@@ -133,7 +134,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Redux에서 필요한 상태 불러오기
+  
   const startDate = useSelector((state) => state.survey.startDate);
   const endDate = useSelector((state) => state.survey.endDate);
   const adults = useSelector((state) => state.survey.adults);
@@ -206,7 +207,7 @@ const Home = () => {
           </SelectDate>
         </SelectCon>
 
-        {/* 선택된 날짜와 인원에 따라 컴포넌트 렌더링 */}
+        
         {selectedText === "startDate" && (
           <CalendarWrapper>
             <CalendarSite onChange={handleDateChange} dateRange={dateRange} />

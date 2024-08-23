@@ -9,7 +9,7 @@ const RecommendationsWrapper = styled.div`
 `;
 
 const Title = styled.h2`
-  margin-bottom: 0.625rem; 
+  margin-bottom: 0.625rem;
   color: #ffffff;
 `;
 
@@ -17,7 +17,7 @@ const RecommendationsContainer = styled.div`
   width: 73.5rem;
   height: 23rem;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.625rem; 
+  border-radius: 0.625rem;
   color: #ffffff;
   position: relative;
 `;
@@ -116,16 +116,26 @@ const ArrowImageRight = styled.img`
 `;
 
 const Recommendations = ({ recommendations }) => {
-  console.log(recommendations);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageContent, setPageContent] = useState([]);
 
   useEffect(() => {
-    const fetchedContent = recommendations.map(rec => ({
-      smallText: rec.smallText,
-      description: rec.description,
-      links: rec.links,
-    }));
+    // 데이터를 처리하여 'tip'과 'links'를 분리
+    const fetchedContent = recommendations.map(rec => {
+      const parts = rec.recommendation.split("[목록]");
+      const tip = parts[0].trim(); // "교통수단:" 이후 부분을 가져옴
+      const links = parts[1] ? parts[1].split('\n').filter(line => line.trim() !== '') : []; // 목록 처리
+
+      return {
+        smallText: rec.smallText || '교통수단', // 제목 부분
+        tip: tip || '이용할 수 있는 다양한 교통수단이 있습니다.',
+        links: links.map(link => {
+          const [title, url] = link.split(': '); // 링크 텍스트와 URL을 분리
+          return { title: title.trim(), url: url.trim() };
+        }),
+      };
+    });
+
     setPageContent(fetchedContent);
   }, [recommendations]);
 
@@ -155,23 +165,23 @@ const Recommendations = ({ recommendations }) => {
           onClick={handlePrevPage}
           style={{ visibility: currentPage === 0 ? 'hidden' : 'visible' }} // 첫 페이지에서 숨김
         />
-        
+
         <>
           <SmallText>{pageContent[currentPage].smallText}</SmallText>
           <CarImage src={Car} alt="교통수단 이미지" />
-          <SmallText2>추천 사이트</SmallText2>
+          <SmallText2>교통수단 추천 TIP</SmallText2>
           <TextContainer>
-            {pageContent[currentPage].description}
+            {pageContent[currentPage].tip}
           </TextContainer>
           <RecommendationLinkBox>
             {pageContent[currentPage].links.map((link, index) => (
-              <RecommendationLink key={index} href={link} target="_blank" rel="noopener noreferrer">
-                {link}
+              <RecommendationLink key={index} href={link.url} target="_blank" rel="noopener noreferrer">
+                {link.title}
               </RecommendationLink>
             ))}
           </RecommendationLinkBox>
         </>
-        
+
         <ArrowImageRight
           src={ArrowRight}
           alt="Right Arrow"
@@ -184,3 +194,4 @@ const Recommendations = ({ recommendations }) => {
 };
 
 export default Recommendations;
+

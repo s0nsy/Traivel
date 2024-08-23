@@ -44,7 +44,9 @@ function InfoBox({ destination }) {
   const navigate = useNavigate(); 
 
   const handleImageClick = () => {
+
     navigate('/output'); 
+
   };
 
   return (

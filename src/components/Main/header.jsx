@@ -9,7 +9,7 @@ const NavContainer = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  height: 4rem;
+  height: 72px;
   z-index: 1000;
   background: linear-gradient(0deg, #013f44 -27.78%, #011e20 37.5%);
 `;
@@ -17,7 +17,7 @@ const NavContainer = styled.div`
 const NavLogo = styled.p`
   position: absolute;
   top: 50%;
-  left: 20%;  /* 로고를 왼쪽에서 고정된 위치로 설정 */
+  left: 20%;  
   transform: translateY(-50%);
   font-family: Pretendard, sans-serif;
   color: #01ecff;
@@ -30,7 +30,7 @@ const NavSelectCon = styled.div`
   position: absolute;
   top: 50%;
   left: 35%;
-  transform: translate(-50%, -50%); /* 컨테이너를 화면 중앙에 고정 */
+  transform: translate(-50%, -50%); 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -90,7 +90,7 @@ const Header = () => {
         <SideRectangle />
         <NavSelect>{selectedPeople}</NavSelect>
       </NavSelectCon>
-      <SideBarBtn src={SideBarIcon} alt="Sidebar Icon" />
+      
     </NavContainer>
   );
 };
