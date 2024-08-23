@@ -24,7 +24,7 @@ const Frame1 = styled.div`
   height: 310px;
   flex-shrink: 0;
   border-radius: 12px;
-  position: relative; /
+  position: relative; 
   border: 1px solid var(--Main_2, #01ecff);
   background: rgba(255, 255, 255, 0.05);
   display: flex; 
