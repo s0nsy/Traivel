@@ -11,10 +11,7 @@ import Share from "../assets/share.svg";
 import DayLists from "../components/Output/DayLists";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import background from "../assets/background.png";
-import infoLoad from "../Pages/infoLoad";
-import routeload from "../Pages/routeLoad";
-
+import background from "../assets/custom.svg";
 
 const RouteContainer = styled.div``;
 const Frame1 = styled.div`
@@ -36,19 +33,19 @@ const Img1 = styled.img`
   flex-shrink: 0;
 `;
 const Img2 = styled.img`
+
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   left: 15px;
-  width: 370px;
+  width:40%;
   height: 270px;
   flex-shrink: 0;
   border-radius: 12px;
   background: var(--Gray_2, #d6d4d4);
   color: var(--Gray_4, #4a4a4a);
   font-family: Pretendard;
-  font-size: 13px;
   font-style: normal;
   font-weight: 500;
   text-align: center;
@@ -337,7 +334,7 @@ function Output({ selectedDateRange, selectedPeople }) {
 
           try {
             const response = await axios.post(
-            `${PROXY}/api/routes/share`,
+              `${PROXY}/api/routes/share`,
               formData,
               {
                 headers: {
@@ -379,6 +376,7 @@ function Output({ selectedDateRange, selectedPeople }) {
         </Header>
       </A>
       <Frame1>
+        
         <Img2 src={background}></Img2>
         <Word>
           <A1>
