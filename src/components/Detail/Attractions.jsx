@@ -76,51 +76,14 @@ const ArrowImageRight = styled.img`
   cursor: pointer;
 `;
 
-function Attractions() {
+function Attractions({ attractions }) {
   const [currentPage, setCurrentPage] = useState(0); // 페이지 상태
-  const [pageContent, setPageContent] = useState([[], [], []]); // API로부터 받아올 페이지 콘텐츠
 
-  useEffect(() => {
-    // API로부터 데이터를 받아오는 함수
-    const fetchPageContent = async () => {
-      try {
-        const response = await fetch('/api/detail', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-        });
-
-        const data = await response.json();
-
-        // 받아온 데이터를 페이지별로 나누어서 설정합니다.
-        const fetchedContent = [
-          [
-            { text: data.tourData.item[0].title, imageUrl: data.tourData.item[0].firstimage },
-            { text: data.tourData.item[1].title, imageUrl: data.tourData.item[1].firstimage },
-            { text: data.tourData.item[2].title, imageUrl: data.tourData.item[2].firstimage },
-          ],
-          [
-            { text: data.tourData.item[3].title, imageUrl: data.tourData.item[3].firstimage },
-            { text: data.tourData.item[4].title, imageUrl: data.tourData.item[4].firstimage },
-            { text: data.tourData.item[5].title, imageUrl: data.tourData.item[5].firstimage },
-          ],
-          [
-            { text: data.tourData.item[6].title, imageUrl: data.tourData.item[6].firstimage },
-            { text: data.tourData.item[7].title, imageUrl: data.tourData.item[7].firstimage },
-            { text: data.tourData.item[8].title, imageUrl: data.tourData.item[8].firstimage },
-          ]
-        ];
-
-        setPageContent(fetchedContent);
-      } catch (error) {
-        console.error('Failed to fetch page content:', error);
-      }
-    };
-
-    fetchPageContent();
-  }, []);
+  const pageContent = [
+    attractions.slice(0, 3),   // 첫 번째 페이지에 표시할 항목들
+    attractions.slice(3, 6),   // 두 번째 페이지에 표시할 항목들
+    attractions.slice(6, 9)    // 세 번째 페이지에 표시할 항목들
+  ];
 
   const handleNextPage = () => {
     if (currentPage < 2) {
@@ -134,7 +97,7 @@ function Attractions() {
     }
   };
 
-  if (pageContent[0].length === 0) {
+  if (attractions.length === 0) {
     return <div>로딩 중...</div>;
   }
 
@@ -151,8 +114,8 @@ function Attractions() {
 
         {pageContent[currentPage].map((item, index) => (
           <AttractionSection key={index}>
-            <ImageContainer imageUrl={item.imageUrl} />
-            <TextContainer>{item.text}</TextContainer>
+            <ImageContainer imageUrl={item.firstimage || 'default_image_path.jpg'} />
+            <TextContainer>{item.title}</TextContainer>
           </AttractionSection>
         ))}
 

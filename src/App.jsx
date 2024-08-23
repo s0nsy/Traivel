@@ -11,7 +11,7 @@ import Location from "./Pages/Location";
 import Theme from "./Pages/Theme";
 import Preference from "./Pages/Preference";
 import Cost from "./Pages/Cost";
-import Detail from "./Pages/Detail";
+import Detail from "./Pages/Detail.jsx";
 import Chat from "./Pages/Chat";
 import Output from "./Pages/Output";
 import Loader from "./Pages/infoLoad"

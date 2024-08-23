@@ -12,12 +12,16 @@ const selectedItemSlice = createSlice({
       state.region = action.payload.region;
       state.district = action.payload.district;
       state.features = action.payload.features;
-      
+
     },
     clearSelectedItem: () => ({
       region: '',
       district: '',
+
+      features: '',
+
       features:[],
+
     }),
   },
 });

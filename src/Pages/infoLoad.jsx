@@ -11,6 +11,10 @@ const LoaderWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: fixed; // 화면 중앙에 위치하도록 설정
+  top: 50%; // 수직 중앙 정렬
+  left: 50%; // 수평 중앙 정렬
+  transform: translate(-50%, -50%); // 요소의 크기를 고려해 정확한 가운데 배치
   height: 60vh;
   width: 78vw;
 `;

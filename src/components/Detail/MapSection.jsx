@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import Background from '../../assets/Detail_background.png';
+import Background from '../../assets/sea.png';
 
 const MapSectionWrapper = styled.div`
   width: 100%;
@@ -80,7 +80,7 @@ function loadGoogleMaps(callback) {
   }
 }
 
-function MapSection() {
+function MapSection({ destination }) {
   useEffect(() => {
     loadGoogleMaps(() => {
       const map = new window.google.maps.Map(document.getElementById('map'), {
@@ -98,7 +98,7 @@ function MapSection() {
 
   return (
     <MapSectionWrapper>
-      <Title>📍서귀포시는 여기에 위치해 있어요</Title>
+      <Title>📍{destination}는 여기에 위치해 있어요</Title>
       <MapSectionContainer>
         <LeftContainer>
           <ImageContainer />
