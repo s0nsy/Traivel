@@ -214,16 +214,16 @@ const DotLoader = styled.div`
 `;
 
 const Chat = () => {
-  
   const [currentInput, setCurrentInput] = useState('');
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [showChatCon, setShowChatCon] = useState(true); // 첫 질문은 바로 표시되도록 true로 설정
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userResponses = useSelector((state) => state.survey);
-  const adults = useSelector((state)=> state.survey.adults);
-  const children =useSelector((state)=> state.survey.children);
-  const infants = useSelector((state)=> state.survey.infants);
+  const adults = useSelector((state) => state.survey.adults);
+  const children = useSelector((state) => state.survey.children);
+  const infants = useSelector((state) => state.survey.infants);
   const [finish, setFinish] = useState(false);
   const chatContainerRef = useRef(null);
   const [questionResponses, setQuestionResponses] = useState([]);
@@ -245,39 +245,39 @@ const Chat = () => {
   ];
 
   const actionDispatchers = [
-    setPurpose, setBudget, setkeyElement, setAccommodation, 
-    settransport, setCompanion, setfavorite, setfavoriteReason, 
+    setPurpose, setBudget, setkeyElement, setAccommodation,
+    settransport, setCompanion, setfavorite, setfavoriteReason,
     setspecialNeeds, setRecommendationType, setfreeTime, setimportantFactors
   ];
 
   const schedule = useSelector((state) => state.survey.schedule);
-  
+
   const handleSend = async () => {
     if (currentInput.trim() !== '') {
       dispatch(actionDispatchers[step](currentInput));
       setQuestionResponses(prev => [...prev, { question: questions[step], response: currentInput }]);
-  
+
       setCurrentInput('');
-  
+
       if (step < questions.length - 1) {
-        setStep(prev => prev + 1);
+        setShowChatCon(false); // ChatCon 숨기기
+        setTimeout(() => {
+          setStep(prev => prev + 1);
+          setShowChatCon(true); // ChatCon을 0.5초 후에 표시
+        }, 600);
       } else {
         setLoading(true);
-        setFinish(true); 
+        setFinish(true);
         try {
-          
-          await handleSubmit(); 
-          
+          await handleSubmit();
         } catch (error) {
           console.error('Error submitting:', error);
-        }
-        finally {
-          setLoading(false); 
+        } finally {
+          setLoading(false);
         }
       }
     }
   };
-  
 
   const handleSubmit = async () => {
     try {
@@ -297,14 +297,13 @@ const Chat = () => {
         freeTime: userResponses.freeTime,
         importantFactors: userResponses.importantFactors,
       };
-  
+
       const response = await axios.post(`${PROXY}/api/chat`, submissionData);
-  
-      
-      dispatch(setRecommendations(response.data)); 
+
+      dispatch(setRecommendations(response.data));
       localStorage.setItem('recommendations', JSON.stringify(response.data));
       console.log(response.data);
-  
+
     } catch (error) {
       console.error('서버 요청 중 오류 발생:', error);
     }
@@ -320,13 +319,12 @@ const Chat = () => {
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      
       setTimeout(() => {
         chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
       }, 100);
     }
-  }, [step, finish]);
-  
+  }, [step, finish, showChatCon]); // showChatCon 상태가 변경될 때마다 스크롤 업데이트
+
   return (
     <>
       <TitleCon>
@@ -337,19 +335,18 @@ const Chat = () => {
       <ChatContainer ref={chatContainerRef}>
         {questionResponses.map((qr, index) => (
           <React.Fragment key={index}>
-           
             <ChatCon>
               <ChatImg src={flag} alt="flag" />
               <ChatBox>{qr.question}</ChatBox>
             </ChatCon>
-            
+
             <UserChatCon>
               <UserChatBox>{qr.response}</UserChatBox>
             </UserChatCon>
           </React.Fragment>
         ))}
 
-        {!finish &&step < questions.length && (
+        {!finish && step < questions.length && showChatCon && (
           <ChatCon>
             <ChatImg src={flag} alt="flag" />
             <ChatBox>{questions[step]}</ChatBox>
