@@ -5,7 +5,6 @@ import Circle from "../../assets/circle.png";
 import ShortLine from "../../assets/Frame 2085666344.png";
 import axios from "axios";
 import Loader from "../../Pages/infoLoad";
-import Error from "../../Pages/Error";
 import { useNavigate } from "react-router-dom";
 const TotalContainer = styled.div``;
 const DayContainer = styled.div``;
@@ -180,7 +179,7 @@ const AttractionsList = styled.ul`
 `;
 
 const AttractionItem = styled.li`
-  margin-left: 20px; /* 리스트 아이템에 대한 간격 */
+  margin-left: 20px; 
   font-family: Pretendard;
   font-size: 16px;
   position: relative;
@@ -197,7 +196,7 @@ function DayLists() {
   const [loading, setLoading] = useState(true);
   const [itinerary, setItinerary] = useState([]);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();  // useNavigate 훅 사용
+  const navigate = useNavigate();  
 
   useEffect(() => {
     const fetchItinerary = async () => {
@@ -226,11 +225,11 @@ function DayLists() {
           setError(null);
         } else {
           setError("API 호출 실패: " + response.data.message);
-          navigate('/error');  // 에러 페이지로 리디렉션
-        }
+          navigate('/error');  
+                }
       } catch (error) {
         setError("서버에 연결할 수 없습니다. 인터넷 연결을 확인하거나 나중에 다시 시도해 주세요.");
-        navigate('/error');  // 에러 페이지로 리디렉션
+        navigate('/error');  
       } finally {
         setLoading(false);
       }
