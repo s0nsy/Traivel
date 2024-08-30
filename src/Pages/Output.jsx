@@ -11,7 +11,7 @@ import Share from "../assets/share.svg";
 import DayLists from "../components/Output/DayLists";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import background from "../assets/custom.svg";
+import background from "../assets/Custom _ 40x30 mm.svg";
 
 const RouteContainer = styled.div``;
 const Frame1 = styled.div`
@@ -39,8 +39,8 @@ const Img2 = styled.img`
   align-items: center;
   position: relative;
   left: 15px;
-  width:40%;
-  height: 270px;
+  width:370px;
+  height: 250px;
   flex-shrink: 0;
   border-radius: 12px;
   background: var(--Gray_2, #d6d4d4);

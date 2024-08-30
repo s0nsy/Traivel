@@ -198,9 +198,6 @@ function DayLists() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let timer = setTimeout(() => {
-      alertSet(false);
-    }, 2000);
     const fetchItinerary = async () => {
       try {
         setLoading(true);
@@ -256,7 +253,7 @@ function DayLists() {
 
   return (
     <TotalContainer>
-      {loading && <Loader />}
+       {loading && <Loader/>}
       {error && <div>에러: {error}</div>}
       {itinerary.length === 0 && !error && <infoLoad />}
       {filteredItinerary.length > 0 ? (
