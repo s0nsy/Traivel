@@ -15,6 +15,7 @@ import Detail from "./Pages/Detail.jsx";
 import Chat from "./Pages/Chat";
 import Output from "./Pages/Output";
 import Loader from "./Pages/infoLoad"
+import Error from "./Pages/Error";
 import "./App.css";
 
 // Global Styles using styled-components
@@ -48,6 +49,7 @@ function App() {
           <Route path="/lists" element={<><List/></>}/>
           <Route path="/output" element={<><Output/></>}/>
           <Route path="/info" element={<><Loader/></>}/>
+          <Route path="/error" element={<><Error/></>}/>
         </Routes>
       </div>
     </>

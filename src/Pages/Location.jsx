@@ -152,7 +152,7 @@ const Question = styled.div`
   line-height: normal;
   opacity: 0;
   animation: ${fadeIn} 1s ease-in forwards;
-  animation-delay: 1s;
+  animation-delay: 0.5s;
   position: absolute;
   top: 515px; /* Lump의 bottom에서 여유를 둠 */
   right: calc(50% - 580px); 
@@ -179,7 +179,7 @@ const Answer = styled.div`
   line-height: normal;
   opacity: 0;
   animation: ${fadeIn} 1s ease-in forwards;
-  animation-delay: 3s;
+  animation-delay: 1s;
 `;
 
 const Answer1 = styled.div`
