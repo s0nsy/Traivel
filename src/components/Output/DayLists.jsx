@@ -5,7 +5,8 @@ import Circle from "../../assets/circle.png";
 import ShortLine from "../../assets/Frame 2085666344.png";
 import axios from "axios";
 import Loader from "../../Pages/infoLoad";
-
+import Error from "../../Pages/Error";
+import { useNavigate } from "react-router-dom";
 const TotalContainer = styled.div``;
 const DayContainer = styled.div``;
 
@@ -196,6 +197,7 @@ function DayLists() {
   const [loading, setLoading] = useState(true);
   const [itinerary, setItinerary] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();  // useNavigate 훅 사용
 
   useEffect(() => {
     const fetchItinerary = async () => {
@@ -224,12 +226,11 @@ function DayLists() {
           setError(null);
         } else {
           setError("API 호출 실패: " + response.data.message);
+          navigate('/error');  // 에러 페이지로 리디렉션
         }
       } catch (error) {
-        setError(
-          "서버 에러: " +
-            (error.response ? error.response.data.message : error.message)
-        );
+        setError("서버에 연결할 수 없습니다. 인터넷 연결을 확인하거나 나중에 다시 시도해 주세요.");
+        navigate('/error');  // 에러 페이지로 리디렉션
       } finally {
         setLoading(false);
       }
@@ -238,12 +239,12 @@ function DayLists() {
     if (region && district && features && features.length > 0) {
       fetchItinerary();
     }
-  }, [region, district, features]);
+  }, [region, district, features, navigate]);
 
   const parseDuration = (duration) => {
     const match = duration.match(/(\d+)박 (\d+)일/);
     if (match) {
-      return parseInt(match[2], 10); // Return the number of days
+      return parseInt(match[2], 10);
     }
     return 0;
   };
@@ -253,15 +254,13 @@ function DayLists() {
 
   return (
     <TotalContainer>
-       {loading && <Loader/>}
-      {error && <div>에러: {error}</div>}
-      {itinerary.length === 0 && !error && <infoLoad />}
+      {loading && <Loader />}
       {filteredItinerary.length > 0 ? (
         filteredItinerary.map((day, i) => (
           <DayContainer key={i}>
             <DayDate>{i + 1}일차</DayDate>
             <DayFrame>
-              {day.places.map((place, index) => (
+              {day.places && day.places.map((place, index) => (
                 <PlanContainer key={index}>
                   <PlanLump>
                     <PlanImg1 src={Circle} alt="원" />
@@ -270,12 +269,8 @@ function DayLists() {
                     <PlanDetail1>{place.recommendations}</PlanDetail1>
                   </PlanLump>
                   <PlanDetail>
-                    <PlanDetail>
-                      <P>운영 시간</P> {place.hours}
-                    </PlanDetail>
-                    <PlanDetail>
-                      <P>추천 음식</P> {place.popularMenu}
-                    </PlanDetail>
+                    <P>운영 시간</P> {place.hours}
+                    <P>추천 음식</P> {place.popularMenu}
                     {place.attractions && place.attractions.length > 0 && (
                       <PlanAttraction>
                         <AttractionsList>
@@ -294,9 +289,7 @@ function DayLists() {
             </DayFrame>
           </DayContainer>
         ))
-      ) : (
-        <div>일정이 없습니다.</div>
-      )}
+      ) : null}
     </TotalContainer>
   );
 }
