@@ -86,12 +86,7 @@ function Food({ foods }) {
     }
   };
 
-  if (!foods || foods.length === 0) {
-    return <div>로딩 중...</div>;
-  }
-
-  // 페이지당 3개의 음식을 표시하기 위해 slice로 데이터를 잘라냄
-  const currentFoods = foods.slice(currentPage * 3, currentPage * 3 + 3);
+  //const currentFoods = foods.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <FoodWrapper>
@@ -103,25 +98,10 @@ function Food({ foods }) {
           onClick={handlePrevPage}
           style={{ visibility: currentPage === 0 ? "hidden" : "visible" }}
         />
-
-        {currentFoods.map((food, index) => (
-          <FoodItem key={index}>
-            {/* 음식 제목 */}
-            <FoodTitle>{food.title}</FoodTitle>
-            {/* 음식에 대한 가게 목록 */}
-            <FoodList>
-              {Array.isArray(food.links) && food.links.length > 0 ? (
-                food.links.map((link, linkIndex) => (
-                  <FoodListItem key={linkIndex}>
-                    <FoodLink href="#">{link}</FoodLink> {/* 가게 이름 텍스트만 표시 */}
-                  </FoodListItem>
-                ))
-              ) : (
-                <FoodListItem>가게 목록이 없습니다.</FoodListItem>
-              )}
-            </FoodList>
-          </FoodItem>
-        ))}
+        
+        {foods.map((food, index) => (
+    <FoodItem key={index}>{food.description}</FoodItem>
+))}
 
         <ArrowImageRight
           src={ArrowRightIcon}

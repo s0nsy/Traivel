@@ -89,7 +89,7 @@ const MainPage = () => {
         // tourData의 첫 번째 항목을 이용해 mapImage를 설정
         const tourData = data?.tourData?.item || [];
         const firstTourItem = tourData[0]; // 첫 번째 투어 데이터를 가져옴
-
+        console.log("투어데이터",data.tourData.item);
         setMapImage(firstTourItem?.firstimage || 'default_image_path');
 
         // gptComment에서 recommendations, accommodations, foods를 설정
@@ -113,14 +113,14 @@ const MainPage = () => {
           console.warn('gptComment data is missing or empty');
         }
 
-        // attractions에 tourData를 설정
-        setAttractions(tourData);
+        //console.log("투어데이터",data.tourData.item);
+        setAttractions(data.tourData);
 
-        // 데이터 로딩 완료 후 로딩 상태 해제
+        
         setLoading(false);
       } catch (error) {
         console.error('API Error:', error.message);
-        setLoading(false); // 오류 발생 시에도 로딩 상태 해제
+        setLoading(false); 
       }
     };
   
@@ -142,7 +142,7 @@ const MainPage = () => {
 
         <InfoBox destination={district} />
         <MapSection destination={district} mapImage={mapImage} />
-        <Recommendations recommendations={recommendations} />
+        <Recommendations recommendation={recommendations} />
         <Accommodation accommodations={accommodations} />
         <Food foods={foods} />
         <Attractions attractions={attractions} />

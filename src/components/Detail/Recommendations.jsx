@@ -123,37 +123,13 @@ function Recommendations({ recommendation }) {
     // 디버깅: 전달된 recommendation 데이터를 출력
     console.log('Received recommendation:', recommendation);
 
-    // 데이터가 있는 경우에만 처리
-    if (recommendation) {
-      // "[목록]"을 기준으로 데이터 분리
-      const parts = recommendation.split("[목록]");
-      const tipPart = parts[0]?.trim() || ""; // 교통수단 추천 텍스트
-      const linksPart = parts[1] ? parts[1].split("\n").filter((line) => line.trim() !== "") : []; // URL 목록
-
-      // 디버깅: 분리된 tip과 links 데이터를 출력
-      console.log('Parsed tip:', tipPart);
-      console.log('Parsed links:', linksPart);
-
-      setTip(tipPart);
-      setLinks(linksPart);
-    }
   }, [recommendation]);
 
   return (
     <RecommendationsWrapper>
       <Title>🚘 교통수단 추천</Title>
       <RecommendationsContainer>
-        {/* 교통수단 추천 TIP */}
-        <TextContainer>{tip}</TextContainer>
-
-        {/* 교통수단 목록 */}
-        <RecommendationLinkBox>
-          {links.map((link, index) => (
-            <RecommendationLink key={index} href={link} target="_blank" rel="noopener noreferrer">
-              {link}
-            </RecommendationLink>
-          ))}
-        </RecommendationLinkBox>
+        {recommendation.length > 0 ? recommendation[0].description : 'No recommendations available.'}
       </RecommendationsContainer>
     </RecommendationsWrapper>
   );
