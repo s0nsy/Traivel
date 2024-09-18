@@ -114,7 +114,7 @@ const MainPage = () => {
         }
 
         //console.log("투어데이터",data.tourData.item);
-        setAttractions(data.tourData);
+        setAttractions(data.tourData.item);
 
         
         setLoading(false);
