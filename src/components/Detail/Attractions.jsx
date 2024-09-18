@@ -78,15 +78,16 @@ const ArrowImageRight = styled.img`
 
 function Attractions({ attractions }) {
   const [currentPage, setCurrentPage] = useState(0); // 페이지 상태
+  const itemsPerPage = 3; // 페이지 당 표시할 항목 수
+  const pageContent = [];
 
-  const pageContent = [
-    attractions.slice(0, 3),   // 첫 번째 페이지에 표시할 항목들
-    attractions.slice(3, 6),   // 두 번째 페이지에 표시할 항목들
-    attractions.slice(6, 9)    // 세 번째 페이지에 표시할 항목들
-  ];
+  // 페이지별로 attractions를 슬라이스하여 저장
+  for (let i = 0; i < attractions.length; i += itemsPerPage) {
+    pageContent.push(attractions.slice(i, i + itemsPerPage));
+  }
 
   const handleNextPage = () => {
-    if (currentPage < 2) {
+    if (currentPage < pageContent.length - 1) {
       setCurrentPage(currentPage + 1); // 다음 페이지로 이동
     }
   };
@@ -112,18 +113,22 @@ function Attractions({ attractions }) {
           style={{ visibility: currentPage === 0 ? 'hidden' : 'visible' }} // 첫 페이지에서 숨김
         />
 
-        {pageContent[currentPage].map((item, index) => (
-          <AttractionSection key={index}>
-            <ImageContainer imageUrl={item.firstimage || 'default_image_path.jpg'} />
-            <TextContainer>{item.title}</TextContainer>
-          </AttractionSection>
+        {/* 현재 페이지의 콘텐츠를 렌더링 */}
+        {pageContent[currentPage].map((attraction, index) => (
+          <div key={index} style={{ marginBottom: '20px' }}>
+            <h2>{attraction.title}</h2>
+            <p>{attraction.addr1}</p>
+            {attraction.firstimage && (
+              <img src={attraction.firstimage} alt={attraction.title} style={{ width: '100%', height: 'auto' }} />
+            )}
+          </div>
         ))}
 
         <ArrowImageRight
           src={ArrowRight}
           alt="Right Arrow"
           onClick={handleNextPage}
-          style={{ visibility: currentPage === 2 ? 'hidden' : 'visible' }} // 마지막 페이지에서 숨김
+          style={{ visibility: currentPage === pageContent.length - 1 ? 'hidden' : 'visible' }} // 마지막 페이지에서 숨김
         />
       </AttractionsContainer>
     </AttractionsWrapper>

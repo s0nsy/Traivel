@@ -115,6 +115,8 @@ const ArrowImageRight = styled.img`
   cursor: pointer;
 `;
 
+
+
 function Recommendations({ recommendation }) {
   const [tip, setTip] = useState("");
   const [links, setLinks] = useState([]);
@@ -123,13 +125,56 @@ function Recommendations({ recommendation }) {
     // 디버깅: 전달된 recommendation 데이터를 출력
     console.log('Received recommendation:', recommendation);
 
+    // 파싱 함수
+    const parseRecommendation = (recommendationString) => {
+      // recommendationString을 섹션별로 분리
+      const sections = recommendationString.split("[목록]");
+      
+      // tip 텍스트 추출
+      const extractedTip = sections[0].replace("[교통수단]", "").trim();
+  
+      // Carlist 항목 추출
+      const carlistRaw = sections[1].trim().split('\n'); // 줄바꿈 기준으로 분리
+      const carlist = carlistRaw.map(item => {
+        // 정규식을 사용하여 이름과 URL 추출
+        const match = item.match(/^\d+\.\s*(.*)\s+\((http.*)\)$/);
+        return match ? { name: match[1], url: match[2] } : { name: item, url: '' };
+      });
+  
+      return { tip: extractedTip, Carlist: carlist };
+    };
+
+    if (recommendation.length > 0 && recommendation[0].description) {
+      // 배열의 첫 번째 요소의 description 추출
+      const recommendationString = recommendation[0].description;
+      const { tip: extractedTip, Carlist } = parseRecommendation(recommendationString);
+      setTip(extractedTip);
+      setLinks(Carlist);
+    }
   }, [recommendation]);
 
   return (
     <RecommendationsWrapper>
-      <Title>🚘 교통수단 추천</Title>
+      <Title>🚘 이런 교통수단을 이용하면 더욱 편리해요</Title>
       <RecommendationsContainer>
-        {recommendation.length > 0 ? recommendation[0].description : 'No recommendations available.'}
+        
+        <SmallText>렌트카</SmallText>
+        <CarImage src={Car}/>
+        <SmallText2>추천 사이트</SmallText2>
+        <TextContainer>{tip}</TextContainer>
+        
+        
+        <RecommendationLinkBox>
+        <ul>
+          {links.map((link, index) => (
+            <li key={index}>
+              <a href={link.url} target="_blank" rel="noopener noreferrer">
+                {link.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+        </RecommendationLinkBox>
       </RecommendationsContainer>
     </RecommendationsWrapper>
   );
