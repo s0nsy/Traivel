@@ -84,13 +84,16 @@ const MainPage = () => {
         }
 
         const data = await response.json();
-        console.log('API Response Data:', data);
+        console.log('Full API Response:', data); // 전체 응답 데이터 확인
 
         // tourData의 첫 번째 항목을 이용해 mapImage를 설정
         const tourData = data?.tourData?.item || [];
-        const firstTourItem = tourData[0]; // 첫 번째 투어 데이터를 가져옴
-        console.log("투어데이터",data.tourData.item);
-        setMapImage(firstTourItem?.firstimage || 'default_image_path');
+        if (tourData.length > 0) {
+          const firstTourItem = tourData[0]; // 첫 번째 투어 데이터를 가져옴
+          setMapImage(firstTourItem?.firstimage || 'default_image_path');
+        } else {
+          console.warn('tourData is empty or missing');
+        }
 
         // gptComment에서 recommendations, accommodations, foods를 설정
         if (data.gptComment) {
@@ -113,9 +116,8 @@ const MainPage = () => {
           console.warn('gptComment data is missing or empty');
         }
 
-        //console.log("투어데이터",data.tourData.item);
-        setAttractions(data.tourData.item);
-
+        // tourData 설정
+        setAttractions(tourData);
         
         setLoading(false);
       } catch (error) {
@@ -153,4 +155,3 @@ const MainPage = () => {
 };
 
 export default MainPage;
-
