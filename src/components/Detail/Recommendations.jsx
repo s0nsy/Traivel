@@ -73,6 +73,9 @@ const SmallText2 = styled.div`
 `;
 
 const RecommendationLinkBox = styled.div`
+  display:flex;
+  justify-content: center;
+  align-items: center;
   position: absolute;
   top: 15.81rem;
   left: 2rem;
@@ -84,7 +87,6 @@ const RecommendationLinkBox = styled.div`
   font-size: 1rem;
   font-weight: 400;
   text-align: left;
-  display: block;
   width: calc(100% - 4.06rem);
 `;
 
@@ -138,11 +140,20 @@ function Recommendations({ recommendation }) {
       const carlist = carlistRaw.map(item => {
         // 정규식을 사용하여 이름과 URL 추출
         const match = item.match(/^\d+\.\s*(.*)\s+\((http.*)\)$/);
-        return match ? { name: match[1], url: match[2] } : { name: item, url: '' };
+        if (match) {
+          // 이름과 URL 분리
+          const name = match[1].replace(/\s*\(.*\)/, '').trim();
+          const url = match[2];
+          return { name, url };
+        } else {
+          return { name: item, url: '' };
+        }
       });
-  
+      console.log('Parsed Carlist:', carlist);
+
       return { tip: extractedTip, Carlist: carlist };
     };
+    
 
     if (recommendation.length > 0 && recommendation[0].description) {
       // 배열의 첫 번째 요소의 description 추출
@@ -152,7 +163,7 @@ function Recommendations({ recommendation }) {
       setLinks(Carlist);
     }
   }, [recommendation]);
-
+ 
   return (
     <RecommendationsWrapper>
       <Title>🚘 이런 교통수단을 이용하면 더욱 편리해요</Title>
@@ -165,15 +176,16 @@ function Recommendations({ recommendation }) {
         
         
         <RecommendationLinkBox>
-        <ul>
           {links.map((link, index) => (
-            <li key={index}>
-              <a href={link.url} target="_blank" rel="noopener noreferrer">
-                {link.name}
-              </a>
-            </li>
+            <RecommendationLink 
+              key={index} 
+              href={link.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              {link.name}
+            </RecommendationLink>
           ))}
-        </ul>
         </RecommendationLinkBox>
       </RecommendationsContainer>
     </RecommendationsWrapper>
