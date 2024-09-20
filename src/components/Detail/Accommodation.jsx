@@ -74,12 +74,12 @@ const TextContainer = styled.div`
 
 const AccommodationLinkBox = styled.div`
   display:flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   position: absolute;
   top: 15.81rem;
   left: 2rem;
-  padding: 1.75rem 2.06rem;
+  padding: 1.75rem 15rem;
   border-radius: 0.75rem;
   border: 1px solid var(--Main_2, #01ECFF);
   color: var(--White, #FFF);
@@ -122,39 +122,16 @@ const Accommodation = ({ accommodations }) => {
   const [tip, setTip] = useState("");
   const [links, setLinks] = useState([]);
 
-  // 현재 페이지의 accommodation 데이터를 파싱하는 함수
-  const parseAccommodation = (accommodationString) => {
-    // accommodationString을 섹션별로 분리
-    const sections = accommodationString.split("[목록]");
-    
-    // tip 텍스트 추출
-    const extractedTip = sections[0].trim();
-
-    // Accommodation list 추출
-    const listRaw = sections[1].trim().split('\n'); // 줄바꿈 기준으로 분리
-    const accommodationList = listRaw.map(item => {
-      // 정규식을 사용하여 이름과 URL 추출
-      const match = item.match(/^(.*)\s*\((http.*)\)$/);
-      if (match) {
-        // 이름과 URL 분리
-        const name = match[1].trim();
-        const url = match[2];
-        return { name, url };
-      } else {
-        return { name: item, url: '' };
-      }
-    });
-
-    return { tip: extractedTip, list: accommodationList };
-  };
-
   useEffect(() => {
+    console.log('Received accommo:', accommodations);
+
     if (accommodations.length > 0) {
-      // 현재 페이지의 accommodation 데이터 파싱
-      const currentAccommodation = accommodations[currentPage];
-      const { tip: extractedTip, list: parsedAccommodationList } = parseAccommodation(currentAccommodation.description);
-      setTip(extractedTip);
-      setLinks(parsedAccommodationList);
+      // 현재 페이지의 accommodation 데이터 추출
+      const currentAccommodation = accommodations[currentPage].description;
+      
+      // 숙박 정보와 추천 사이트 설정
+      setTip(currentAccommodation.reason);
+      setLinks(currentAccommodation.sites);
     }
   }, [accommodations, currentPage]);
 
@@ -178,7 +155,7 @@ const Accommodation = ({ accommodations }) => {
     <AccommodationWrapper>
       <Title>🏡 요즘 많이 찾는 숙박시설을 모아봤어요</Title>
       <AccommodationContainer>
-        <SmallText>호텔</SmallText>
+        <SmallText>{accommodations[currentPage].description.name}</SmallText>
         <HotelImage src={Hotel}/>
         <SmallText2>추천 사이트</SmallText2>
         <TextContainer>{tip}</TextContainer>
@@ -196,7 +173,20 @@ const Accommodation = ({ accommodations }) => {
           ))}
         </AccommodationLinkBox>
 
-       
+        <ArrowImageLeft
+          src={ArrowLeft}
+          alt="이전 페이지로 이동"
+          onClick={handlePrevPage}
+          style={{ visibility: currentPage === 0 ? "hidden" : "visible" }}
+        />
+        <ArrowImageRight
+          src={ArrowRight}
+          alt="다음 페이지로 이동"
+          onClick={handleNextPage}
+          style={{
+            visibility: currentPage === accommodations.length - 1 ? "hidden" : "visible",
+          }}
+        />
       </AccommodationContainer>
     </AccommodationWrapper>
   );

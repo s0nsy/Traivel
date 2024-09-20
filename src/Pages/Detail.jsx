@@ -9,6 +9,7 @@ import Attractions from '../components/Detail/Attractions';
 import Footer from '../components/Detail/Footer';
 import InfoLoad from './infoLoad'; // 로딩 컴포넌트 추가
 import { useSelector } from 'react-redux';
+import axios from 'axios';
 
 const HeaderTextContainer = styled.div`
   display: flex;
@@ -71,14 +72,13 @@ const MainPage = () => {
     const fetchData = async () => {
       try {
         const queryString = `?region=${encodeURIComponent(region)}&district=${encodeURIComponent(district)}&features=${encodeURIComponent(features)}`;
-        const response = await fetch(`${PROXY}/api/detail${queryString}`, {
+        const response = await fetch(`/api/detail${queryString}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
         });
-  
         if (!response.ok) {
           throw new Error('Failed to fetch data from the API');
         }

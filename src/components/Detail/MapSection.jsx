@@ -62,7 +62,7 @@ function loadGoogleMaps(callback) {
 
   if (!existingScript) {
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAWaI-Y8lIURXjytBxx7ksV8PBFW6aRsfk&callback=initMap&async=2`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&async=2`;
     script.async = true;
     script.defer = true;
 
@@ -80,13 +80,53 @@ function loadGoogleMaps(callback) {
   }
 }
 
-function MapSection({ destination }) {
+function MapSection({ destination, mapImage }) {
+  console.log('MapSection rendered with destination:', destination);
+
   useEffect(() => {
-    loadGoogleMaps(() => {
-      const map = new window.google.maps.Map(document.getElementById('map'), {
-        center: { lat: 33.253, lng: 126.561 },
-        zoom: 12,
+    console.log('useEffect in MapSection triggered');
+  }, [destination]);
+  useEffect(() => {
+    const geocodeAddress = async (address) => {
+      const geocoder = new window.google.maps.Geocoder();
+
+      return new Promise((resolve, reject) => {
+        geocoder.geocode({ address: address }, (results, status) => {
+          console.log('Geocode results:', results);  // Geocode 결과 확인
+          if (status === 'OK' && results[0]) {
+            const { lat, lng } = results[0].geometry.location;
+            resolve({ lat: lat(), lng: lng() });
+          } else {
+            console.error('Geocode failed:', status);  // 에러 메시지 출력
+            reject(new Error('Geocode was not successful: ' + status));
+          }
+        });
       });
+    };
+
+    loadGoogleMaps(async () => {
+      try {
+        console.log('Destination:', destination);  // destination 값 확인
+
+        // Geocoding API를 사용해 좌표 얻기
+        const location = await geocodeAddress(destination);
+
+        // 좌표가 제대로 전달되었는지 확인
+        console.log('Geocoded location:', location);
+
+        const map = new window.google.maps.Map(document.getElementById('map'), {
+          center: location,  // Geocoding API에서 얻은 좌표로 지도 중심 설정
+          zoom: 12,
+        });
+
+        // 마커 추가
+        new window.google.maps.Marker({
+          position: location,
+          map: map,
+        });
+      } catch (error) {
+        console.error('Error loading map:', error);
+      }
     });
 
     return () => {
@@ -94,14 +134,14 @@ function MapSection({ destination }) {
         window.google.maps = undefined;
       }
     };
-  }, []);
+  }, [destination]);
 
   return (
     <MapSectionWrapper>
       <Title>📍{destination}는 여기에 위치해 있어요</Title>
       <MapSectionContainer>
         <LeftContainer>
-          <ImageContainer />
+          <ImageContainer src={mapImage} />
           <TextContainer>한 줄 설명</TextContainer>
         </LeftContainer>
         <MapContainer id="map">

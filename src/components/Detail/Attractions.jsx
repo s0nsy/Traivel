@@ -35,14 +35,11 @@ const AttractionSection = styled.div`
   padding: 0.1rem;
 `;
 
-const ImageContainer = styled.div`
-  flex: 1;
-  width: 100%;
-  background-image: url(${props => props.imageUrl});
-  background-size: cover;
-  background-position: center;
-  margin-bottom: 0.5rem; 
-  border-radius: 0.5rem; 
+const ImageContainer = styled.img`
+   width:356px;
+   height:321px;
+  margin-bottom: 1rem;
+  border-radius: 0.625rem; 
 `;
 
 const TextContainer = styled.div`
@@ -115,13 +112,10 @@ function Attractions({ attractions }) {
 
         {/* 현재 페이지의 콘텐츠를 렌더링 */}
         {pageContent[currentPage].map((attraction, index) => (
-          <div key={index} style={{ marginBottom: '20px' }}>
-            <h2>{attraction.title}</h2>
-            <p>{attraction.addr1}</p>
-            {attraction.firstimage && (
-              <img src={attraction.firstimage} alt={attraction.title} style={{ width: '100%', height: 'auto' }} />
-            )}
-          </div>
+          <AttractionSection key={index}>
+            <ImageContainer src={attraction.firstimage}/>
+            <TextContainer>{attraction.title}</TextContainer>
+          </AttractionSection>
         ))}
 
         <ArrowImageRight

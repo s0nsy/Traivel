@@ -297,7 +297,8 @@ const Chat = () => {
         freeTime: userResponses.freeTime,
         importantFactors: userResponses.importantFactors,
       };
-
+      const apiUrl = `${PROXY}/api/chat`;  // 요청할 URL을 변수로 저장
+      console.log('API 요청 URL:', apiUrl);
       const response = await axios.post(`${PROXY}/api/chat`, submissionData);
 
       dispatch(setRecommendations(response.data));

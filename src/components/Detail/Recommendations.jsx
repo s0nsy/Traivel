@@ -74,12 +74,12 @@ const SmallText2 = styled.div`
 
 const RecommendationLinkBox = styled.div`
   display:flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   position: absolute;
   top: 15.81rem;
   left: 2rem;
-  padding: 1.75rem 2.06rem;
+  padding: 1.75rem 15rem;
   border-radius: 0.75rem;
   border: 1px solid var(--Main_2, #01ECFF);
   color: var(--White, #FFF);
@@ -120,60 +120,31 @@ const ArrowImageRight = styled.img`
 
 
 function Recommendations({ recommendation }) {
-  const [tip, setTip] = useState("");
-  const [links, setLinks] = useState([]);
+  const [tip, setTip] = useState("");  // 교통수단 정보
+  const [links, setLinks] = useState([]); // 사이트 링크
 
   useEffect(() => {
     // 디버깅: 전달된 recommendation 데이터를 출력
     console.log('Received recommendation:', recommendation);
 
-    // 파싱 함수
-    const parseRecommendation = (recommendationString) => {
-      // recommendationString을 섹션별로 분리
-      const sections = recommendationString.split("[목록]");
-      
-      // tip 텍스트 추출
-      const extractedTip = sections[0].replace("[교통수단]", "").trim();
-  
-      // Carlist 항목 추출
-      const carlistRaw = sections[1].trim().split('\n'); // 줄바꿈 기준으로 분리
-      const carlist = carlistRaw.map(item => {
-        // 정규식을 사용하여 이름과 URL 추출
-        const match = item.match(/^\d+\.\s*(.*)\s+\((http.*)\)$/);
-        if (match) {
-          // 이름과 URL 분리
-          const name = match[1].replace(/\s*\(.*\)/, '').trim();
-          const url = match[2];
-          return { name, url };
-        } else {
-          return { name: item, url: '' };
-        }
-      });
-      console.log('Parsed Carlist:', carlist);
-
-      return { tip: extractedTip, Carlist: carlist };
-    };
-    
-
     if (recommendation.length > 0 && recommendation[0].description) {
-      // 배열의 첫 번째 요소의 description 추출
-      const recommendationString = recommendation[0].description;
-      const { tip: extractedTip, Carlist } = parseRecommendation(recommendationString);
-      setTip(extractedTip);
-      setLinks(Carlist);
+      // 첫 번째 recommendation의 데이터 구조를 추출
+      const { name, reason, sites } = recommendation[0].description;
+      
+      // 교통수단 설명과 추천 사이트를 상태로 설정
+      setTip(reason);
+      setLinks(sites);
     }
   }, [recommendation]);
- 
+
   return (
     <RecommendationsWrapper>
       <Title>🚘 이런 교통수단을 이용하면 더욱 편리해요</Title>
       <RecommendationsContainer>
-        
-        <SmallText>렌트카</SmallText>
+        <SmallText>{recommendation.length > 0 ? recommendation[0].description.name : "교통수단 정보 없음"}</SmallText>
         <CarImage src={Car}/>
         <SmallText2>추천 사이트</SmallText2>
         <TextContainer>{tip}</TextContainer>
-        
         
         <RecommendationLinkBox>
           {links.map((link, index) => (
