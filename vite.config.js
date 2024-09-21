@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // '/api'로 시작하는 요청은 https://routeport.co.kr로 프록시됩니다.
+      
       '/api': {
         target: 'https://routeport.co.kr',
         changeOrigin: true,

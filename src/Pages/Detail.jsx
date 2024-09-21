@@ -72,7 +72,7 @@ const MainPage = () => {
     const fetchData = async () => {
       try {
         const queryString = `?region=${encodeURIComponent(region)}&district=${encodeURIComponent(district)}&features=${encodeURIComponent(features)}`;
-        const response = await fetch(`/api/detail${queryString}`, {
+        const response = await fetch(`${PROXY}/api/detail${queryString}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
