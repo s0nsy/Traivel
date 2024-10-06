@@ -191,7 +191,7 @@ function DayLists() {
     (state) => state.selectedItem
   );
   const duration = useSelector((state) => state.survey.duration);
-  const PROXY = window.location.hostname === "localhost" ? "" : "/proxy";
+  const PROXY = '/api'; 
 
   const [loading, setLoading] = useState(true);
   const [itinerary, setItinerary] = useState([]);
@@ -203,7 +203,7 @@ function DayLists() {
       try {
         setLoading(true);
         const response = await axios.post(
-          `${PROXY}/api/routes`,
+          `${PROXY}/routes`,
           {
             destinations: [
               {
