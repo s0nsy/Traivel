@@ -284,7 +284,7 @@ function Output({ selectedDateRange, selectedPeople }) {
   const importantFactors = useSelector(
     (state) => state.survey.importantFactors
   );
-  const PROXY = window.location.hostname === "localhost" ? "" : "/proxy";
+  const PROXY = '/api'; 
   const adults = useSelector((state) => state.survey.adults);
   const children = useSelector((state) => state.survey.children);
   const infants = useSelector((state) => state.survey.infants);
@@ -334,7 +334,7 @@ function Output({ selectedDateRange, selectedPeople }) {
 
           try {
             const response = await axios.post(
-              `${PROXY}/api/routes/share`,
+              `${PROXY}/routes/share`,
               formData,
               {
                 headers: {
