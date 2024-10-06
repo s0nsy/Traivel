@@ -2,9 +2,11 @@ import { createSlice } from '@reduxjs/toolkit';
 import moment from 'moment';
 
 const initialState = {
-  adults:0,
-  children:0,
-  infants:0,
+  groupComposition: { 
+    adults: 0,
+    children: 0,
+    infants: 0,
+  },
   startDate: null,
   endDate: null,
   schedule: '',
@@ -37,13 +39,13 @@ const surveySlice = createSlice({
       updateScheduleAndDuration(state);  
     },
     setAdults: (state, action) => {
-      state.adults = action.payload;
+      state.groupComposition.adults = action.payload; // 수정된 부분
     },
     setChildren: (state, action) => {
-      state.children = action.payload;
+      state.groupComposition.children = action.payload; // 수정된 부분
     },
     setInfants: (state, action) => {
-      state.infants = action.payload;
+      state.groupComposition.infants = action.payload; // 수정된 부분
     },
     setPurpose: (state, action) => {
       state.purpose = action.payload;

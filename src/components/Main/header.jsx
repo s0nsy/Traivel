@@ -66,9 +66,9 @@ const SideBarBtn = styled.img`
 
 const Header = () => {
   const navigate = useNavigate();
-  const adults = useSelector((state) => state.survey.adults);
-  const children = useSelector((state) => state.survey.children);
-  const infants = useSelector((state) => state.survey.infants);
+  const adults = useSelector((state) => state.survey.groupComposition.adults);
+  const children = useSelector((state) => state.survey.groupComposition.children);
+  const infants = useSelector((state) => state.survey.groupComposition.infants);
   const schedule = useSelector((state) => state.survey.schedule);
 
   const selectedPeople = adults || children || infants

@@ -270,10 +270,8 @@ function Cost() {
         </Guide3>
       </CostContainer>
       <Footer3
-        isVisible={allButtonsClicked}
         onClick={() => navigate("/chat")}
       />
-      <Footer2 isVisible={!allButtonsClicked} />
     </Background>
   );
 }

@@ -277,10 +277,8 @@ function Preference() {
         </Guide3>
       </PreferenceContainer>
       <Footer3
-        isVisible={allButtonsClicked}
         onClick={() => navigate("/chat")}
       />
-      <Footer2 isVisible={!allButtonsClicked} />
     </Background>
   );
 }
