@@ -275,7 +275,6 @@ function Theme() {
         isVisible={allButtonsClicked}
         onClick={() => navigate("/chat")}
       />
-      <Footer2 isVisible={!allButtonsClicked} />
     </Background>
   );
 }

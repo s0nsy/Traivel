@@ -281,10 +281,8 @@ function Location() {
         </Guide3>
       </LocationContainer>
       <Footer3
-        isVisible={allButtonsClicked}
         onClick={() => navigate("/chat")}
       />
-      <Footer2 isVisible={!allButtonsClicked} />
     </Background>
   );
 }

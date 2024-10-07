@@ -137,9 +137,9 @@ const Home = () => {
   
   const startDate = useSelector((state) => state.survey.startDate);
   const endDate = useSelector((state) => state.survey.endDate);
-  const adults = useSelector((state) => state.survey.adults);
-  const children = useSelector((state) => state.survey.children);
-  const infants = useSelector((state) => state.survey.infants);
+  const adults = useSelector((state) => state.survey.groupComposition.adults);
+  const children = useSelector((state) => state.survey.groupComposition.children);
+  const infants = useSelector((state) => state.survey.groupComposition.infants);
 
   const [selectedText, setSelectedText] = useState(null);
 

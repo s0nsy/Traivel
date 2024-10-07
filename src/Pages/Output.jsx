@@ -278,16 +278,17 @@ const KeywordItem = styled.div`
   box-shadow: 0px 4px 8px 4px rgba(0, 0, 0, 0.1);
 `;
 
-function Output({ selectedDateRange, selectedPeople }) {
+function Output() {
   const [dayListsData, setDayListsData] = useState([]);
 
   const importantFactors = useSelector(
     (state) => state.survey.importantFactors
   );
+
+  const adults = useSelector((state) => state.survey.groupComposition.adults);
+  const children = useSelector((state) => state.survey.groupComposition.children);
+  const infants = useSelector((state) => state.survey.groupComposition.infants);
   const PROXY = '/api'; 
-  const adults = useSelector((state) => state.survey.adults);
-  const children = useSelector((state) => state.survey.children);
-  const infants = useSelector((state) => state.survey.infants);
 
   const totalPeople = adults + children + infants;
 

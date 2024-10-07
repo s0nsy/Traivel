@@ -98,10 +98,10 @@ const SubText = styled.span`
 const People = () => {
     const dispatch = useDispatch();
 
-    const adults = useSelector((state) => state.survey.adults);
-    const children = useSelector((state) => state.survey.children);
-    const infants = useSelector((state) => state.survey.infants);
-
+    const adults = useSelector((state) => state.survey.groupComposition.adults);
+    const children = useSelector((state) => state.survey.groupComposition.children);
+    const infants = useSelector((state) => state.survey.groupComposition.infants);
+    
     const handleIncrease = (type) => {
         if (type === "adult") dispatch(setAdults(adults + 1));
         if (type === "child") dispatch(setChildren(children + 1));

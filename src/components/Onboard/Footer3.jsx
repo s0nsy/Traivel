@@ -4,7 +4,7 @@ import button2 from "../../assets/button.png";
 import { useNavigate } from "react-router-dom";
 
 const FooterContainer = styled.div`
-  display: ${({ isVisible }) => (isVisible ? "flex" : "none")};
+  display: flex;
   padding: 16px 380px 10px 380px;
   justify-content: center;
   align-items: center;
@@ -39,11 +39,11 @@ const Button = styled.img`
   right: 27px; 
 `;
 
-function Footer3({ isVisible }) {
+function Footer3() {
   const navigate = useNavigate();
 
   return (
-    <FooterContainer isVisible={isVisible} onClick={() => navigate("/chat")}>
+    <FooterContainer  onClick={() => navigate("/chat")}>
       <Start>시작하기</Start>
       <Button src={button2} alt="start" />
     </FooterContainer>

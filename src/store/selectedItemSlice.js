@@ -17,9 +17,6 @@ const selectedItemSlice = createSlice({
     clearSelectedItem: () => ({
       region: '',
       district: '',
-
-      features: '',
-
       features:[],
 
     }),
