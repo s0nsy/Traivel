@@ -67,12 +67,12 @@ const MainPage = () => {
   const [attractions, setAttractions] = useState([]);
   const [mapImage, setMapImage] = useState('');
   const { region, district, features } = useSelector((state) => state.selectedItem);
-  const PROXY = window.location.hostname === 'localhost' ? '' : '/proxy';
+  const PROXY = '/api'; 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const queryString = `?region=${encodeURIComponent(region)}&district=${encodeURIComponent(district)}&features=${encodeURIComponent(features)}`;
-        const response = await fetch(`${PROXY}/api/detail${queryString}`, {
+        const response = await fetch(`${PROXY}/detail${queryString}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

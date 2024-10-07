@@ -139,6 +139,7 @@ function DayLists() {
   const { region, district, features } = useSelector(
     (state) => state.selectedItem
   );
+
   const {
     schedule,
     purpose,
@@ -155,6 +156,10 @@ function DayLists() {
     importantFactors,
     groupComposition: { adults, children, infants },
   } = useSelector((state) => state.survey);
+
+  const duration = useSelector((state) => state.survey.duration);
+  const PROXY = '/api'; 
+
 
   const PROXY = window.location.hostname === "localhost" ? "" : "/proxy";
   const [loading, setLoading] = useState(true);
@@ -199,8 +204,10 @@ function DayLists() {
         console.log('보내는 데이터:', requestData); // 요청 데이터 로그
   
         const response = await axios.post(
-          `${PROXY}/api/routes`,
+
+          `${PROXY}/routes`,
           requestData,
+
           {
             method: 'POST',
             headers: {
