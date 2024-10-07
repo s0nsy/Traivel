@@ -161,7 +161,7 @@ function DayLists() {
   const PROXY = '/api'; 
 
 
-  const PROXY = window.location.hostname === "localhost" ? "" : "/proxy";
+
   const [loading, setLoading] = useState(true);
   const [itinerary, setItinerary] = useState([]);
   const [error, setError] = useState(null);
