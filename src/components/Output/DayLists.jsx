@@ -158,7 +158,7 @@ function DayLists() {
   } = useSelector((state) => state.survey);
 
   const duration = useSelector((state) => state.survey.duration);
-  const PROXY = '/api'; 
+  const PROXY = window.location.hostname === 'localhost' ? '/api' : '/api';
 
 
 
