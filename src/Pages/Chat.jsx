@@ -227,8 +227,8 @@ const Chat = () => {
   const [finish, setFinish] = useState(false);
   const chatContainerRef = useRef(null);
   const [questionResponses, setQuestionResponses] = useState([]);
-  const PROXY = window.location.hostname === 'localhost' ? '' : '/proxy';
-
+  //const PROXY = window.location.hostname === 'localhost' ? '' : '/proxy';
+  const PROXY = '/api'; 
   const questions = [
     '이번 여행의 주된 목적은 무엇인가요? (예: 휴식, 탐험, 문화 체험, 미식 여행 등)',
     '여행 예산은 어느 정도인가요? (예: 100만원, 80~120만원)',
@@ -297,9 +297,8 @@ const Chat = () => {
         freeTime: userResponses.freeTime,
         importantFactors: userResponses.importantFactors,
       };
-      const apiUrl = `${PROXY}/api/chat`;  // 요청할 URL을 변수로 저장
-      console.log('API 요청 URL:', apiUrl);
-      const response = await axios.post(`${PROXY}/api/chat`, submissionData);
+      
+     const response = await axios.post(`${PROXY}/chat`, submissionData);
 
       dispatch(setRecommendations(response.data));
       localStorage.setItem('recommendations', JSON.stringify(response.data));

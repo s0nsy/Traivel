@@ -289,10 +289,11 @@ function Output() {
   const importantFactors = useSelector(
     (state) => state.survey.importantFactors
   );
-  const PROXY = window.location.hostname === "localhost" ? "" : "/proxy";
+
   const adults = useSelector((state) => state.survey.groupComposition.adults);
   const children = useSelector((state) => state.survey.groupComposition.children);
   const infants = useSelector((state) => state.survey.groupComposition.infants);
+  const PROXY = '/api'; 
 
   const totalPeople = adults + children + infants;
 
@@ -351,7 +352,7 @@ function Output() {
 
           try {
             const response = await axios.post(
-              `${PROXY}/api/routes/share`,
+              `${PROXY}/routes/share`,
               formData,
               {
                 headers: {

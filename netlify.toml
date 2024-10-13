@@ -1,5 +1,10 @@
 [[redirects]]
-  from = "/proxy/*"
-  to = "https://routeport.co.kr/:splat"
+  from = "/api/*"
+  to = "https://api.routeport.co.kr/:splat"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

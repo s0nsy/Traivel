@@ -162,6 +162,7 @@ function DayLists() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    
     const fetchItinerary = async () => {
       setLoading(true);
       try {
