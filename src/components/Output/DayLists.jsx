@@ -134,7 +134,9 @@ const AttractionItem = styled.li`
   right: 40px;
   color: #fff;
 `;
-function DayLists() {
+function DayLists({ onDataChange }) {
+  const [loading, setLoading] = useState(true);
+
   const { region, district, features } = useSelector(
     (state) => state.selectedItem
   );
@@ -156,10 +158,11 @@ function DayLists() {
   } = useSelector((state) => state.survey);
 
   const PROXY = window.location.hostname === "localhost" ? "" : "/proxy";
-  const [loading, setLoading] = useState(true);
   const [itinerary, setItinerary] = useState([]);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [isOutputVisible, setIsOutputVisible] = useState(false);  // output 표시 여부 상태
+
 
   useEffect(() => {
     
