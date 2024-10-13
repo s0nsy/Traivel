@@ -12,6 +12,8 @@ import DayLists from "../components/Output/DayLists";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import background from "../assets/Custom _ 40x30 mm.svg";
+import Loader from "../Pages/infoLoad"; 
+
 
 const RouteContainer = styled.div``;
 const Frame1 = styled.div`
@@ -280,6 +282,9 @@ const KeywordItem = styled.div`
 
 function Output() {
   const [dayListsData, setDayListsData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);  // 통합 로딩 상태 관리
+
+
 
   const importantFactors = useSelector(
     (state) => state.survey.importantFactors
@@ -307,9 +312,21 @@ function Output() {
     navigate("/chat");
   };
 
+
+  
+  // DayLists의 데이터를 받아오면 로딩 완료
   const handleDayListsData = (data) => {
     setDayListsData(data);
+    setIsLoading(false);  // 로딩 상태 해제
   };
+
+  useEffect(() => {
+    // 예시로, 2초 후 로딩 완료 처리
+    setTimeout(() => {
+      setIsLoading(false);  // 전체 로딩 상태 해제
+    }, 5000);
+  }, []);
+
 
   const Capture = async () => {
     if (routeRef.current) {
@@ -367,66 +384,64 @@ function Output() {
   };
 
   return (
-    <RouteContainer ref={routeRef}>
-      <A>
-        <Img1 src={Icon} alt="Icon"></Img1>
-        <Header>
-          {selectedItem.region} ‘{selectedItem.district}’ 지역의 {duration}{" "}
-          일정을 추천드립니다!
-        </Header>
-      </A>
-      <Frame1>
-        
-        <Img2 src={background}></Img2>
-        <Word>
-          <A1>
-            <P1>여행 일정 및 인원</P1>
-            <Guide1>
-              <P2>{schedule}</P2>
-              <Img3 src={Shortline1} alt="shortline"></Img3>
-              <P3>{totalPeople}명</P3>
-            </Guide1>
-          </A1>
-          <P4>여행 키워드</P4>
-          <Guide2>
-            {keywords.map((keyword, i) => (
-              <KeywordItem>{keyword}</KeywordItem>
-            ))}
-          </Guide2>
-        </Word>
-      </Frame1>
-      <B>
-        <Guide3>추천 정보가 마음에 드신다면</Guide3>
-        <Img4 src={Share} alt="share"></Img4>
-        <Guide4>공유하기</Guide4>
-        <Guide5>를 눌러 루트를 공유해보세요</Guide5>
-      </B>
-      <C>
-        <Img5 src={Back} onClick={Chattting}></Img5>
-        <ChatOrShare1 onClick={Chattting}>채팅으로</ChatOrShare1>
-        <Img6 src={Shortline2}></Img6>
-        <Img7 src={Share}></Img7>
-        <ChatOrShare2
-          onClick={() => {
-            Capture();
-          }}
-        >
-          {" "}
-          공유하기
-        </ChatOrShare2>
-      </C>
-      <D>
-        <Frame2>
-          <DayLists
-            region={selectedItem.region}
-            district={selectedItem.district}
-            features={selectedItem.features}
-            onDataChange={handleDayListsData}
-          />
-        </Frame2>
-      </D>
-    </RouteContainer>
-  );
+    <>
+    {isLoading ? ( // 로딩 중일 때 Loader 표시
+      <Loader />
+    ) : (
+      <RouteContainer ref={routeRef}>
+        <A>
+          <Img1 src={Icon} alt="Icon"></Img1>
+          <Header>
+            {selectedItem.region} ‘{selectedItem.district}’ 지역의 {duration}{" "}
+            일정을 추천드립니다!
+          </Header>
+        </A>
+        <Frame1>
+          <Img2 src={background}></Img2>
+          <Word>
+            <A1>
+              <P1>여행 일정 및 인원</P1>
+              <Guide1>
+                <P2>{schedule}</P2>
+                <Img3 src={Shortline1} alt="shortline"></Img3>
+                <P3>{totalPeople}명</P3>
+              </Guide1>
+            </A1>
+            <P4>여행 키워드</P4>
+            <Guide2>
+              {keywords.map((keyword, i) => (
+                <KeywordItem key={i}>{keyword}</KeywordItem>
+              ))}
+            </Guide2>
+          </Word>
+        </Frame1>
+        <B>
+          <Guide3>추천 정보가 마음에 드신다면</Guide3>
+          <Img4 src={Share} alt="share"></Img4>
+          <Guide4>공유하기</Guide4>
+          <Guide5>를 눌러 루트를 공유해보세요</Guide5>
+        </B>
+        <C>
+          <Img5 src={Back} onClick={Chattting}></Img5>
+          <ChatOrShare1 onClick={Chattting}>채팅으로</ChatOrShare1>
+          <Img6 src={Shortline2}></Img6>
+          <Img7 src={Share}></Img7>
+          <ChatOrShare2 onClick={Capture}>공유하기</ChatOrShare2>
+        </C>
+        <D>
+          <Frame2>
+            <DayLists
+              region={selectedItem.region}
+              district={selectedItem.district}
+              features={selectedItem.features}
+              onDataChange={handleDayListsData}
+            />
+          </Frame2>
+        </D>
+      </RouteContainer>
+    )}
+  </>
+);
 }
 
 export default Output;

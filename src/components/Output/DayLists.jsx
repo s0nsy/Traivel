@@ -107,8 +107,7 @@ const Strong = styled.div`
   font-weight: 600;
   line-height: normal;
   position: relative;
-  right:20px;
-
+  right: 20px;
 `;
 
 const PlanLump = styled.div`
@@ -132,7 +131,7 @@ const AttractionItem = styled.li`
   font-family: Pretendard;
   font-size: 16px;
   position: relative;
-  right:40px;
+  right: 40px;
   color: #fff;
 `;
 function DayLists() {
@@ -187,27 +186,23 @@ function DayLists() {
             freeTime,
             importantFactors,
           },
-          destination: 
-            {
-              region,
-              district,
-              points: features,
-            },
-          
+          destination: {
+            region,
+            district,
+            points: features,
+          },
         };
-  
-        console.log('보내는 데이터:', requestData); // 요청 데이터 로그
-  
-        const response = await axios.post(
-          `${PROXY}/api/routes`,
-          requestData,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            }});
-  
+
+        console.log("보내는 데이터:", requestData); // 요청 데이터 로그
+
+        const response = await axios.post(`${PROXY}/api/routes`, requestData, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        });
+
         if (response.data.success) {
           setItinerary(response.data.data);
           setError(null);
@@ -217,13 +212,15 @@ function DayLists() {
         }
       } catch (error) {
         console.error("API 호출 중 오류 발생:", error);
-        setError("서버에 연결할 수 없습니다. 인터넷 연결을 확인하거나 나중에 다시 시도해 주세요.");
+        setError(
+          "서버에 연결할 수 없습니다. 인터넷 연결을 확인하거나 나중에 다시 시도해 주세요."
+        );
         navigate("/error");
       } finally {
         setLoading(false);
       }
     };
-  
+    
     if (region && district && features.length > 0) {
       fetchItinerary();
     }
@@ -262,47 +259,47 @@ function DayLists() {
 
   return (
     <TotalContainer>
-      {loading && <Loader />}
-      {itinerary.length > 0
-        ? itinerary.map((day, i) => (
-            <DayContainer key={i}>
-              <DayDate>{i + 1}일차</DayDate>
-              <DayFrame>
-                {day.places &&
-                  day.places.map((place, index) => (
-                    <PlanContainer key={index}>
-                      <PlanLump>
-                        <PlanImg1 src={Circle} alt="원" />
-                        <PlanTitle>{place.name}</PlanTitle>
-                        <PlanImg2 src={ShortLine} alt="짧은 선" />
-                        <PlanDetail1>{place.recommendations}</PlanDetail1>
-                      </PlanLump>
-                      <PlanDetail>
-                        <P>운영 시간</P> {place.hours}
-                        <P>추천 음식</P> {place.popularMenu}
-                        {place.attractions && place.attractions.length > 0 && (
-                          <PlanAttraction>
-                            <AttractionsList>
-                              <Strong>주요 명소</Strong>
-                              {place.attractions.map(
-                                (attraction, attrIndex) => (
-                                  <AttractionItem key={attrIndex}>
-                                    {attraction}
-                                  </AttractionItem>
-                                )
-                              )}
-                            </AttractionsList>
-                          </PlanAttraction>
-                        )}
-                      </PlanDetail>
-                    </PlanContainer>
-                  ))}
-              </DayFrame>
-            </DayContainer>
-          ))
-        : null}
+      {loading ? ( // 로딩 중이면 Loader 표시
+        <Loader />
+      ) : itinerary.length > 0 ? (
+        itinerary.map((day, i) => (
+          <DayContainer key={i}>
+            <DayDate>{i + 1}일차</DayDate>
+            <DayFrame>
+              {day.places &&
+                day.places.map((place, index) => (
+                  <PlanContainer key={index}>
+                    <PlanLump>
+                      <PlanImg1 src={Circle} alt="원" />
+                      <PlanTitle>{place.name}</PlanTitle>
+                      <PlanImg2 src={ShortLine} alt="짧은 선" />
+                      <PlanDetail1>{place.recommendations}</PlanDetail1>
+                    </PlanLump>
+                    <PlanDetail>
+                      <P>운영 시간</P> {place.hours}
+                      <P>추천 음식</P> {place.popularMenu}
+                      {place.attractions && place.attractions.length > 0 && (
+                        <PlanAttraction>
+                          <AttractionsList>
+                            <Strong>주요 명소</Strong>
+                            {place.attractions.map((attraction, attrIndex) => (
+                              <AttractionItem key={attrIndex}>
+                                {attraction}
+                              </AttractionItem>
+                            ))}
+                          </AttractionsList>
+                        </PlanAttraction>
+                      )}
+                    </PlanDetail>
+                  </PlanContainer>
+                ))}
+            </DayFrame>
+          </DayContainer>
+        ))
+      ) : null}
     </TotalContainer>
   );
 }
+
 
 export default DayLists;
