@@ -264,7 +264,7 @@ const Chat = () => {
         setTimeout(() => {
           setStep(prev => prev + 1);
           setShowChatCon(true); // ChatCon을 0.5초 후에 표시
-        }, 600);
+        }, 1000);
       } else {
         setLoading(true);
         setFinish(true);
