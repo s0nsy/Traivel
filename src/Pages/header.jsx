@@ -23,6 +23,7 @@ const NavLogo = styled.p`
     color: #01ECFF;
     font-size: 24px;
     font-weight: 600;
+    margin: 0 20px;
 `;
 
 const NavSelectCon = styled.div`
@@ -30,6 +31,7 @@ const NavSelectCon = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0 20px;
 `;
 
 const NavSelectImg = styled.img`
