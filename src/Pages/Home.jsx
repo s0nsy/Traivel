@@ -155,12 +155,20 @@ const Home = () => {
 
   const handleDateChange = (date) => {
     if (selectedText === "startDate") {
-      dispatch(setStartDate(date));
-      setSelectedText("endDate");
+        if (endDate && moment(date).isAfter(endDate)) {
+            alert("출발일은 도착일보다 늦을 수 없습니다.");
+            return;
+        }
+        dispatch(setStartDate(date));
+        setSelectedText("endDate");
     } else if (selectedText === "endDate") {
-      dispatch(setEndDate(date));
+        if (startDate && moment(date).isBefore(startDate)) {
+            alert("도착일은 출발일보다 빠를 수 없습니다.");
+            return;
+        }
+        dispatch(setEndDate(date));
     }
-  };
+};
 
   const handlePeopleChange = (totalPeople) => {
     const { adultsCount, childrenCount, infantsCount } = totalPeople;
