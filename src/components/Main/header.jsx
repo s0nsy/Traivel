@@ -29,7 +29,7 @@ const NavLogo = styled.p`
 const NavSelectCon = styled.div`
   position: absolute;
   top: 50%;
-  left: 35%;
+  left: 45%;
   transform: translate(-50%, -50%); 
   display: flex;
   justify-content: center;
