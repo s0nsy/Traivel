@@ -1,6 +1,6 @@
 [[redirects]]
   from = "/api/*"
-  to = "https://api.routeport.co.kr/:splat"
+  to = "https://routeporter.netlify.app/:splat"
   status = 200
   force = true
 
