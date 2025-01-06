@@ -15,6 +15,7 @@ import Detail from "./Pages/Detail.jsx";
 import Chat from "./Pages/Chat";
 import Output from "./Pages/Output";
 import Loader from "./Pages/infoLoad"
+import Login from "./Pages/Login.jsx";
 import Error from "./Pages/Error";
 import "./App.css";
 
@@ -49,6 +50,7 @@ function App() {
           <Route path="/lists" element={<><List/></>}/>
           <Route path="/output" element={<><Output/></>}/>
           <Route path="/info" element={<><Loader/></>}/>
+          <Route path="/oauth" element={<><Login/></>}/>
           <Route path="/error" element={<><Error/></>}/>
         </Routes>
       </div>

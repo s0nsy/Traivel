@@ -98,7 +98,7 @@ const Lump = styled.div`
   height: 368px;
   display: flex;
   position: relative;
-  margin-left: 400px;
+  margin-left: 50px;
   margin-right: 24px;
 `;
 
@@ -106,7 +106,7 @@ const Lump2 = styled.div`
   display: flex;
   position: relative;
   top: 106px;
-  margin-left: 400px;
+  margin-left: 50px;
 `;
 
 const P = styled.div`
