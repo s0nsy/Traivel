@@ -1,10 +1,5 @@
-[[redirects]]
-from = "/*"
-to = "https://routeporter.netlify.app/:splat"
-status = 200
-force = true
+# API 요청을 백엔드 서버로 프록시
+/api/* https://api.routeport.co.kr/:splat 200
 
-[[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200
+# React SPA를 위한 리다이렉트
+/* /index.html 200
