@@ -34,5 +34,5 @@
     "eslint-plugin-react-refresh": "^0.4.7",
     "vite": "^5.4.6"
   },
-  "proxy": "https://routeport.co.kr"
+  "proxy": "https://api.routeport.co.kr/"
 }
