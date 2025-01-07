@@ -298,7 +298,7 @@ const Chat = () => {
         importantFactors: userResponses.importantFactors,
       };
       
-     const response = await axios.post(`${PROXY}/chat`, submissionData);
+     const response = await axios.post(`${PROXY}/api/chat`, submissionData);
 
       dispatch(setRecommendations(response.data));
       localStorage.setItem('recommendations', JSON.stringify(response.data));
