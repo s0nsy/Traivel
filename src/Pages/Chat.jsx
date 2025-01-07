@@ -299,6 +299,7 @@ const Chat = () => {
       };
       
      const response = await axios.post(`${PROXY}/api/chat`, submissionData);
+     console(PROXY);
 
       dispatch(setRecommendations(response.data));
       localStorage.setItem('recommendations', JSON.stringify(response.data));
