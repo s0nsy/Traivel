@@ -161,11 +161,9 @@ function DayLists({ onDataChange }) {
   const [itinerary, setItinerary] = useState([]);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const [isOutputVisible, setIsOutputVisible] = useState(false);  // output 표시 여부 상태
-
+  const [isOutputVisible, setIsOutputVisible] = useState(false); // output 표시 여부 상태
 
   useEffect(() => {
-    
     const fetchItinerary = async () => {
       setLoading(true);
       try {
@@ -199,13 +197,16 @@ function DayLists({ onDataChange }) {
 
         console.log("보내는 데이터:", requestData); // 요청 데이터 로그
 
-        const response = await axios.post(`${PROXY}/api/routes`, requestData, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        });
+        const response = await axios.post(
+          "https://api.routeport.co.kr/routes",
+          requestData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
+        );
 
         if (response.data.success) {
           setItinerary(response.data.data);
@@ -224,7 +225,7 @@ function DayLists({ onDataChange }) {
         setLoading(false);
       }
     };
-    
+
     if (region && district && features.length > 0) {
       fetchItinerary();
     }
@@ -304,6 +305,5 @@ function DayLists({ onDataChange }) {
     </TotalContainer>
   );
 }
-
 
 export default DayLists;
