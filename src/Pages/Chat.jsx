@@ -298,7 +298,7 @@ const Chat = () => {
         importantFactors: userResponses.importantFactors,
       };
       
-     const response = await axios.post(`${PROXY}/api/chat`, submissionData);
+     const response = await axios.post(`${PROXY}/chat`, submissionData);
      console(PROXY);
 
       dispatch(setRecommendations(response.data));
