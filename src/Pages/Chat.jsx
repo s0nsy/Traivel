@@ -281,6 +281,7 @@ const Chat = () => {
 
   const handleSubmit = async () => {
     try {
+      console.log(PROXY);
       const submissionData = {
         schedule: schedule,
         groupComposition: { adults: adults, children: children, infants: infants },
