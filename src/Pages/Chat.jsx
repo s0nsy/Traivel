@@ -281,7 +281,7 @@ const Chat = () => {
 
   const handleSubmit = async () => {
     try {
-      console.log(PROXY);
+      
       const submissionData = {
         schedule: schedule,
         groupComposition: { adults: adults, children: children, infants: infants },
@@ -300,8 +300,6 @@ const Chat = () => {
       };
       
      const response = await axios.post(`${PROXY}/chat`, submissionData);
-     console(PROXY);
-
       dispatch(setRecommendations(response.data));
       localStorage.setItem('recommendations', JSON.stringify(response.data));
       console.log(response.data);
