@@ -199,7 +199,7 @@ function DayLists({ onDataChange }) {
 
         console.log("보내는 데이터:", requestData); // 요청 데이터 로그
 
-        const response = await axios.post(`${PROXY}/api/routes`, requestData, {
+        const response = await axios.post(`/routes`, requestData, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
