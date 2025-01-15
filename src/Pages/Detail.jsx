@@ -67,7 +67,7 @@ const MainPage = () => {
   const [attractions, setAttractions] = useState([]);
   const [mapImage, setMapImage] = useState('');
   const { region, district, features } = useSelector((state) => state.selectedItem);
-  const PROXY = '/api'; 
+   
   useEffect(() => {
     const fetchData = async () => {
       try {
