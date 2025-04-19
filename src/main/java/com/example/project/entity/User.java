@@ -13,15 +13,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table (name = "\"user\"")
+@Table (name = "users")
 public class User {
    @Id @GeneratedValue
    private long id;
 
-
    private String username;
 
    private String password;
+
+   private String email;
 
    private String role;
 }

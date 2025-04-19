@@ -1,0 +1,16 @@
+spring:
+  application.name: Project
+  datasource:
+    url: jdbc:postgresql://localhost:5432/project
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate.ddl-auto: update
+    show-sql: true
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.model
+#  config-location: classpath:mybatis-config.xml
