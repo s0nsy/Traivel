@@ -36,7 +36,10 @@ public class SecurityConfig {
       // HttpSecurity 설정
       http
             .authorizeHttpRequests(auth->auth
-            .requestMatchers("/login", "/signup").permitAll()  // 로그인, 회원가입 페이지는 모두에게 열어줌
+            .requestMatchers("/auth/**",
+                  "/swagger-ui/**",
+                  "/swagger-resources/**",
+                  "/v3/api-docs/**").permitAll()  // 로그인, 회원가입 페이지는 모두에게 열어줌
             .anyRequest().authenticated()  // 나머지 요청은 인증 필요
             )
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터 추가
