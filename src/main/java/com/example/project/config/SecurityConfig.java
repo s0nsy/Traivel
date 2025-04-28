@@ -1,17 +1,17 @@
 package com.example.project.config;
 
-import com.example.project.security.jwt.JwtAuthenticationFilter;
-import com.example.project.security.jwt.JwtAuthorizationFilter;
+import com.example.project.security.jwt.JwtTokenFilter;
 import com.example.project.security.jwt.JwtUtil;
+import com.example.project.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -21,33 +21,37 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
    private final JwtUtil jwtUtil;
-   private final UserDetailsService userDetailsService;
-   @Bean
-   public JwtAuthenticationFilter jwtAuthenticationFilter() {
-      return new JwtAuthenticationFilter(jwtUtil);
-   }
+   private final CustomUserDetailsService customUserDetailsService;
 
    @Bean
-   public JwtAuthorizationFilter jwtAuthorizationFilter() {
-      return new JwtAuthorizationFilter(jwtUtil);
+   public JwtTokenFilter jwtTokenFilter(){
+      return new JwtTokenFilter(jwtUtil, customUserDetailsService);
    }
    @Bean
    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
       // HttpSecurity 설정
       http
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth->auth
-            .requestMatchers("/auth/**",
+            .requestMatchers("/auth/**", "/register",
                   "/swagger-ui/**",
                   "/swagger-resources/**",
                   "/v3/api-docs/**").permitAll()  // 로그인, 회원가입 페이지는 모두에게 열어줌
             .anyRequest().authenticated()  // 나머지 요청은 인증 필요
             )
-            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터 추가
-            .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 인가 필터 추가
+            .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 인가 필터 추가
 
       return http.build();
    }
 
+   @Bean
+   public PasswordEncoder passwordEncoder() {
+      return new BCryptPasswordEncoder();
+   }
 
+   @Bean
+   public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
+      return authenticationConfiguration.getAuthenticationManager();
+   }
 }
 

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
       security = @SecurityRequirement(name = "bearerAuth"),
       servers = {
             @Server(url = "http://localhost:8080"), // 로컬 개발 서버 URL
-//            @Server(url = "http://3.105.163.214:8080") // 원격 서버 URL
+//            @Server(url = "http://~:8080") // 원격 서버 URL
       }
 )
 @SecurityScheme(
