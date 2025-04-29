@@ -1,12 +1,11 @@
 package com.example.project.entity.dto;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-public class ChatRequestDto {
+@Data
+public class TravelRequest {
    private String schedule;
    private String groupComposition;
    private String purpose;

@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class RegisterRequest {
    private String username;

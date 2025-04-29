@@ -1,30 +1,25 @@
 package com.example.project.config;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.http.HttpHeaders;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-public class OpenApiConfig {
+public class OpenAiConfig {
+   @Value("${spring.ai.openai.api-key}")
+   private String apiKey;
 
    @Bean
-   public RestTemplate restTemplate() {
-      RestTemplate restTemplate = new RestTemplate();
-      return restTemplate;
+   public WebClient.Builder webClientBuilder(){
+      return WebClient.builder()
+              .baseUrl("https://api.openai.com/v1/")
+              .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+              .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer "+apiKey);
    }
 
-   @Bean
-   public HttpHeaders headers() {
-      HttpHeaders headers = new HttpHeaders();
-      headers.setBearerAuth()
-   }
-   @Bean
-   ChatClient chatClient(ChatClient.Builder builder){
-      return builder.defaultSystem(prompt).build();
-   }
-
-   String prompt="";
 }
