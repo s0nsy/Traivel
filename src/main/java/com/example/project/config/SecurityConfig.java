@@ -36,7 +36,10 @@ public class SecurityConfig {
             .requestMatchers("/auth/**", "/register",
                   "/swagger-ui/**",
                   "/swagger-resources/**",
-                  "/v3/api-docs/**").permitAll()  // 로그인, 회원가입 페이지는 모두에게 열어줌
+                  "/v3/api-docs/**",
+                  "/**"
+            )
+                        .permitAll()  // 로그인, 회원가입 페이지는 모두에게 열어줌
             .anyRequest().authenticated()  // 나머지 요청은 인증 필요
             )
             .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 인가 필터 추가

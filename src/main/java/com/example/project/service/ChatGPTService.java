@@ -2,24 +2,43 @@ package com.example.project.service;
 
 import com.example.project.entity.dto.TravelRequest;
 import lombok.AllArgsConstructor;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Service
 @AllArgsConstructor
 public class ChatGPTService {
 
-   public ChatClient chatClient;
+
+   public WebClient webClient;
+
+   private String escapeJson(String text) {
+      return text.replace("\"", "\\\"")
+            .replace("\n", "\\n");
+   }
 
    public String getTravelRecommendations(TravelRequest request){
-      String prompt = createPrompt(request);
+      String prompt = escapeJson(createPrompt(request));
+      String url= "https://api.openai.com/v1/chat/completions";
+      String requestBody = String.format("{\n" +
+            "  \"model\": \"gpt-4o\",\n" +
+            "  \"messages\": [\n" +
+            "    {\"role\": \"user\", \"content\": \"%s\"}\n" +
+            "  ],\n" +
+            "  \"max_tokens\": 150\n" +
+            "}", prompt);
+      String apiKey = "Bearer "+System.getenv("SPRING_AI_OPENAI_API_KEY");
 
-      String response= chatClient.prompt()
-              .user(prompt)
-              .call()
-              .content();
+      Mono<String> response = webClient.post()
+            .uri(url)
+            .header("Authorization", apiKey)
+            .header("Content-Type", "application/json")
+            .bodyValue(requestBody)
+            .retrieve()
+            .bodyToMono(String.class);
 
-      return response;
+      return response.block();
    }
 
    private String createPrompt(TravelRequest request){
