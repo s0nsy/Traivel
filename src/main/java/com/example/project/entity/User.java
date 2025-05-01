@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,4 +25,7 @@ public class User {
    private String email;
 
    private String role;
+
+   @ManyToMany(mappedBy="users", cascade = CascadeType.ALL)
+   private List<Route> route= new ArrayList<>();
 }
