@@ -1,5 +1,6 @@
 package com.example.project.service;
 
+import com.example.project.config.WebClientConfig;
 import com.example.project.entity.dto.RouteRequest;
 import com.example.project.entity.dto.TravelRequest;
 import com.example.project.entity.dto.TravelResponse;
@@ -19,8 +20,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ChatGPTService {
 
-
-   public WebClient webClient;
+   private final WebClient OpenAiWebClient;
 
    private String escapeJson(String text) {
       return text.replace("\"", "\\\"")
@@ -38,7 +38,7 @@ public class ChatGPTService {
             "}", prompt, maxToken);
       String apiKey = "Bearer "+System.getenv("SPRING_AI_OPENAI_API_KEY");
 
-      String response = webClient.post()
+      String response = OpenAiWebClient.post()
             .uri(url)
             .header("Authorization", apiKey)
             .header("Content-Type", "application/json")
