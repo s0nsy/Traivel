@@ -6,7 +6,7 @@
     <select id="findByUsername" parameterType="string" resultType="com.example.project.entity.User">
         select * from users where username= #{username}
     </select>
-    <insert id ="save" parameterType="com.example.project.entity.User">
+    <insert id ="savePlace" parameterType="com.example.project.entity.User">
         insert into users(username, password, email)
             values(#{username},#{password},#{email})
     </insert>
