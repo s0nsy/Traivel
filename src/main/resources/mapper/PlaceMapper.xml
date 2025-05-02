@@ -3,22 +3,37 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.project.mapper.PlaceMapper">
-    <select id="findByPlaceTitle" parameterType="string" resultType="com.example.project.entity.Place">
-        select * from place where title= #{title}
+    <select id="findByRouteId" parameterType="Long" resultType="com.example.project.entity.Route">
+        select * from route where id= #{id}
     </select>
-    <insert id ="save" parameterType="com.example.project.entity.Place">
+    <insert id ="save" parameterType="com.example.project.entity.Place" useGeneratedKeys="true" keyProperty="id">
         insert into place(title,link,address,roadAddress,mapx,mapy,category,route_id)
-        values(#{place.title},
-               #{place.link},
-               #{place.address},
-               #{place.roadAddress},
-               #{place.mapx},
-               #{place.mapy},
-               #{place.category},
-               #{route_id})
+        values(#{title},
+               #{link},
+               #{address},
+               #{roadAddress},
+               #{mapx},
+               #{mapy},
+               #{category},
+               #{route.id})
     </insert>
     <insert id = "saveRoute" parameterType="com.example.project.entity.Route">
         insert into route(title, created_at)
         values(#{title},#{created_at})
+    </insert>
+    <select id ="findMaxOrderByRouteDay" parameterType="map" resultType="int">
+        select coalesce(max("order"), 0 )
+        from route_item
+        where route_id = #{routeId}
+        and day=#{day}
+    </select>
+    <insert id="saveRouteItem" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.example.project.entity.PlaceItem" >
+        insert into route_item(route_id, day, "order")
+        values (#{route.id}, #{day}, #{order})
+    </insert>
+    <insert id="savePlaceItem" parameterType="com.example.project.entity.PlaceItem" useGeneratedKeys="true" keyProperty="id">
+        insert into place_item(id, place_id)
+        values (#{id}, #{place.id})
     </insert>
 </mapper>

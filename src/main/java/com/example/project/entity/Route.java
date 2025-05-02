@@ -23,7 +23,8 @@ public class Route {
    private LocalDateTime created_at;
 
    @OneToMany(mappedBy="route", cascade = CascadeType.ALL, orphanRemoval = true)
-   private List<Place> places= new ArrayList<>();
+   private List<RouteItem> items= new ArrayList<>();
+
 
    @ManyToMany(fetch= FetchType.LAZY)
    @JoinTable(
@@ -31,6 +32,6 @@ public class Route {
          joinColumns = @JoinColumn(name="route_id"),
          inverseJoinColumns = @JoinColumn(name="user_id")
    )
-   private List<User> users;
+   private List<User> users= new ArrayList<>();
 
 }

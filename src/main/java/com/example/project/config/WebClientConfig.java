@@ -30,4 +30,13 @@ public class WebClientConfig {
             .defaultHeader("X-Naver-Client-Server", naverApiConfig.getSearchSecret())
             .build();
    }
+
+   @Bean
+   public WebClient naverMapClient(){
+      return WebClient.builder()
+            .baseUrl("https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc")
+            .defaultHeader("X-NCP-APIGW-API-KEY-ID", naverApiConfig.getMapId())
+            .defaultHeader("X-NCP-APIGW-API-KEY", naverApiConfig.getMapSecret())
+            .build();
+   }
 }

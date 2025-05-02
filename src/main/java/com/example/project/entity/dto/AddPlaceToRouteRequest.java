@@ -8,4 +8,6 @@ import lombok.RequiredArgsConstructor;
 public class AddPlaceToRouteRequest {
    private Long routeId;
    private NaverSearchRequest naverSearchRequest;
+   private int order;
+   private int day;
 }

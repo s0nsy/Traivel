@@ -2,6 +2,8 @@ package com.example.project.service;
 
 import com.example.project.config.NaverApiConfig;
 import com.example.project.entity.Place;
+import com.example.project.entity.PlaceItem;
+import com.example.project.entity.Route;
 import com.example.project.entity.dto.AddPlaceToRouteRequest;
 import com.example.project.entity.dto.NaverSearchListResponse;
 import com.example.project.entity.dto.NaverSearchRequest;
@@ -11,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static reactor.core.publisher.Mono.error;
 
@@ -20,6 +24,7 @@ import static reactor.core.publisher.Mono.error;
 public class NaverSearchService {
    private final NaverApiConfig naverApiConfig;
    private final WebClient naverWebClient;
+   private final WebClient naverMapClient;
    private final PlaceMapper placeMapper;
 
    public List<NaverSearchRequest> searchPlace(String keyword){
@@ -55,6 +60,48 @@ public class NaverSearchService {
       newPlace.setCategory(place.getCategory());
       newPlace.setMapx(place.getMapx());
       newPlace.setMapy(place.getMapy());
-      placeMapper.save(request.getRouteId(),newPlace);
+
+      Route route = placeMapper.findByRouteId(request.getRouteId());
+      if(route==null)
+         throw new RuntimeException("루트가 존재하지 않습니다.");
+
+      newPlace.setRoute(route);
+      placeMapper.save(newPlace);
+
+      PlaceItem placeItem = new PlaceItem();
+      placeItem.setPlace(newPlace);
+      placeItem.setRoute(route);
+      placeItem.setDay(request.getDay());
+
+      //order: 요청에 있으면 그대로, 없으면 마지막에 추가
+      Map<String, Object> map = new HashMap<>();
+
+      map.put("routeId", request.getRouteId());
+      map.put("day",request.getDay());
+
+      int maxOrder = placeMapper.findMaxOrderByRouteDay(map);
+      placeItem.setOrder(maxOrder+1);
+      placeMapper.saveRouteItem(placeItem);
+      placeMapper.savePlaceItem(placeItem);
+      System.out.println(placeItem);
+
+   }
+
+   public String reverseGeocode(Map<String, Double> coords){
+      double latitude= coords.get("lat");
+      double longitude = coords.get("lng");
+      String coord = latitude+ ","+longitude;
+
+      String response = naverMapClient.get()
+            .uri(uriBuilder -> uriBuilder
+                  .queryParam("coord", coord)
+                  .queryParam("output","json")
+                  .queryParam("orders", "addr,roadaddr")
+                  .build())
+            .retrieve()
+            .bodyToMono(String.class)
+            .block();
+
+      return response;
    }
 }
