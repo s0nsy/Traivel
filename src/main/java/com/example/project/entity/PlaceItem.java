@@ -6,6 +6,8 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name="place_item")
+@PrimaryKeyJoinColumn(name = "id")
+@DiscriminatorValue("PLACE")
 public class PlaceItem extends RouteItem{
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)

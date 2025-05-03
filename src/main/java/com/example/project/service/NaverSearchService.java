@@ -8,6 +8,7 @@ import com.example.project.entity.dto.AddPlaceToRouteRequest;
 import com.example.project.entity.dto.NaverSearchListResponse;
 import com.example.project.entity.dto.NaverSearchRequest;
 import com.example.project.mapper.PlaceMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,8 +26,8 @@ public class NaverSearchService {
    private final NaverApiConfig naverApiConfig;
    private final WebClient naverWebClient;
    private final WebClient naverMapClient;
-   private final PlaceMapper placeMapper;
 
+   // 네이버 검색 API로 장소 검색
    public List<NaverSearchRequest> searchPlace(String keyword){
       String clientId = naverApiConfig.getSearchId();
       String clientSecret = naverApiConfig.getSearchSecret();
@@ -48,45 +49,7 @@ public class NaverSearchService {
             .block();
    }
 
-   public void addPin(AddPlaceToRouteRequest request){
-//      Place place = placeMapper.findByPlaceTitle(request.getNaverSearchRequest().getTitle());
-      NaverSearchRequest place = request.getNaverSearchRequest();
-
-      Place newPlace = new Place();
-      newPlace.setTitle(place.getTitle());
-      newPlace.setAddress(place.getAddress());
-      newPlace.setRoadAddress(place.getRoadAddress());
-      newPlace.setLink(place.getLink());
-      newPlace.setCategory(place.getCategory());
-      newPlace.setMapx(place.getMapx());
-      newPlace.setMapy(place.getMapy());
-
-      Route route = placeMapper.findByRouteId(request.getRouteId());
-      if(route==null)
-         throw new RuntimeException("루트가 존재하지 않습니다.");
-
-      newPlace.setRoute(route);
-      placeMapper.save(newPlace);
-
-      PlaceItem placeItem = new PlaceItem();
-      placeItem.setPlace(newPlace);
-      placeItem.setRoute(route);
-      placeItem.setDay(request.getDay());
-
-      //order: 요청에 있으면 그대로, 없으면 마지막에 추가
-      Map<String, Object> map = new HashMap<>();
-
-      map.put("routeId", request.getRouteId());
-      map.put("day",request.getDay());
-
-      int maxOrder = placeMapper.findMaxOrderByRouteDay(map);
-      placeItem.setOrder(maxOrder+1);
-      placeMapper.saveRouteItem(placeItem);
-      placeMapper.savePlaceItem(placeItem);
-      System.out.println(placeItem);
-
-   }
-
+   // 지도에서 장소 택하기
    public String reverseGeocode(Map<String, Double> coords){
       double latitude= coords.get("lat");
       double longitude = coords.get("lng");

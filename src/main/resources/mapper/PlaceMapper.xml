@@ -3,10 +3,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.project.mapper.PlaceMapper">
+    <insert id="addRoute" parameterType="com.example.project.entity.Route" useGeneratedKeys="true" keyProperty="id">
+        insert into route()
+    </insert>
     <select id="findByRouteId" parameterType="Long" resultType="com.example.project.entity.Route">
         select * from route where id= #{id}
     </select>
-    <insert id ="save" parameterType="com.example.project.entity.Place" useGeneratedKeys="true" keyProperty="id">
+    <insert id ="savePlace" parameterType="com.example.project.entity.Place" useGeneratedKeys="true" keyProperty="id">
         insert into place(title,link,address,roadAddress,mapx,mapy,category,route_id)
         values(#{title},
                #{link},
@@ -28,12 +31,42 @@
         and day=#{day}
     </select>
     <insert id="saveRouteItem" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.example.project.entity.PlaceItem" >
+            parameterType="com.example.project.entity.RouteItem" >
         insert into route_item(route_id, day, "order")
         values (#{route.id}, #{day}, #{order})
     </insert>
-    <insert id="savePlaceItem" parameterType="com.example.project.entity.PlaceItem" useGeneratedKeys="true" keyProperty="id">
+    <insert id="savePlaceItem" parameterType="com.example.project.entity.PlaceItem">
         insert into place_item(id, place_id)
         values (#{id}, #{place.id})
     </insert>
+    <insert id="saveMemo" parameterType="com.example.project.entity.Memo" useGeneratedKeys="true" keyProperty="id">
+        insert into memo(content,route_id)
+        values (#{content}, #{route.id})
+    </insert>
+    <update id="editMemo" parameterType="com.example.project.entity.Memo">
+        update memo set content=#{content} where id = #{id}
+    </update>
+    <insert id="saveMemoItem" parameterType="com.example.project.entity.MemoItem" >
+        --saveRouteItem에서 memo_item.id 생성됨
+        insert into memo_item(id, memo_id)
+        values (#{id}, #{memo.id})
+    </insert>
+    <delete id="deleteRouteItem" parameterType="com.example.project.entity.RouteItem">
+    delete from route_item where id= #{id}
+    </delete>
+    <delete id="deleteMemoItem" parameterType="com.example.project.entity.MemoItem">
+        delete from memo_item where id= #{id}
+    </delete>
+    <delete id="deletePlaceItem" parameterType="com.example.project.entity.PlaceItem">
+        delete from place_item where id= #{id}
+    </delete>
+    <select id ="findByMemoId" parameterType="Long" resultType="com.example.project.entity.Memo">
+        select * from memo where id = #{id}
+    </select>
+    <select id ="findByMemoItemId" parameterType="Long" resultType="com.example.project.entity.MemoItem">
+        select * from memo_item where id = #{id}
+    </select>
+    <select id ="findByPlaceItemId" parameterType="Long" resultType="com.example.project.entity.PlaceItem">
+        select * from place_item where id = #{id}
+    </select>
 </mapper>

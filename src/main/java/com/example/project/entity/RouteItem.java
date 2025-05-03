@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name="dtype")
 @Table(name="route_item")
 public abstract class RouteItem {
    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,4 +18,7 @@ public abstract class RouteItem {
    @ManyToOne
    @JoinColumn(name="route_id")
    private Route route;
+
+   @Column(insertable = false, updatable = false)
+   private String dtype;
 }
