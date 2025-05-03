@@ -1,4 +1,4 @@
-package com.example.project.security.jwt;
+package com.example.project.config.security.jwt;
 
 import com.example.project.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;

@@ -1,7 +1,7 @@
 package com.example.project.config;
 
-import com.example.project.security.jwt.JwtTokenFilter;
-import com.example.project.security.jwt.JwtUtil;
+import com.example.project.config.security.jwt.JwtTokenFilter;
+import com.example.project.config.security.jwt.JwtUtil;
 import com.example.project.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

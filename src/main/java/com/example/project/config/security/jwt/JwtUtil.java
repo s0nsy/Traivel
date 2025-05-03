@@ -1,4 +1,4 @@
-package com.example.project.security.jwt;
+package com.example.project.config.security.jwt;
 
 
 import io.jsonwebtoken.Claims;
