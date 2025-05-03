@@ -1,14 +1,11 @@
 package com.example.project.controller;
 
-import com.example.project.entity.User;
-import com.example.project.security.dto.LoginRequest;
-import com.example.project.security.dto.LoginResponse;
-import com.example.project.security.dto.RegisterRequest;
-import com.example.project.security.jwt.JwtUtil;
+import com.example.project.config.security.dto.LoginRequest;
+import com.example.project.config.security.dto.LoginResponse;
+import com.example.project.config.security.dto.RegisterRequest;
+import com.example.project.config.security.jwt.JwtUtil;
 import com.example.project.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +22,7 @@ public class AuthController {
    private final JwtUtil jwtUtil;
    private final UserService userService;
 
+   // 회원가입
    @PostMapping("/register")
    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest){
       userService.register(registerRequest);
@@ -35,6 +33,8 @@ public class AuthController {
       response.put("token",accessToken);
       return ResponseEntity.ok(response);
    }
+
+   // 로그인
    @PostMapping("/login")
    public ResponseEntity<?> login(@RequestBody LoginRequest request){
       LoginResponse response= userService.login(request);

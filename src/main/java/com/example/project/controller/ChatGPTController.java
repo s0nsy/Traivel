@@ -17,12 +17,14 @@ import java.util.List;
 public class ChatGPTController {
    private final ChatGPTService chatGPTService;
 
+   // 여행지 추천
    @PostMapping("/recommend")
    public ResponseEntity<List<TravelResponse>> getRecommendDestinations(@RequestBody TravelRequest request) throws JsonProcessingException {
       List<TravelResponse> recommendations = chatGPTService.getTravelRecommendations(request);
       return ResponseEntity.ok(recommendations);
    }
 
+   // 추천 루트 출력
    @PostMapping("/route")
    public ResponseEntity<String> getRecommendRoute(@RequestBody RouteRequest routeRequest) throws JsonProcessingException {
       String route = chatGPTService.getRouteRecommendation(routeRequest);

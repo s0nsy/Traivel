@@ -48,6 +48,7 @@ public class ChatGPTService {
       return response;
 
    }
+   // 여행지 추천 받기
    public List<TravelResponse> getTravelRecommendations(TravelRequest request) throws JsonProcessingException {
       String prompt = escapeJson(recommendedPrompt(request));
       String content = extractContent(OpenAPISetting(prompt,400));
@@ -90,6 +91,7 @@ public class ChatGPTService {
       );
    }
 
+   // 여행 루트 추천
    public String getRouteRecommendation(RouteRequest routeRequest) throws JsonProcessingException {
       String prompt = escapeJson(RoutePrompt(routeRequest));
       String content = extractContent(OpenAPISetting(prompt,1000));
@@ -143,6 +145,7 @@ public class ChatGPTService {
             routeRequest.getFeatures().get(2)
       );
    }
+
 
    public List<TravelResponse> parseRecommendedPlaces(String content) {
       List<TravelResponse> places = new ArrayList<>();
