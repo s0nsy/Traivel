@@ -1,6 +1,6 @@
 package com.example.project.controller;
 
-import com.example.project.entity.dto.RouteRequest;
+import com.example.project.entity.dto.RecommendRouteRequest;
 import com.example.project.entity.dto.TravelRequest;
 import com.example.project.entity.dto.TravelResponse;
 import com.example.project.service.ChatGPTService;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/api/chat")
 public class ChatGPTController {
    private final ChatGPTService chatGPTService;
 
@@ -26,7 +26,7 @@ public class ChatGPTController {
 
    // 추천 루트 출력
    @PostMapping("/route")
-   public ResponseEntity<String> getRecommendRoute(@RequestBody RouteRequest routeRequest) throws JsonProcessingException {
+   public ResponseEntity<String> getRecommendRoute(@RequestBody RecommendRouteRequest routeRequest) throws JsonProcessingException {
       String route = chatGPTService.getRouteRecommendation(routeRequest);
       return ResponseEntity.ok(route);
    }

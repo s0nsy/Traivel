@@ -1,7 +1,6 @@
 package com.example.project.service;
 
-import com.example.project.config.WebClientConfig;
-import com.example.project.entity.dto.RouteRequest;
+import com.example.project.entity.dto.RecommendRouteRequest;
 import com.example.project.entity.dto.TravelRequest;
 import com.example.project.entity.dto.TravelResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -92,13 +91,13 @@ public class ChatGPTService {
    }
 
    // 여행 루트 추천
-   public String getRouteRecommendation(RouteRequest routeRequest) throws JsonProcessingException {
+   public String getRouteRecommendation(RecommendRouteRequest routeRequest) throws JsonProcessingException {
       String prompt = escapeJson(RoutePrompt(routeRequest));
       String content = extractContent(OpenAPISetting(prompt,1000));
       return content; //수정
    }
 
-   public String RoutePrompt(RouteRequest routeRequest){
+   public String RoutePrompt(RecommendRouteRequest routeRequest){
       return String.format(
          "일정 정보: %s \n" +
          "상세 인원 정보: %s \n" +
