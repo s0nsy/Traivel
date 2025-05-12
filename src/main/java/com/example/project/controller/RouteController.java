@@ -1,5 +1,6 @@
 package com.example.project.controller;
 
+import com.example.project.config.security.jwt.JwtUtil;
 import com.example.project.entity.User;
 import com.example.project.entity.dto.DeleteRequest;
 import com.example.project.entity.dto.MemoEditRequest;
@@ -12,12 +13,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
+
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/route")
+@RequestMapping("/api/route")
 public class RouteController {
    private final RouteService routeService;
    private final UserMapper userMapper;
+   private final JwtUtil jwtUtil;
 
    // 루트 db 추가
    @PostMapping("/addRoute")
@@ -52,5 +56,38 @@ public class RouteController {
    public ResponseEntity<String> deletePlace(@RequestBody DeleteRequest deleteRequest){
       routeService.deletePlace(deleteRequest);
       return ResponseEntity.ok("삭제했습니다.");
+   }
+
+   // 루트 삭제
+   @DeleteMapping("/deleteRoute")
+   public ResponseEntity<String> deleteRoute(Long routeId, @AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException {
+      User user = userMapper.findByUsername(userDetails.getUsername());
+      routeService.deleteRoute(routeId,user);
+      return ResponseEntity.ok("루트를 삭제했습니다.");
+   }
+
+   // 초대 링크 생성
+   @PostMapping("/createLink")
+   public ResponseEntity<String> createLink(Long routeId, @RequestHeader("Authorization") String auth) throws AccessDeniedException {
+      String token = auth.replace("Bearer ","");
+      String username= jwtUtil.getUserIdFromToken(token);
+      String linkToken =routeService.createInviteLink(routeId, username);
+      return ResponseEntity.ok(linkToken);
+   }
+
+   // 링크를 통해 여행 루트 입장
+   @GetMapping("/invite/{token}")
+   public ResponseEntity<String> joinRoute(@PathVariable String token,@AuthenticationPrincipal UserDetails userDetails){
+      User user = userMapper.findByUsername(userDetails.getUsername());
+      routeService.joinRoute(token,user);
+      return ResponseEntity.ok("정상적으로 초대되었습니다.");
+   }
+
+   // 멤버 방출
+   @DeleteMapping("/deleteMember")
+   public ResponseEntity<String> deleteMemeber(Long routeId, @AuthenticationPrincipal UserDetails userDetails, String username) throws AccessDeniedException {
+      User member = userMapper.findByUsername(username);
+      routeService.deleteMember(routeId,userDetails.getUsername(),member);
+      return ResponseEntity.ok(username+ "을 퇴장시켰습니다.");
    }
 }

@@ -3,10 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.project.mapper.PlaceMapper">
-    <insert id="addRoute" parameterType="com.example.project.entity.Route" useGeneratedKeys="true" keyProperty="id">
-        insert into route()
-    </insert>
-    <select id="findByRouteId" parameterType="Long" resultType="com.example.project.entity.Route">
+    <select id="findByRouteId" resultType="com.example.project.entity.Route">
         select * from route where id= #{id}
     </select>
     <insert id ="savePlace" parameterType="com.example.project.entity.Place" useGeneratedKeys="true" keyProperty="id">
@@ -20,10 +17,17 @@
                #{category},
                #{route.id})
     </insert>
-    <insert id = "saveRoute" parameterType="com.example.project.entity.Route">
-        insert into route(title, created_at)
-        values(#{title},#{created_at})
+    <insert id = "addRoute" parameterType="com.example.project.entity.Route" useGeneratedKeys="true" keyProperty="id">
+        insert into route(title, created_at,owner_id)
+        values(#{title},#{created_at},#{owner.id})
     </insert>
+    <insert id="addRouteUser">
+        insert into route_user(route_id, user_id)
+        values(#{route.id}, #{users.id})
+    </insert>
+    <delete id="deleteRouteUser">
+        delete from route_user where user_id=#{users.id} and route_id=#{route.id}
+    </delete>
     <select id ="findMaxOrderByRouteDay" parameterType="map" resultType="int">
         select coalesce(max("order"), 0 )
         from route_item
@@ -51,7 +55,7 @@
         insert into memo_item(id, memo_id)
         values (#{id}, #{memo.id})
     </insert>
-    <delete id="deleteRouteItem" parameterType="com.example.project.entity.RouteItem">
+    <delete id="deleteRouteItem">
     delete from route_item where id= #{id}
     </delete>
     <delete id="deleteMemoItem" parameterType="com.example.project.entity.MemoItem">
@@ -60,13 +64,29 @@
     <delete id="deletePlaceItem" parameterType="com.example.project.entity.PlaceItem">
         delete from place_item where id= #{id}
     </delete>
-    <select id ="findByMemoId" parameterType="Long" resultType="com.example.project.entity.Memo">
+    <select id ="findByMemoId" resultType="com.example.project.entity.Memo">
         select * from memo where id = #{id}
     </select>
-    <select id ="findByMemoItemId" parameterType="Long" resultType="com.example.project.entity.MemoItem">
+    <select id ="findByMemoItemId" resultType="com.example.project.entity.MemoItem">
         select * from memo_item where id = #{id}
     </select>
-    <select id ="findByPlaceItemId" parameterType="Long" resultType="com.example.project.entity.PlaceItem">
+    <select id ="findByPlaceItemId" resultType="com.example.project.entity.PlaceItem">
         select * from place_item where id = #{id}
+    </select>
+    <delete id="deleteRoute" parameterType="com.example.project.entity.Route">
+        delete from route where id=#{id}
+    </delete>
+    <insert id="saveInvite" parameterType="com.example.project.entity.Invite" useGeneratedKeys="true" keyProperty="id">
+        insert into invite(route_id,  token, expired_at)
+        values(#{route_id},#{token},#{expired_at})
+    </insert>
+    <select id="findByToken" resultType="com.example.project.entity.Invite">
+        select * from invite where token = #{token}
+    </select>
+    <select id="findByOwnerIdByRouteId" resultType="Long">
+        select owner_id from route where id=#{id}
+    </select>
+    <select id="findUsersByRouteId" resultType="com.example.project.entity.User">
+        select u.* from users u join route_user ru on u.id=ru.user_id where ru.route_id=#{routeId}
     </select>
 </mapper>

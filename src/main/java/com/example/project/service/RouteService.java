@@ -5,16 +5,15 @@ import com.example.project.entity.dto.*;
 import com.example.project.mapper.PlaceMapper;
 import com.example.project.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.security.Security;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.time.LocalTime.now;
 
@@ -33,8 +32,9 @@ public class RouteService {
       route.setTitle(title);
       route.setCreated_at(LocalDateTime.now());
       route.getUsers().add(user);
-
-      placeMapper.saveRoute(route);
+      route.setOwner(user);
+      placeMapper.addRoute(route);
+      placeMapper.addRouteUser(route,user);
    }
 
    // 장소 추가
@@ -124,6 +124,67 @@ public class RouteService {
    }
 
    // 여행 루트 전체 삭제
+   public void deleteRoute(Long routeId, User user) throws AccessDeniedException {
+      Route route = placeMapper.findByRouteId(routeId);
+      if(route==null)
+         throw new NullPointerException("존재하지 않는 루트입니다.");
+      Long ownerId = placeMapper.findByOwnerIdByRouteId(routeId);
+      if(ownerId!=user.getId())
+         throw new AccessDeniedException("해당 여행 루트 생성자가 여행 루트를 삭제할 수 있습니다.");
+      placeMapper.deleteRouteUser(route,user);
+      placeMapper.deleteRoute(route);
+   }
 
+   // 초대 링크 생성
+   public String createInviteLink(Long routeId, String username) throws AccessDeniedException {
+      Route route = placeMapper.findByRouteId(routeId);
+      if(route==null)
+         throw new NullPointerException("존재하지 않는 루트입니다.");
+      Long ownerId = placeMapper.findByOwnerIdByRouteId(route.getId());
+      User user = userMapper.findByUsername(username);
+      if(ownerId!=user.getId())
+         throw new AccessDeniedException("해당 여행 루트 생성자가 여행 루트를 삭제할 수 있습니다.");
+      String token = UUID.randomUUID().toString();
+      LocalDateTime now = LocalDateTime.now();
+      LocalDateTime expiredAt= now.plusDays(1);
 
+      Invite invite = new Invite();
+      invite.setRoute_id(routeId);
+      invite.setToken(token);
+      invite.setExpired_at(expiredAt);
+      placeMapper.saveInvite(invite);
+
+      return "https://도메인.com/invite/" +token;
+   }
+
+   // 여행 루트 입장
+   public void joinRoute(String token,User user){
+      Invite invite = placeMapper.findByToken(token);
+      System.out.println(invite);
+      System.out.println("routeId: " + invite.getRoute_id());
+      Route route = placeMapper.findByRouteId(invite.getRoute_id());
+      List<User> users= placeMapper.findUsersByRouteId(route.getId());
+      System.out.println(user);
+
+      if(!users.contains(user)) {
+         route.getUsers().add(user);
+         placeMapper.addRouteUser(route,user);
+      }
+   }
+
+   // 멤버 방출
+   public void deleteMember(Long routeId, String username, User member) throws AccessDeniedException {
+      Route route = placeMapper.findByRouteId(routeId);
+      if(route==null)
+         throw new NullPointerException("존재하지 않는 루트입니다.");
+      Long ownerId = placeMapper.findByOwnerIdByRouteId(route.getId());
+      User user = userMapper.findByUsername(username);
+      if(ownerId!=user.getId())
+         throw new AccessDeniedException("루트 관리자가 아닙니다. 멤버를 방출시키실 수 없습니다.");
+      List<User> users= placeMapper.findUsersByRouteId(routeId);
+      if(users.contains(member)) {
+         users.remove(member);
+         placeMapper.deleteRouteUser(route,member);
+      }
+   }
 }

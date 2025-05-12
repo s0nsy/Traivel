@@ -8,7 +8,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @Data
-public class RouteRequest {
+public class RecommendRouteRequest {
    private TravelRequest travelRequest;
    @Schema(example="전라남도 순천")
    private String destination;

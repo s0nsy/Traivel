@@ -1,20 +1,13 @@
 package com.example.project.service;
 
 import com.example.project.config.NaverApiConfig;
-import com.example.project.entity.Place;
-import com.example.project.entity.PlaceItem;
-import com.example.project.entity.Route;
-import com.example.project.entity.dto.AddPlaceToRouteRequest;
 import com.example.project.entity.dto.NaverSearchListResponse;
 import com.example.project.entity.dto.NaverSearchRequest;
-import com.example.project.mapper.PlaceMapper;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

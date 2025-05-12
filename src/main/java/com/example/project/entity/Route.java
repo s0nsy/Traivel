@@ -25,7 +25,6 @@ public class Route {
    @OneToMany(mappedBy="route", cascade = CascadeType.ALL, orphanRemoval = true)
    private List<RouteItem> items= new ArrayList<>();
 
-
    @ManyToMany(fetch= FetchType.LAZY)
    @JoinTable(
          name="route_user",
@@ -34,4 +33,7 @@ public class Route {
    )
    private List<User> users= new ArrayList<>();
 
+   @ManyToOne(fetch=FetchType.LAZY)
+   @JoinColumn(name="owner_id")
+   private User owner;
 }

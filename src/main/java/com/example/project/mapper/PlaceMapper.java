@@ -2,14 +2,18 @@ package com.example.project.mapper;
 
 import com.example.project.entity.*;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 @Mapper
 public interface PlaceMapper {
-   void saveRoute(Route route);
    Route findByRouteId(Long id);
    void savePlace(Place place);
+   void addRoute(Route route);
+   void addRouteUser(@Param("route") Route route, @Param("users") User user);
+   void deleteRouteUser(@Param("route") Route route, @Param("users") User user);
    int findMaxOrderByRouteDay(Map map);
    void saveRouteItem(RouteItem routeItem);
    void savePlaceItem(PlaceItem placeItem);
@@ -22,4 +26,9 @@ public interface PlaceMapper {
    Memo findByMemoId(Long id);
    MemoItem findByMemoItemId(Long id);
    PlaceItem findByPlaceItemId(Long id);
+   void deleteRoute(Route route);
+   void saveInvite(Invite invite);
+   Invite findByToken(String token);
+   Long findByOwnerIdByRouteId(Long id);
+   List<User> findUsersByRouteId(Long id);
 }
