@@ -28,4 +28,7 @@ public class User {
 
    @ManyToMany(mappedBy="users", cascade = CascadeType.ALL)
    private List<Route> route= new ArrayList<>();
+
+   @OneToMany(mappedBy="writer", cascade= CascadeType.ALL)
+   private List<Access> accesses;
 }

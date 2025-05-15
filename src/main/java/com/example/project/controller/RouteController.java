@@ -90,4 +90,7 @@ public class RouteController {
       routeService.deleteMember(routeId,userDetails.getUsername(),member);
       return ResponseEntity.ok(username+ "을 퇴장시켰습니다.");
    }
+
+   // 루트 공유
+
 }

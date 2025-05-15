@@ -187,4 +187,6 @@ public class RouteService {
          placeMapper.deleteRouteUser(route,member);
       }
    }
+
+   // 루트 이미지 생성
 }

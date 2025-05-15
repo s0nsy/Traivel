@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.mapper.AccessMapper">
+    <insert id="save" parameterType="com.example.project.entity.Access" useGeneratedKeys="true" keyProperty="id">
+        insert into access(content, created_at,user_id)
+        values(#{content}, #{created_at},#{writer.id})
+    </insert>
+    <insert id="saveImage" parameterType="com.example.project.entity.Image" useGeneratedKeys="true" keyProperty="image.id">
+        insert into image(image_url, access_id)
+        values(#{image.ImageUrl},#{access.id})
+    </insert>
+    <select id="findByAccessId" resultType="com.example.project.entity.Access">
+        select * from access where id=#{id}
+    </select>
+    <update id="editAccess" parameterType="com.example.project.entity.Access">
+        update access set title= #{title}, content=#{content}, updated_at=#{updated_at} where id=#{id}
+    </update>
+    <delete id="deleteAccess">
+        delete from access where id=#{id}
+    </delete>
+    <select id="findUserIdByAccessId" resultType="Long">
+        select user_id from access where id=#{id}
+    </select>
+    <delete id="deleteImageByAccessId">
+        delete from image where access_id=#{id}
+    </delete>
+</mapper>
