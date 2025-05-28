@@ -2,26 +2,28 @@ package com.example.project.controller;
 
 import com.example.project.config.security.jwt.JwtUtil;
 import com.example.project.entity.User;
-import com.example.project.entity.dto.DeleteRequest;
-import com.example.project.entity.dto.MemoEditRequest;
-import com.example.project.entity.dto.MemoRequest;
+import com.example.project.entity.dto.*;
 import com.example.project.mapper.UserMapper;
 import com.example.project.service.RouteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 
 @RequiredArgsConstructor
-@RestController
+@Controller
 @RequestMapping("/api/route")
 public class RouteController {
    private final RouteService routeService;
    private final UserMapper userMapper;
    private final JwtUtil jwtUtil;
+   private final SimpMessagingTemplate messagingTemplate;
 
    // 루트 db 추가
    @PostMapping("/addRoute")
@@ -93,4 +95,16 @@ public class RouteController {
 
    // 루트 공유
 
+   @MessageMapping("/moveBlock")
+   public void moveBlock(BlockMoveMessage message){
+      System.out.println("블록 이동 요청 받음: " + message.getBlockId() + " -> " + message.getNewOrder());
+      BlockDto updated=routeService.moveBlock(message.getRouteId(),message.getBlockId(),message.getNewOrder(), message.getNewDay());
+      if(updated!=null){
+         messagingTemplate.convertAndSend("/topic/blocks", routeService.getAllBlocks(message.getRouteId()));
+      }
+   }
+   @GetMapping("/webSocket")
+   public String webSocket(){
+      return "webSocket";
+   }
 }

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+   <title>WebSocket Demo</title>
+   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+<h1>WebSocket Block Test</h1>
+
+<script>
+   const socket = new SockJS("/ws");
+   const stompClient = Stomp.over(socket);
+
+   //전역
+   window.stompClient= stompClient;
+
+   stompClient.connect({}, function (frame) {
+      console.log("Connected: " + frame);
+      stompClient.subscribe("/topic/blocks", function (message) {
+         console.log("Received:", message.body);
+      });
+
+      // 테스트용: 1초 후 블록 이동 요청 전송
+      setTimeout(() => {
+         stompClient.send("/app/moveBlock", {}, JSON.stringify({
+            blockId: 1,
+            newDay: 2,
+            newOrder: 2
+         }));
+      }, 1000);
+
+   });
+</script>
+</body>
+</html>

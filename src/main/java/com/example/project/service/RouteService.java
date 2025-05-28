@@ -4,21 +4,22 @@ import com.example.project.entity.*;
 import com.example.project.entity.dto.*;
 import com.example.project.mapper.PlaceMapper;
 import com.example.project.mapper.UserMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.time.LocalTime.now;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class RouteService {
    private final UserMapper userMapper;
    private final PlaceMapper placeMapper;
@@ -189,4 +190,53 @@ public class RouteService {
    }
 
    // 루트 이미지 생성
+   // 루트 블럭 변경
+   public BlockDto moveBlock(Long routeId, Long blockId, int newOrder, int newDay){
+      BlockDto blockDto=new BlockDto(placeMapper.findByBlockId(blockId));
+
+      int oldOrder = blockDto.getOrder();
+      blockDto.setOrder(newOrder);
+      blockDto.setDay(newDay);
+
+      List<RouteItem> routeItemList =placeMapper.findByDay(routeId, newDay);
+      List<BlockDto> blocksList = routeItemList.stream().map(BlockDto::new).collect(Collectors.toList());
+      Map<Integer,BlockDto> blocks = blocksList.stream().collect(Collectors.toMap(BlockDto::getOrder, Function.identity()));
+
+      if(blockDto.getDay()==newDay) {
+         for (BlockDto b : blocks.values()) {
+            int order = b.getOrder();
+            if (b.getId() != blockId) {
+               if (oldOrder > newOrder) {
+                  if (order < oldOrder && order >= newOrder) {
+                     b.setOrder(order - 1);
+                  }
+               } else if (oldOrder < newOrder) {
+                  if (order > oldOrder && order <= newOrder) {
+                     b.setOrder(order + 1);
+                  }
+               }
+            }
+            placeMapper.updateRouteItem(b);
+         }
+      }else {
+         List<RouteItem> oldRouteItemList =placeMapper.findByDay(routeId, blockDto.getDay());
+         List<BlockDto> oldBlockList = oldRouteItemList.stream().map(BlockDto::new).collect(Collectors.toList());
+         Map<Integer,BlockDto> oldBlocks = oldBlockList.stream().collect(Collectors.toMap(BlockDto::getOrder, Function.identity()));
+
+         for(BlockDto b : oldBlocks.values()){
+            if(b.getOrder()>oldOrder)
+            b.setOrder(b.getOrder()-1);
+            placeMapper.updateRouteItem(b);
+         }
+      }
+      placeMapper.updateRouteItem(blockDto);
+
+      return blockDto;
+   }
+   public Collection<BlockDto> getAllBlocks(Long routeId){
+      List<BlockDto> list =placeMapper.findAllBlocks(routeId);
+      list.sort(Comparator.comparingInt(BlockDto::getDay)
+            .thenComparingInt(BlockDto::getOrder));
+      return list;
+   }
 }

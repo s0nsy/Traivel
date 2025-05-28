@@ -1,6 +1,7 @@
 package com.example.project.mapper;
 
 import com.example.project.entity.*;
+import com.example.project.entity.dto.BlockDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -31,4 +32,9 @@ public interface PlaceMapper {
    Invite findByToken(String token);
    Long findByOwnerIdByRouteId(Long id);
    List<User> findUsersByRouteId(Long id);
+
+   RouteItem findByBlockId(Long id);
+   List<RouteItem> findByDay(Long routeId, int day);
+   void updateRouteItem(BlockDto item);
+   List<BlockDto> findAllBlocks(Long routeId);
 }

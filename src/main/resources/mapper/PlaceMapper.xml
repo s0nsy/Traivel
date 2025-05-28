@@ -89,4 +89,44 @@
     <select id="findUsersByRouteId" resultType="com.example.project.entity.User">
         select u.* from users u join route_user ru on u.id=ru.user_id where ru.route_id=#{routeId}
     </select>
+    <select id="findByBlockId" resultMap="routeItemResultMap">
+        select ri.id, ri.day, ri.route_id, ri."order", ri.dtype,
+               pi.place_id, mi.memo_id
+        from route_item ri
+        left join place_item pi on ri.id=pi.id
+        left join memo_item mi on ri.id=mi.id
+                                where ri.id=#{id}
+    </select>
+    <select id="findByDay" resultMap="routeItemResultMap">
+        select * from route_item where route_id=#{routeId} and day=#{day}
+    </select>
+    <update id="updateRouteItem" parameterType="com.example.project.entity.RouteItem">
+        update route_item set day=#{day}, "order"=#{order} where id=#{id}
+    </update>
+    <select id="findAllBlocks" parameterType="com.example.project.entity.RouteItem">
+        select * from route_item where route_id=#{routeId}
+    </select>
+
+    <resultMap id="routeItemResultMap" type="com.example.project.entity.RouteItem">
+        <id property="id" column="id"/>
+        <result property="order" column="order"/>
+        <result property="day" column="day"/>
+        <association property="route" javaType="com.example.project.entity.Route">
+            <id column="route_id" property="id"/>
+        </association>
+        <discriminator javaType="string" column="dtype">
+            <case value="PLACE" resultMap="placeItemResultMap"/>
+            <case value="MEMO" resultMap="memoItemResultMap"/>
+        </discriminator>
+    </resultMap>
+    <resultMap id="placeItemResultMap" type="com.example.project.entity.PlaceItem" extends="routeItemResultMap">
+        <association property="place" javaType="com.example.project.entity.Place">
+            <id column="place_id" property="id"/>
+        </association>
+    </resultMap>
+    <resultMap id="memoItemResultMap" type="com.example.project.entity.MemoItem" extends="routeItemResultMap">
+        <association property="memo" javaType="com.example.project.entity.Memo">
+            <id column="memo_id" property="id"/>
+        </association>
+    </resultMap>
 </mapper>
