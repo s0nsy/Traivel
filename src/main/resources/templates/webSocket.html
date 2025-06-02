@@ -23,7 +23,7 @@
 
       // 테스트용: 1초 후 블록 이동 요청 전송
       setTimeout(() => {
-         stompClient.send("/app/moveBlock", {}, JSON.stringify({
+         stompClient.send("/app/move-block", {}, JSON.stringify({
             blockId: 1,
             newDay: 2,
             newOrder: 2

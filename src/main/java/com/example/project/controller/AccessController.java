@@ -19,7 +19,7 @@ public class AccessController {
    private final AccessService accessService;
 
    // 후기 작성
-   @PostMapping("/write")
+   @PostMapping("/Access")
    public ResponseEntity<String> createAccess(
          @RequestBody AccessRequest request,
          @AuthenticationPrincipal UserDetails userDetails){
@@ -28,18 +28,18 @@ public class AccessController {
    }
 
    // 후기 수정
-   @PatchMapping("/edit")
+   @PatchMapping("/Access/{id}")
    public ResponseEntity<String> editAccess (
+         @PathVariable Long id,
          @RequestBody AccessRequest request,
-         Long id,
          @AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException{
       accessService.editAccess(request,id,userDetails.getUsername());
       return ResponseEntity.ok("게시글을 수정했습니다.");
    }
 
    // 후기 삭제
-   @DeleteMapping("/delete")
-   public ResponseEntity<String> deleteAccess(Long id,@AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException{
+   @DeleteMapping("/Access/{id}")
+   public ResponseEntity<String> deleteAccess(@PathVariable Long id,@AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException{
       accessService.deleteAccess(id, userDetails.getUsername());
       return ResponseEntity.ok("게시글을 삭제했습니다.");
    }

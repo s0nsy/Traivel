@@ -29,14 +29,14 @@ public class NaverController {
    }
 
    // 장소 추가
-   @PostMapping("/addPin")
+   @PostMapping("/pin")
    public ResponseEntity<String> addPin(@RequestBody AddPlaceToRouteRequest request){
      routeService.addPin(request);
      return ResponseEntity.ok("장소를 추가했습니다.");
    }
 
    // 네이버 지도에서 장소 추가
-   @PostMapping("/addPin/map")
+   @PostMapping("/pin/map")
    public ResponseEntity<String> reverseGeocode(@RequestBody Map<String, Double> coords){
       String address = naverSearchService.reverseGeocode(coords);
       return ResponseEntity.ok(address);

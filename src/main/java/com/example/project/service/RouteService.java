@@ -102,26 +102,26 @@ public class RouteService {
    }
 
    // 메모 수정
-   public void editMemo(MemoEditRequest request){
-      Memo memo = placeMapper.findByMemoId(request.getId());
-      memo.setContent(request.getContent());
+   public void editMemo(Long id, String content){
+      Memo memo = placeMapper.findByMemoId(id);
+      memo.setContent(content);
       placeMapper.editMemo(memo);
    }
 
    // 메모 삭제
-   public void deleteMemo(DeleteRequest deleteRequest){
-      MemoItem memoItem= placeMapper.findByMemoItemId(deleteRequest.getRouteItemId());
+   public void deleteMemo(Long id){
+      MemoItem memoItem= placeMapper.findByMemoItemId(id);
 
       placeMapper.deleteMemoItem(memoItem);
-      placeMapper.deleteRouteItem(deleteRequest.getRouteItemId());
+      placeMapper.deleteRouteItem(id);
    }
 
    // 장소 삭제
-   public void deletePlace(DeleteRequest deleteRequest) {
-      PlaceItem placeItem= placeMapper.findByPlaceItemId(deleteRequest.getRouteItemId());
+   public void deletePlace(Long id) {
+      PlaceItem placeItem= placeMapper.findByPlaceItemId(id);
 
       placeMapper.deletePlaceItem(placeItem);
-      placeMapper.deleteRouteItem(deleteRequest.getRouteItemId());
+      placeMapper.deleteRouteItem(id);
    }
 
    // 여행 루트 전체 삭제
@@ -233,6 +233,8 @@ public class RouteService {
 
       return blockDto;
    }
+
+   // 블럭 조회
    public Collection<BlockDto> getAllBlocks(Long routeId){
       List<BlockDto> list =placeMapper.findAllBlocks(routeId);
       list.sort(Comparator.comparingInt(BlockDto::getDay)

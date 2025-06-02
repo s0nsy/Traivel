@@ -2,9 +2,13 @@ package com.example.project.entity.dto;
 
 import com.example.project.entity.Route;
 import com.example.project.entity.RouteItem;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BlockDto {
    private Long id;
    private int order;
