@@ -17,6 +17,7 @@ import java.nio.file.AccessDeniedException;
 public class AccessController {
    private final AccessMapper accessMapper;
    private final AccessService accessService;
+
    // 후기 작성
    @PostMapping("/write")
    public ResponseEntity<String> createAccess(
@@ -25,6 +26,7 @@ public class AccessController {
       accessService.createAccess(request,userDetails.getUsername());
       return ResponseEntity.ok("게시글을 작성했습니다.");
    }
+
    // 후기 수정
    @PatchMapping("/edit")
    public ResponseEntity<String> editAccess (
@@ -34,6 +36,7 @@ public class AccessController {
       accessService.editAccess(request,id,userDetails.getUsername());
       return ResponseEntity.ok("게시글을 수정했습니다.");
    }
+
    // 후기 삭제
    @DeleteMapping("/delete")
    public ResponseEntity<String> deleteAccess(Long id,@AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException{

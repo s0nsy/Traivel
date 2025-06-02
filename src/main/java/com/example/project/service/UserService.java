@@ -1,5 +1,6 @@
 package com.example.project.service;
 
+import com.example.project.entity.Notification;
 import com.example.project.entity.User;
 import com.example.project.mapper.UserMapper;
 import com.example.project.config.security.dto.LoginRequest;
@@ -7,11 +8,15 @@ import com.example.project.config.security.dto.LoginResponse;
 import com.example.project.config.security.dto.RegisterRequest;
 import com.example.project.config.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -63,5 +68,15 @@ public class UserService {
 
       String accessToken = jwtUtil.CreateAccessToken(authentication.getName());
       return new LoginResponse(accessToken);
+   }
+
+   // 알림 조회
+   public List<Notification> notification(String username){
+      User user = userMapper.findByUsername(username);
+      if(user==null){
+         throw new UsernameNotFoundException(username+"을 찾을 수 없습니다.");
+      }
+      List<Notification> notifications= userMapper.findNotificationsByUserId(user.getId());
+      return notifications;
    }
 }
