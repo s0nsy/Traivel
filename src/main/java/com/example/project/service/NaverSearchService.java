@@ -9,7 +9,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
-import java.util.Map;
 
 import static reactor.core.publisher.Mono.error;
 
@@ -42,22 +41,4 @@ public class NaverSearchService {
             .block();
    }
 
-   // 지도에서 장소 택하기
-   public String reverseGeocode(Map<String, Double> coords){
-      double latitude= coords.get("lat");
-      double longitude = coords.get("lng");
-      String coord = latitude+ ","+longitude;
-
-      String response = naverMapClient.get()
-            .uri(uriBuilder -> uriBuilder
-                  .queryParam("coord", coord)
-                  .queryParam("output","json")
-                  .queryParam("orders", "addr,roadaddr")
-                  .build())
-            .retrieve()
-            .bodyToMono(String.class)
-            .block();
-
-      return response;
-   }
 }

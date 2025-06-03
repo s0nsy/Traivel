@@ -25,7 +25,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
    private final JwtUtil jwtUtil;
    private final UserService userService;
@@ -55,24 +55,6 @@ public class AuthController {
    public ResponseEntity<List<Notification>> notifications(@AuthenticationPrincipal UserDetails userDetails){
       List<Notification> notifications= userService.notification(userDetails.getUsername());
       return ResponseEntity.ok(notifications);
-   }
-   // 초대 알림 전송
-   @PostMapping("/invite")
-   public ResponseEntity<String> invite(String username,@AuthenticationPrincipal UserDetails userDetails) throws AuthenticationException, AccessDeniedException {
-      User user = userMapper.findByUsername(userDetails.getUsername());
-      if(user==null)
-         throw new AccessDeniedException("해당 루트 관리자가 아닙니다.");
-      Notification newNotification = new Notification();
-      User invitedUser = userMapper.findByUsername(username);
-      if(invitedUser==null)
-         throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
-      newNotification.setUserId(invitedUser.getId());
-      String message = userDetails.getUsername()+"님이 여행 일정에 초대했습니다!";
-      newNotification.setMessage(message);
-      newNotification.setType("INVITE");
-      newNotification.setCreatedAt(LocalDateTime.now());
-      userMapper.addNotification(newNotification);
-      return ResponseEntity.ok("알림 추가했습니다.");
    }
 
    // 알림 전송

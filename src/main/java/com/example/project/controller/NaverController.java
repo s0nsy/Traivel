@@ -1,6 +1,5 @@
 package com.example.project.controller;
 
-import com.example.project.config.WebClientConfig;
 import com.example.project.entity.dto.AddPlaceToRouteRequest;
 import com.example.project.entity.dto.NaverSearchRequest;
 import com.example.project.service.NaverSearchService;
@@ -10,10 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/naver")
 @RequiredArgsConstructor
 public class NaverController {
    private final NaverSearchService naverSearchService;
@@ -35,10 +33,6 @@ public class NaverController {
      return ResponseEntity.ok("장소를 추가했습니다.");
    }
 
-   // 네이버 지도에서 장소 추가
-   @PostMapping("/pin/map")
-   public ResponseEntity<String> reverseGeocode(@RequestBody Map<String, Double> coords){
-      String address = naverSearchService.reverseGeocode(coords);
-      return ResponseEntity.ok(address);
-   }
+
+
 }

@@ -11,5 +11,5 @@ import java.util.List;
 public class AccessRequest {
    private String title;
    private String content;
-   private List<Image> imageUrl;
+   private List<ImageDto> imageUrl;
 }

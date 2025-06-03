@@ -13,7 +13,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("/chat")
 public class ChatGPTController {
    private final ChatGPTService chatGPTService;
 

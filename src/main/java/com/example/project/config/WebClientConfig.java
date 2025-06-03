@@ -31,10 +31,11 @@ public class WebClientConfig {
             .build();
    }
 
+   // 역지오코딩 API용
    @Bean
-   public WebClient naverMapClient(){
+   public WebClient naverMapClient() {
       return WebClient.builder()
-            .baseUrl("https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc")
+            .baseUrl("https://naveropenapi.apigw.ntruss.com")
             .defaultHeader("X-NCP-APIGW-API-KEY-ID", naverApiConfig.getMapId())
             .defaultHeader("X-NCP-APIGW-API-KEY", naverApiConfig.getMapSecret())
             .build();

@@ -20,5 +20,4 @@ public class NaverApiConfig {
    @Value("${naver.map.secret}")
    private String mapSecret;
 
-
 }

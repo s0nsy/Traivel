@@ -28,11 +28,8 @@ public interface PlaceMapper {
    MemoItem findByMemoItemId(Long id);
    PlaceItem findByPlaceItemId(Long id);
    void deleteRoute(Route route);
-   void saveInvite(Invite invite);
-   Invite findByToken(String token);
    Long findByOwnerIdByRouteId(Long id);
    List<User> findUsersByRouteId(Long id);
-
    RouteItem findByBlockId(Long id);
    List<RouteItem> findByDay(Long routeId, int day);
    void updateRouteItem(BlockDto item);

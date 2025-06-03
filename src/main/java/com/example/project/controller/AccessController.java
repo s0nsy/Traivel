@@ -13,13 +13,12 @@ import java.nio.file.AccessDeniedException;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/access")
+@RequestMapping("/access")
 public class AccessController {
-   private final AccessMapper accessMapper;
    private final AccessService accessService;
 
    // 후기 작성
-   @PostMapping("/Access")
+   @PostMapping("/")
    public ResponseEntity<String> createAccess(
          @RequestBody AccessRequest request,
          @AuthenticationPrincipal UserDetails userDetails){
@@ -28,7 +27,7 @@ public class AccessController {
    }
 
    // 후기 수정
-   @PatchMapping("/Access/{id}")
+   @PatchMapping("/{id}")
    public ResponseEntity<String> editAccess (
          @PathVariable Long id,
          @RequestBody AccessRequest request,
@@ -38,7 +37,7 @@ public class AccessController {
    }
 
    // 후기 삭제
-   @DeleteMapping("/Access/{id}")
+   @DeleteMapping("/{id}")
    public ResponseEntity<String> deleteAccess(@PathVariable Long id,@AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException{
       accessService.deleteAccess(id, userDetails.getUsername());
       return ResponseEntity.ok("게시글을 삭제했습니다.");

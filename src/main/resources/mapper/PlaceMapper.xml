@@ -76,13 +76,6 @@
     <delete id="deleteRoute" parameterType="com.example.project.entity.Route">
         delete from route where id=#{id}
     </delete>
-    <insert id="saveInvite" parameterType="com.example.project.entity.Invite" useGeneratedKeys="true" keyProperty="id">
-        insert into invite(route_id,  token, expired_at)
-        values(#{route_id},#{token},#{expired_at})
-    </insert>
-    <select id="findByToken" resultType="com.example.project.entity.Invite">
-        select * from invite where token = #{token}
-    </select>
     <select id="findByOwnerIdByRouteId" resultType="Long">
         select owner_id from route where id=#{id}
     </select>
