@@ -1,7 +1,6 @@
 package com.example.project.controller;
 
 import com.example.project.entity.dto.AccessRequest;
-import com.example.project.mapper.AccessMapper;
 import com.example.project.service.AccessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

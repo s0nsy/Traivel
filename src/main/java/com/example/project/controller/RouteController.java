@@ -2,7 +2,6 @@ package com.example.project.controller;
 
 import com.example.project.entity.User;
 import com.example.project.entity.dto.*;
-import com.example.project.mapper.PlaceMapper;
 import com.example.project.mapper.UserMapper;
 import com.example.project.service.RouteService;
 import lombok.RequiredArgsConstructor;

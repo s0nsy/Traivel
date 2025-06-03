@@ -2,13 +2,11 @@ package com.example.project.service;
 
 import com.example.project.entity.Access;
 import com.example.project.entity.Image;
-import com.example.project.entity.User;
 import com.example.project.entity.dto.AccessRequest;
 import com.example.project.entity.dto.ImageDto;
 import com.example.project.mapper.AccessMapper;
 import com.example.project.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;

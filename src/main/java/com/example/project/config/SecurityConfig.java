@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-//@EnableWebSecurity: 웹 보안 구성할 때 사용. WebSecurityConfigurerAdapter 클래스를 상속받은 설정 클래스를 등록
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -38,8 +37,7 @@ public class SecurityConfig {
                   "/api/auth/login/**",
                   "/swagger-ui/**",
                   "/swagger-resources/**",
-                  "/v3/api-docs/**",
-                  "/map-test/**"
+                  "/v3/api-docs/**"
             )
                         .permitAll()  // 로그인, 회원가입 페이지는 모두에게 열어줌
             .anyRequest().authenticated()  // 나머지 요청은 인증 필요

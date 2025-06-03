@@ -2,7 +2,6 @@ package com.example.project.mapper;
 
 import com.example.project.entity.Access;
 import com.example.project.entity.Image;
-import com.example.project.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

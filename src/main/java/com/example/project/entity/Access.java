@@ -2,7 +2,6 @@ package com.example.project.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.w3c.dom.Text;
 
 import java.time.LocalDateTime;
 import java.util.List;
