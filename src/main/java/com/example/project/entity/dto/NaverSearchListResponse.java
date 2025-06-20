@@ -8,7 +8,6 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
 public class NaverSearchListResponse {
    private List<NaverSearchRequest> items;
 }
