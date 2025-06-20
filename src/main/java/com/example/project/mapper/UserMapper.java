@@ -12,4 +12,5 @@ public interface UserMapper {
    void save(User user);
    List<Notification> findNotificationsByUserId(Long id);
    void addNotification(Notification notification);
+   String findUsernameById(Long id);
 }

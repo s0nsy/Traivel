@@ -17,4 +17,7 @@
         insert into notification(user_id,message,type,is_read, created_at)
         values(#{userId},#{message},#{type},#{isRead},#{createdAt})
     </insert>
+    <select id="findUsernameById">
+        select username from users where id=#{id}
+    </select>
 </mapper>
