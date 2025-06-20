@@ -31,4 +31,8 @@ public class WebSocketController {
       return "webSocket";
    }
 
+   @GetMapping("/map-test")
+   public String showMapTest() {
+      return "map-test"; // templates/map-test.html
+   }
 }
