@@ -65,7 +65,7 @@ public class RouteService {
       placeItem.setPlace(newPlace);
       placeItem.setRoute(route);
       placeItem.setDay(request.getDay());
-      placeItem.setDtype(request.getDType());
+      placeItem.setDtype(request.getDtype());
 
       Map<String, Object> map = new HashMap<>();
       //여러값(routeId,day) 넘겨야하니 map
@@ -93,7 +93,7 @@ public class RouteService {
       memoItem.setMemo(memo);
       memoItem.setRoute(route);
       memoItem.setDay(memoRequest.getDay());
-      memoItem.setDtype(memoRequest.getDType());
+      memoItem.setDtype(memoRequest.getDtype());
 
       Map<String, Object> map = new HashMap<>();
       map.put("routeId", memoRequest.getRouteId());

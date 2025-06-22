@@ -27,7 +27,7 @@ public class ChatGPTController {
 
    // 추천 루트 출력
    @PostMapping("/route")
-   @Operation(description = "feature 배열에 3가지를 특징을 적어주세요.")
+   @Operation(description = "features 배열에 3가지를 특징을 적어주세요.")
    public ResponseEntity<String> getRecommendRoute(@RequestBody RecommendRouteRequest routeRequest) throws JsonProcessingException {
       String route = chatGPTService.getRouteRecommendation(routeRequest);
       return ResponseEntity.ok(route);

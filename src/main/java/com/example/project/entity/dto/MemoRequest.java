@@ -1,6 +1,7 @@
 package com.example.project.entity.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data
@@ -9,6 +10,8 @@ public class MemoRequest {
    private String content;
    private int order;
    private int day;
-   @Schema(example = "MEMO",accessMode=Schema.AccessMode.READ_WRITE)
-   private String dType;
+   @Schema(example = "MEMO")
+   @Column(insertable = false, updatable = false)
+   private String dtype;
+
 }
