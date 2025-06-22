@@ -4,9 +4,10 @@ spring:
     restart:
       enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/project
+    # url: jdbc:postgresql://localhost:5432/project
+    url: jdbc:postgresql://3.38.9.29:5432/traivel
     username: postgres
-    password: root
+    password: admin
     driver-class-name: org.postgresql.Driver
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
