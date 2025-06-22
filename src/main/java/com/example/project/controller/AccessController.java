@@ -1,6 +1,5 @@
 package com.example.project.controller;
 
-import com.example.project.converter.AccessToAccessDto;
 import com.example.project.entity.Access;
 import com.example.project.entity.Image;
 import com.example.project.entity.dto.AccessDto;
@@ -37,7 +36,6 @@ public class AccessController {
    private final AccessService accessService;
    private final AccessMapper accessMapper;
    private final UserMapper userMapper;
-   private final AccessToAccessDto accessToAccessDto;
 
    // 후기 목록
    @GetMapping
