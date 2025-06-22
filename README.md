@@ -19,7 +19,7 @@ WebSocket 기반 실시간 다인원 협업으로 여행 루트를 함께 수정
 
 - **Backend**: Spring Boot, MyBatis, WebSocket, REST API
 - **Database**: PostgreSQL
-- **인프라 및 배포**: AWS EC2, GitHub Actions (CI/CD), Nginx (설정 중)
+- **인프라 및 배포**: AWS EC2, GitHub Actions (CI/CD), Nginx
 - **인증**: JWT
 - **외부 API**: OpenAI GPT API, Naver Search API, Naver Map API, Gateway API
 <br><br>
