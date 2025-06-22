@@ -1,4 +1,4 @@
-# Traivel
+# 🛫 Traivel
 
 **Traivel**은 OpenAI API를 활용해 개인 맞춤형 여행 루트를 추천하고,  
 WebSocket 기반 실시간 다인원 협업으로 여행 루트를 함께 수정하며 계획할 수 있는 여행 계획 플랫폼입니다.
