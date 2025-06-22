@@ -86,6 +86,8 @@ public class RouteService {
       Memo memo = new Memo();
       memo.setContent(memoRequest.getContent());
       Route route = placeMapper.findByRouteId(memoRequest.getRouteId());
+      if(route==null)
+         throw new NullPointerException("해당 루트가 존재하지 않습니다.");
       memo.setRoute(route);
       placeMapper.saveMemo(memo);
 
