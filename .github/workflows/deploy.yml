@@ -30,8 +30,8 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
-          source: "/build/libs/"
-          target: "/home/ubuntu/traivel/Project-0.0.1-SNAPSHOT.jar"
+          source: "build/libs/Project-0.0.1-SNAPSHOT.jar"
+          target: "/home/ubuntu/traivel/"
 
       - name: Set permission to jar and restart server
         uses: appleboy/ssh-action@master
