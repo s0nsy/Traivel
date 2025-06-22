@@ -19,7 +19,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Set execute permission for gradlew
-        run: chmod +x ./gradle
+        run: chmod +x ./gradlew
 
       - name: Build the Gradle
         run: ./gradlew clean build --exclude-task test
