@@ -9,6 +9,7 @@ import com.example.project.entity.User;
 import com.example.project.entity.dto.NotificationDto;
 import com.example.project.mapper.UserMapper;
 import com.example.project.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -57,6 +58,7 @@ public class AuthController {
 
    // 알림 전송
    @PostMapping("/notifications")
+   @Operation(description="관리자만 알림을 보낼 수 있습니다.")
    public ResponseEntity<String> addNotification(Long userId, @RequestBody NotificationDto notification, @AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException {
       User user = userMapper.findByUsername(userDetails.getUsername());
       if(!user.getRole().equals("ADMIN"))

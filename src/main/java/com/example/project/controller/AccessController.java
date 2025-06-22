@@ -2,12 +2,14 @@ package com.example.project.controller;
 
 import com.example.project.converter.AccessToAccessDto;
 import com.example.project.entity.Access;
+import com.example.project.entity.Image;
 import com.example.project.entity.dto.AccessDto;
 import com.example.project.entity.dto.AccessRequest;
 import com.example.project.entity.dto.AccessSummaryDto;
 import com.example.project.mapper.AccessMapper;
 import com.example.project.mapper.UserMapper;
 import com.example.project.service.AccessService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.FileSystemResource;
@@ -54,6 +56,7 @@ public class AccessController {
 
    // 후기 작성
    @PostMapping("/write")
+   @Operation(description = "postman에서 진행해주세요.")
    public ResponseEntity<String> createAccess(
          @ModelAttribute AccessRequest request,
          @AuthenticationPrincipal UserDetails userDetails) throws IOException {
@@ -62,19 +65,27 @@ public class AccessController {
    }
 
    // 후기 상세 페이지
-   @GetMapping("/{id}")
-   public AccessDto AccessDetailed(@PathVariable Long id){
-      AccessDto accessDto = accessToAccessDto.fromEntity(accessMapper.findByAccessId(id));
+   @GetMapping("/{accessId}")
+   public AccessDto AccessDetailed(@PathVariable Long accessId){
+//      AccessDto accessDto = accessToAccessDto.fromEntity(accessMapper.findByAccessId(accessId));
+      AccessDto accessDto = new AccessDto();
+      Access access = accessMapper.findByAccessId(accessId);
+      accessDto.setTitle(access.getTitle());
+      accessDto.setContent(access.getContent());
+      accessDto.setWriter(userMapper.findUsernameById(accessMapper.findUserIdByAccessId(accessId)));
+      accessDto.setImageUrl(accessMapper.findImageByAccessId(accessId));
+      accessDto.setCreatedAt(String.valueOf(access.getCreated_at()));
       return accessDto;
    }
 
    // 후기 수정
-   @PatchMapping("/{id}")
+   @PatchMapping("/{accessId}")
+   @Operation(description = "postman에서 진행해주세요.")
    public ResponseEntity<String> editAccess (
-         @PathVariable Long id,
+         @PathVariable Long accessId,
          @ModelAttribute AccessRequest request,
          @AuthenticationPrincipal UserDetails userDetails) throws IOException{
-      accessService.editAccess(request,id,userDetails.getUsername());
+      accessService.editAccess(request,accessId,userDetails.getUsername());
       return ResponseEntity.ok("게시글을 수정했습니다.");
    }
 
