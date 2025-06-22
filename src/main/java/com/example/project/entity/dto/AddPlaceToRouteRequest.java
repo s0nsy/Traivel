@@ -8,6 +8,7 @@ public class AddPlaceToRouteRequest {
    private NaverSearchRequest naverSearchRequest;
    private int order;
    private int day;
-   @Schema(example = "PLACE")
+   @Schema(example = "PLACE", accessMode = Schema.AccessMode.READ_WRITE)
    private String dType;
+
 }

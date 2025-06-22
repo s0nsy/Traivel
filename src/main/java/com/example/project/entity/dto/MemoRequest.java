@@ -9,6 +9,6 @@ public class MemoRequest {
    private String content;
    private int order;
    private int day;
-   @Schema(example = "MEMO")
+   @Schema(example = "MEMO",accessMode=Schema.AccessMode.READ_WRITE)
    private String dType;
 }
