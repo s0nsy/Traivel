@@ -34,11 +34,17 @@
         where route_id = #{routeId}
         and day=#{day}
     </select>
-    <insert id="saveRouteItem" useGeneratedKeys="true" keyProperty="id"
+    <insert id="saveRouteItem" useGeneratedKeys="false" keyProperty="id"
             parameterType="com.example.project.entity.RouteItem" >
-        insert into route_item(route_id, day, "order")
-        values (#{route.id}, #{day}, #{order})
+        insert into route_item(route_id, day, "order","dtype")
+        values (#{route.id}, #{day}, #{order},#{dtype})
+        returning id
+
+        <selectKey keyProperty="id" resultType="long" order="AFTER">
+            SELECT currval(pg_get_serial_sequence('route_item','id'))
+        </selectKey>
     </insert>
+
     <insert id="savePlaceItem" parameterType="com.example.project.entity.PlaceItem">
         insert into place_item(id, place_id)
         values (#{id}, #{place.id})
@@ -68,10 +74,10 @@
         select * from memo where id = #{id}
     </select>
     <select id ="findByMemoItemId" resultType="com.example.project.entity.MemoItem">
-        select * from memo_item where id = #{id}
+        select * from memo_item where memo_id = #{id}
     </select>
     <select id ="findByPlaceItemId" resultType="com.example.project.entity.PlaceItem">
-        select * from place_item where id = #{id}
+        select * from place_item where place_id = #{id}
     </select>
     <delete id="deleteRoute" parameterType="com.example.project.entity.Route">
         delete from route where id=#{id}
@@ -99,6 +105,15 @@
     <select id="findAllBlocks" parameterType="com.example.project.entity.RouteItem">
         select * from route_item where route_id=#{routeId}
     </select>
+    <delete id="deleteMemo">
+        delete from memo where id=#{id}
+    </delete>
+    <select id="findByPlaceId" resultType="com.example.project.entity.Place">
+        select * from place where id=#{id}
+    </select>
+    <delete id="deletePlace">
+        delete from place where id=#{id}
+    </delete>
 
     <resultMap id="routeItemResultMap" type="com.example.project.entity.RouteItem">
         <id property="id" column="id"/>

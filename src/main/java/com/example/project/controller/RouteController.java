@@ -28,7 +28,7 @@ public class RouteController {
    }
 
    // 루트 조회
-   @GetMapping("/{id}")
+   @GetMapping("/{routeId}")
    public ResponseEntity<Collection<BlockDto>> getRoute(@PathVariable Long routeId){
       return ResponseEntity.ok(routeService.getAllBlocks(routeId));
    }
@@ -41,28 +41,28 @@ public class RouteController {
    }
 
    // 메모 수정
-   @PutMapping("/memo/{id}")
+   @PutMapping("/memo/{memoId}")
    public ResponseEntity<String> editMemo(@PathVariable Long memoId, String content){
       routeService.editMemo(memoId,content);
       return ResponseEntity.ok("수정했습니다.");
    }
 
    // 메모 삭제
-   @DeleteMapping("/memo/{id}")
+   @DeleteMapping("/memo/{MemoId}")
    public ResponseEntity<String> deleteMemo(@PathVariable Long MemoId){
-      routeService.deleteMemo(MemoId);
-      return ResponseEntity.ok("삭제했습니다.");
+      String response = routeService.deleteMemo(MemoId);
+      return ResponseEntity.ok(response);
    }
 
    // 장소 삭제
-   @DeleteMapping("/place/{id}")
+   @DeleteMapping("/place/{placeId}")
    public ResponseEntity<String> deletePlace(@PathVariable Long placeId){
-      routeService.deletePlace(placeId);
-      return ResponseEntity.ok("삭제했습니다.");
+      String response =routeService.deletePlace(placeId);
+      return ResponseEntity.ok(response);
    }
 
    // 루트 삭제
-   @DeleteMapping("/{id}")
+   @DeleteMapping("/{routeId}")
    public ResponseEntity<String> deleteRoute(@PathVariable Long routeId, @AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException {
       User user = userMapper.findByUsername(userDetails.getUsername());
       routeService.deleteRoute(routeId,user);

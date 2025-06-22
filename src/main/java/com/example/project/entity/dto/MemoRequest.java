@@ -8,5 +8,5 @@ public class MemoRequest {
    private String content;
    private int order;
    private int day;
-
+   private String dType;
 }

@@ -65,6 +65,7 @@ public class RouteService {
       placeItem.setPlace(newPlace);
       placeItem.setRoute(route);
       placeItem.setDay(request.getDay());
+      placeItem.setDtype(request.getDType());
 
       Map<String, Object> map = new HashMap<>();
       //여러값(routeId,day) 넘겨야하니 map
@@ -92,6 +93,7 @@ public class RouteService {
       memoItem.setMemo(memo);
       memoItem.setRoute(route);
       memoItem.setDay(memoRequest.getDay());
+      memoItem.setDtype(memoRequest.getDType());
 
       Map<String, Object> map = new HashMap<>();
       map.put("routeId", memoRequest.getRouteId());
@@ -111,19 +113,27 @@ public class RouteService {
    }
 
    // 메모 삭제
-   public void deleteMemo(Long id){
-      MemoItem memoItem= placeMapper.findByMemoItemId(id);
-
+   public String deleteMemo(Long memoId){
+      Memo memo = placeMapper.findByMemoId(memoId);
+      MemoItem memoItem= placeMapper.findByMemoItemId(memoId);
+      if(memo==null||memoItem==null)
+         return "존재하지 않는 메모입니다.";
       placeMapper.deleteMemoItem(memoItem);
-      placeMapper.deleteRouteItem(id);
+      placeMapper.deleteMemo(memoId);
+      placeMapper.deleteRouteItem(memoItem.getId());
+      return "삭제되었습니다";
    }
 
    // 장소 삭제
-   public void deletePlace(Long id) {
-      PlaceItem placeItem= placeMapper.findByPlaceItemId(id);
-
+   public String deletePlace(Long placeId) {
+      Place place = placeMapper.findByPlaceId(placeId);
+      PlaceItem placeItem= placeMapper.findByPlaceItemId(placeId);
+      if(placeItem==null)
+         return "존재하지 않는 장소입니다.";
       placeMapper.deletePlaceItem(placeItem);
-      placeMapper.deleteRouteItem(id);
+      placeMapper.deletePlace(placeId);
+      placeMapper.deleteRouteItem(placeItem.getId());
+      return "삭제되었습니다";
    }
 
    // 여행 루트 전체 삭제

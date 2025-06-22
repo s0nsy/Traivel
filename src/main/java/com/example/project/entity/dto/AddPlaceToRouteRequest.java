@@ -7,4 +7,5 @@ public class AddPlaceToRouteRequest {
    private NaverSearchRequest naverSearchRequest;
    private int order;
    private int day;
+   private String dType;
 }

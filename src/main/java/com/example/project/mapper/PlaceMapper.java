@@ -34,4 +34,7 @@ public interface PlaceMapper {
    List<RouteItem> findByDay(Long routeId, int day);
    void updateRouteItem(BlockDto item);
    List<BlockDto> findAllBlocks(Long routeId);
+   void deleteMemo(Long id);
+   Place findByPlaceId(Long id);
+   void deletePlace(Long id);
 }
