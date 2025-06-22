@@ -22,7 +22,7 @@ jobs:
         run: chmod +x ./gradle
 
       - name: Build the Gradle
-        run: ./gradle clean build --exclude-task test
+        run: ./gradlew clean build --exclude-task test
 
       - name: Copy jar to EC2 server
         uses: appleboy/scp-action@v0.1.4
