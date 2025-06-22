@@ -13,5 +13,5 @@ public class MemoRequest {
    @Schema(example = "MEMO")
    @Column(insertable = false, updatable = false)
    private String dtype;
-
+   // Springdoc 2.x에서 지원하는 필드 기반 접근
 }

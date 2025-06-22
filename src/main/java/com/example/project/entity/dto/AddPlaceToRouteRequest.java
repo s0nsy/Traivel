@@ -13,4 +13,6 @@ public class AddPlaceToRouteRequest {
    public String getDtype(){
       return dtype;
    }
+   // Springdoc 1.x에서 사용하는 기본 getter 기반 접근
+
 }
