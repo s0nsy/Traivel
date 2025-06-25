@@ -1,5 +1,9 @@
 package com.example.project.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.project.entity.Access;
 import com.example.project.entity.Image;
 import com.example.project.entity.dto.AccessRequest;
@@ -7,6 +11,7 @@ import com.example.project.mapper.AccessMapper;
 import com.example.project.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +32,9 @@ public class AccessService {
 //   private final String uploadDir ="C:/Users/82104/IdeaProjects/Project/images/";
    private final String uploadDir= "/home/ubuntu/traivel/images/";
 
+   @Value("${aws.s3.bucket}")
+   private String bucket;
+   private final AmazonS3 amazonS3;
 
    public void createAccess(AccessRequest request, String username) throws IOException {
 
@@ -46,8 +54,14 @@ public class AccessService {
             String imageName = i.getOriginalFilename();
             String saveImageName = UUID.randomUUID()+"_"+imageName;
 
-            File dest = new File(uploadDir+saveImageName);
-            i.transferTo(dest);
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(i.getContentType());
+            metadata.setContentLength(i.getSize());
+            PutObjectRequest objectRequest = new PutObjectRequest(bucket, saveImageName, i.getInputStream(), metadata);
+            amazonS3.putObject(objectRequest);
+
+//            File dest = new File(uploadDir+saveImageName);
+//            i.transferTo(dest);
 
             Image image = new Image();
             image.setImageUrl(saveImageName);
@@ -76,9 +90,13 @@ public class AccessService {
       if(request.getOriginalImageUrl()!=null)
          for (Long image : currentImages) {
             if (!request.getOriginalImageUrl().contains(image)) {
-               File dest = new File(uploadDir + accessMapper.findByImageId(image));
-               if (dest.exists())
-                  dest.delete();
+               DeleteObjectRequest objectRequest = new DeleteObjectRequest(bucket,accessMapper.findByImageId(image));
+
+               amazonS3.deleteObject(objectRequest);
+
+//               File dest = new File(uploadDir + accessMapper.findByImageId(image));
+//               if (dest.exists())
+//                  dest.delete();
                accessMapper.deleteByImageId(image);
             }
          }
@@ -87,8 +105,14 @@ public class AccessService {
             String name = image.getOriginalFilename();
             String saveImageName = UUID.randomUUID() + "_" + name;
 
-            File dest = new File(uploadDir + saveImageName);
-            image.transferTo(dest);
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(image.getContentType());
+            metadata.setContentLength(image.getSize());
+
+            PutObjectRequest objectRequest = new PutObjectRequest(bucket,saveImageName,image.getInputStream(),metadata);
+            amazonS3.putObject(objectRequest);
+//            File dest = new File(uploadDir + saveImageName);
+//            image.transferTo(dest);
 
             Image newImage = new Image();
             newImage.setImageUrl(saveImageName);

@@ -30,4 +30,11 @@ springdoc:
 
 file:
   upload-dir: ./images
- 
+
+
+aws:
+  access-key: ${AMAZON_ACCESS_KEY}
+  secret-key: ${AMAZON_SECRET_ACCESS_KEY}
+  region: ap-northeast-2
+  s3:
+    bucket: ${AWS_S3_BUCKET}
