@@ -78,7 +78,7 @@ public class AccessController {
 
    // 후기 수정
    @PatchMapping("/{accessId}")
-   @Operation(description = "postman에서 진행해주세요.")
+   @Operation(description = "postman에서 진행해주세요.\nimageUrl은 새로운 파일, originalImageUrl은 후기에 업로드 되어있는 파일입니다.\n 이미지를 imageUrl에서 추가하거나 originalImageUrl에서 삭제할 수 있습니다.")
    public ResponseEntity<String> editAccess (
          @PathVariable Long accessId,
          @ModelAttribute AccessRequest request,
