@@ -25,7 +25,7 @@ public class AccessService {
    private final AccessMapper accessMapper;
    private final UserMapper userMapper;
 //   private final String uploadDir ="C:/Users/82104/IdeaProjects/Project/images/";
-   private final String uploadDir= "/home/ubuntu/traivel/image/";
+   private final String uploadDir= "/home/ubuntu/traivel/images/";
 
 
    public void createAccess(AccessRequest request, String username) throws IOException {
@@ -72,7 +72,6 @@ public class AccessService {
       accessMapper.editAccess(access);
 
       List<Long> currentImages= accessMapper.findImageByAccessId(access.getId());
-//      String uploadDir= "/home/ubuntu/traivel/image";
 
       if(request.getOriginalImageUrl()!=null)
          for (Long image : currentImages) {
