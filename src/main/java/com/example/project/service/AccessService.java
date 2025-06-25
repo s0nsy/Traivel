@@ -24,10 +24,11 @@ public class AccessService {
 
    private final AccessMapper accessMapper;
    private final UserMapper userMapper;
-   private final String uploadDir ="C:/Users/82104/IdeaProjects/Project/images/";
+//   private final String uploadDir ="C:/Users/82104/IdeaProjects/Project/images/";
+   private final String uploadDir= "/home/ubuntu/traivel/image/";
+
 
    public void createAccess(AccessRequest request, String username) throws IOException {
-//      String uploadDir= "/home/ubuntu/traivel/image";
 
 
       Access access = new Access();
