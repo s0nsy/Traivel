@@ -21,17 +21,14 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @RequestMapping("/member")
 public class MemberController {
-   private final JwtUtil jwtUtil;
    private final RouteService routeService;
    private final UserMapper userMapper;
    private final MemberService memberService;
 
    // 초대 링크 생성
    @PostMapping("/link")
-   public ResponseEntity<String> createLink(Long routeId, @RequestHeader("Authorization") String auth) throws AccessDeniedException {
-      String token = auth.replace("Bearer ","");
-      String username= jwtUtil.getUserIdFromToken(token);
-      String linkToken =memberService.createInviteLink(routeId, username);
+   public ResponseEntity<String> createLink(Long routeId, @AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException {
+      String linkToken =memberService.createInviteLink(routeId, userDetails.getUsername());
       return ResponseEntity.ok(linkToken);
    }
 
