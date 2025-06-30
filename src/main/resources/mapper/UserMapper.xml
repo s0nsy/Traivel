@@ -14,8 +14,8 @@
         select * from notification where user_id=#{id}
     </select>
     <insert id="addNotification" parameterType="com.example.project.entity.Notification">
-        insert into notification(user_id,message,type,is_read, created_at)
-        values(#{userId},#{message},#{type},#{isRead},#{createdAt})
+        insert into notification(user_id,message,type,is_read, created_at,content)
+        values(#{userId},#{message},#{type},#{isRead},#{createdAt},#{content})
     </insert>
     <select id="findUsernameById">
         select username from users where id=#{id}

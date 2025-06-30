@@ -6,6 +6,7 @@ import com.example.project.entity.User;
 import com.example.project.mapper.UserMapper;
 import com.example.project.service.MemberService;
 import com.example.project.service.RouteService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -34,7 +35,7 @@ public class MemberController {
 
    // 초대 알림 전송
    @PostMapping("/invite/notification")
-   public ResponseEntity<String> invite(String username,@AuthenticationPrincipal UserDetails userDetails) throws AuthenticationException, AccessDeniedException {
+   public ResponseEntity<String> invite(String username, String link, @AuthenticationPrincipal UserDetails userDetails) throws AuthenticationException, AccessDeniedException {
       User user = userMapper.findByUsername(userDetails.getUsername());
       if(user==null)
          throw new AccessDeniedException("해당 루트 관리자가 아닙니다.");
@@ -47,11 +48,13 @@ public class MemberController {
       newNotification.setMessage(message);
       newNotification.setType("INVITE");
       newNotification.setCreatedAt(LocalDateTime.now());
+      newNotification.setContent(link);
       userMapper.addNotification(newNotification);
       return ResponseEntity.ok("알림 추가했습니다.");
    }
 
    // 링크를 통해 여행 루트 입장
+   @Operation(description="초대 코드의 UUID를 작성해주세요.")
    @GetMapping("/invite/{token}")
    public ResponseEntity<String> joinRoute(@PathVariable String token, @AuthenticationPrincipal UserDetails userDetails){
       User user = userMapper.findByUsername(userDetails.getUsername());

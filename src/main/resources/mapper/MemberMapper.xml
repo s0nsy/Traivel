@@ -10,4 +10,7 @@
     <select id="findByToken" resultType="com.example.project.entity.Invite">
         select * from invite where token = #{token}
     </select>
+    <select id="findUserIdByNotification" resultType="com.example.project.entity.User">
+        select
+    </select>
 </mapper>

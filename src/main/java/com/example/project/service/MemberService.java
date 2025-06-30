@@ -40,7 +40,7 @@ public class MemberService {
       invite.setExpired_at(expiredAt);
       memberMapper.saveInvite(invite);
 
-      return "https://도메인.com/invite/" +token;
+      return "https://traivel.p-e.kr.com/invite/" +token;
    }
 
    // 멤버 방출
