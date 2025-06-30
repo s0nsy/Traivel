@@ -130,7 +130,7 @@ public class RouteService {
    public String deletePlace(Long placeId) {
       Place place = placeMapper.findByPlaceId(placeId);
       PlaceItem placeItem= placeMapper.findByPlaceItemId(placeId);
-      if(placeItem==null)
+      if(placeItem==null || place==null)
          return "존재하지 않는 장소입니다.";
       placeMapper.deletePlaceItem(placeItem);
       placeMapper.deletePlace(placeId);
@@ -139,6 +139,7 @@ public class RouteService {
    }
 
    // 여행 루트 전체 삭제
+   @Transactional
    public void deleteRoute(Long routeId, User user) throws AccessDeniedException {
       Route route = placeMapper.findByRouteId(routeId);
       if(route==null)
@@ -147,6 +148,11 @@ public class RouteService {
       if(ownerId!=user.getId())
          throw new AccessDeniedException("해당 여행 루트 생성자가 여행 루트를 삭제할 수 있습니다.");
       placeMapper.deleteRouteUser(route,user);
+      //해당 routeId 인 placeId, memoId의 리스트들
+      List<Long> placeList = placeMapper.findPlaceIdByRouteId(routeId);
+      List<Long> memoList = placeMapper.findMemoIdByRouteId(routeId);
+      placeList.stream().forEach(placeId->deletePlace(placeId));
+      memoList.stream().forEach(memoId->deleteMemo(memoId));
       placeMapper.deleteRoute(route);
    }
 

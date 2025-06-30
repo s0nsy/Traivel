@@ -37,4 +37,6 @@ public interface PlaceMapper {
    void deleteMemo(Long id);
    Place findByPlaceId(Long id);
    void deletePlace(Long id);
+   List<Long> findMemoIdByRouteId(Long id);
+   List<Long> findPlaceIdByRouteId(Long id);
 }

@@ -114,6 +114,12 @@
     <delete id="deletePlace">
         delete from place where id=#{id}
     </delete>
+    <select id="findPlaceIdByRouteId" resultType="long">
+        select id from place where route_id=#{id}
+    </select>
+    <select id="findMemoIdByRouteId" resultType="long">
+        select id from memo where route_id=#{id}
+    </select>
 
     <resultMap id="routeItemResultMap" type="com.example.project.entity.RouteItem">
         <id property="id" column="id"/>
