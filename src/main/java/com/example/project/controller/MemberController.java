@@ -3,6 +3,8 @@ package com.example.project.controller;
 import com.example.project.config.security.jwt.JwtUtil;
 import com.example.project.entity.Notification;
 import com.example.project.entity.User;
+import com.example.project.entity.dto.NotificationDto;
+import com.example.project.mapper.MemberMapper;
 import com.example.project.mapper.UserMapper;
 import com.example.project.service.MemberService;
 import com.example.project.service.RouteService;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class MemberController {
    private final RouteService routeService;
    private final UserMapper userMapper;
    private final MemberService memberService;
+   private final MemberMapper memberMapper;
 
    // 초대 링크 생성
    @PostMapping("/link")
@@ -68,6 +72,18 @@ public class MemberController {
       User member = userMapper.findByUsername(username);
       memberService.deleteMember(routeId,userDetails.getUsername(),member);
       return ResponseEntity.ok(username+ "을 퇴장시켰습니다.");
+   }
+
+   // 알림 조회
+   @GetMapping("/notification")
+   public List<NotificationDto> getNotification(@AuthenticationPrincipal UserDetails userDetails){
+      User user = userMapper.findByUsername(userDetails.getUsername());
+      if(user==null)
+         throw new RuntimeException("오류가 발생했습니다.");
+      List<Notification> list = memberMapper.findNotificationByUserId(user.getId());
+      List<NotificationDto> dtoList = list.stream().map(NotificationDto::new).toList();
+
+      return dtoList;
    }
 
 }
