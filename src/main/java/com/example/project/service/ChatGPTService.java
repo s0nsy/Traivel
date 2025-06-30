@@ -1,12 +1,17 @@
 package com.example.project.service;
 
+import com.example.project.entity.dto.MemoRequest;
 import com.example.project.entity.dto.RecommendRouteRequest;
 import com.example.project.entity.dto.TravelRequest;
 import com.example.project.entity.dto.TravelResponse;
+import com.example.project.mapper.PlaceMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -20,6 +25,8 @@ import java.util.stream.Collectors;
 public class ChatGPTService {
 
    private final WebClient OpenAiWebClient;
+
+   private final RouteService routeService;
 
    private String escapeJson(String text) {
       return text.replace("\"", "\\\"")
@@ -178,6 +185,35 @@ public class ChatGPTService {
       content = content.substring(colonIndex+1);
       String[] features=content.split(",");
       return Arrays.stream(features).map(String::trim).collect(Collectors.toList());
+   }
+
+   // 출력된 추천 루트 적용
+   public void adjustRoute(Long routeId, String text){
+      String[] lines = text.split("\n");
+      int day =0;
+      String[] recommend= new String[4];
+
+      for(String line: lines){
+         line=line.trim();
+         if(line.startsWith("[")){
+            day=Integer.parseInt(line.replaceAll("[^0-9]",""));
+         }else if(line.contains("첫 번째 장소명")){
+            recommend[0]= line.split("장소명:")[1].trim();
+         }else if(line.contains("두 번째 장소명")){
+            recommend[1]= line.split("장소명:")[1].trim();
+         }else if(line.contains("유명 음식")){
+            String foods = line.split("음식:")[1].trim();
+            recommend[2]= foods.split(",")[0].trim();
+            recommend[3]= foods.split(",")[1].trim();
+         }
+         if(recommend[3]!=null) {
+            for (int i = 0; i < 4; i++) {
+               MemoRequest memoRequest = new MemoRequest(routeId, recommend[i], i, day, "MEMO");
+               routeService.addMemo(memoRequest);
+            }
+            recommend=new String[4];
+         }
+      }
    }
 
 }
