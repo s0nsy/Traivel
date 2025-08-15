@@ -5,12 +5,15 @@ import com.example.project.entity.dto.RecommendRouteRequest;
 import com.example.project.entity.dto.TravelRequest;
 import com.example.project.entity.dto.TravelResponse;
 import com.example.project.mapper.PlaceMapper;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,6 +30,7 @@ public class ChatGPTService {
    private final WebClient OpenAiWebClient;
 
    private final RouteService routeService;
+   private final ObjectMapper objectMapper;
 
    private String escapeJson(String text) {
       return text.replace("\"", "\\\"")
@@ -55,10 +59,18 @@ public class ChatGPTService {
 
    }
    // 여행지 추천 받기
+   @Cacheable(value="추천받은여행지", key="#root.target.getTravelRecommKey(#request)")
    public List<TravelResponse> getTravelRecommendations(TravelRequest request) throws JsonProcessingException {
+
       String prompt = escapeJson(recommendedPrompt(request));
       String content = extractContent(OpenAPISetting(prompt,400));
       return parseRecommendedPlaces(content);
+   }
+
+   // 여행지 추천받기 캐시 저장. 키 생성
+   public String getTravelRecommKey(TravelRequest request) throws JsonProcessingException {
+      String dtoToJson = objectMapper.writeValueAsString(request);
+      return DigestUtils.sha256Hex(dtoToJson);
    }
 
    private String recommendedPrompt(TravelRequest request){
