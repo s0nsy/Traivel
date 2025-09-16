@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -30,18 +31,19 @@ public class SecurityConfig {
    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
       // HttpSecurity 설정
       http
+            .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth->auth
-            .requestMatchers(
-                  "/auth/register/**",
-                  "/auth/login/**",
-                  "/swagger-ui/**",
-                  "/swagger-resources/**",
-                  "/v3/api-docs/**",
-                  "/"
-            )
-                        .permitAll()  // 로그인, 회원가입 페이지는 모두에게 열어줌
-            .anyRequest().authenticated()  // 나머지 요청은 인증 필요
+            .authorizeHttpRequests(auth -> auth
+                  .requestMatchers(
+                        "/auth/register/**",
+                        "/auth/login/**",
+                        "/swagger-ui/**",
+                        "/swagger-resources/**",
+                        "/v3/api-docs/**",
+                        "/"
+                  )
+                  .permitAll()  // 로그인, 회원가입 페이지는 모두에게 열어줌
+                  .anyRequest().authenticated()  // 나머지 요청은 인증 필요
             )
             .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 인가 필터 추가
 
