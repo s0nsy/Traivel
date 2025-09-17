@@ -9,12 +9,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Route {
-   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
 
    private String title;

@@ -8,13 +8,11 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Table (name = "users")
 public class User {
-   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
    private long id;
 
    private String username;

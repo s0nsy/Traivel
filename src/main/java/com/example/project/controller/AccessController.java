@@ -95,6 +95,7 @@ public class AccessController {
       return ResponseEntity.ok("게시글을 삭제했습니다.");
    }
 
+   // 이미지 조회
    @GetMapping("/image/{image}")
    public ResponseEntity<Resource> image(@PathVariable String image){
       String basePath;

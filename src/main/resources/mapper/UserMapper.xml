@@ -6,14 +6,14 @@
     <select id="findByUsername" resultType="com.example.project.entity.User">
         select * from users where username= #{username}
     </select>
-    <insert id ="save" parameterType="com.example.project.entity.User">
+    <insert id ="save" parameterType="com.example.project.entity.User" useGeneratedKeys="true" keyProperty="id">
         insert into users(username, password, email)
             values(#{username},#{password},#{email})
     </insert>
     <select id="findNotificationsByUserId" resultType="com.example.project.entity.Notification">
         select * from notification where user_id=#{id}
     </select>
-    <insert id="addNotification" parameterType="com.example.project.entity.Notification">
+    <insert id="addNotification" parameterType="com.example.project.entity.Notification" useGeneratedKeys="true" keyProperty="id">
         insert into notification(user_id,message,type,is_read, created_at,content)
         values(#{userId},#{message},#{type},#{isRead},#{createdAt},#{content})
     </insert>

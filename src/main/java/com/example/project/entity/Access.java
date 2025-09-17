@@ -4,12 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Data
 public class Access {
-   @Id @GeneratedValue(strategy= GenerationType.IDENTITY)
    private Long id;
 
    private String title;
@@ -17,7 +16,7 @@ public class Access {
    private String content;
 
    @OneToMany(mappedBy="access", cascade=CascadeType.ALL, orphanRemoval = true)
-   private List<Image> ImageUrl;
+   private List<Image> ImageUrl = new ArrayList<>();
 
    private LocalDateTime created_at;
    private LocalDateTime updated_at;

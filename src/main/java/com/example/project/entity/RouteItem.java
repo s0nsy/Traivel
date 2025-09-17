@@ -4,12 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
-@Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name="dtype")
 @Table(name="route_item")
 public abstract class RouteItem {
-   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
    @Column(name="`order`")
    private int order;

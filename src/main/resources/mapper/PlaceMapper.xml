@@ -45,7 +45,7 @@
         </selectKey>
     </insert>
 
-    <insert id="savePlaceItem" parameterType="com.example.project.entity.PlaceItem">
+    <insert id="savePlaceItem" parameterType="com.example.project.entity.PlaceItem" useGeneratedKeys="false" keyProperty="id">
         insert into place_item(id, place_id)
         values (#{id}, #{place.id})
     </insert>

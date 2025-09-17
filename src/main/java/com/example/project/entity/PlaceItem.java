@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@Entity
 @Data
 @Table(name="place_item")
 @EqualsAndHashCode(callSuper = true)
