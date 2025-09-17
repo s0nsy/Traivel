@@ -43,6 +43,7 @@ public class AccessController {
       List<AccessSummaryDto> dtos = new ArrayList<>();
       for(Access access: accessMapper.findSummaryAll()){
          AccessSummaryDto dto = new AccessSummaryDto();
+         dto.setId(access.getId());
          dto.setTitle(access.getTitle());
          dto.setWriter(access.getWriter().getUsername());
          dto.setCreatedAt(access.getCreated_at());
