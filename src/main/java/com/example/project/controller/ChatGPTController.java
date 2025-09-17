@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.security.Principal;
 import java.util.List;
 
 @AllArgsConstructor
@@ -25,6 +26,7 @@ public class ChatGPTController {
    private final ChatGPTService chatGPTService;
    private final UserMapper userMapper;
    private final PlaceMapper placeMapper;
+   private final RouteController routeController;
 
    // 여행지 추천
    @PostMapping("/recommend")
@@ -44,11 +46,27 @@ public class ChatGPTController {
 
    // 출력된 추천 루트 적용
    @PostMapping("/route/adjust")
-   public ResponseEntity<String> adjustRoute(Long routeId, @RequestBody String text, @AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException {
-      User user = userMapper.findByUsername(userDetails.getUsername());
-      if(user==null||!placeMapper.findUsersByRouteId(routeId).contains(user))
+   public ResponseEntity<String> adjustRoute(Principal principal, String routeId, @RequestBody String text) throws AccessDeniedException {
+      // routeId 말고 제목으로 넣는 걸로 하자
+      User user = userMapper.findByUsername(principal.getName());
+      if (user == null)
          throw new AccessDeniedException("루트를 추가할 권한이 없습니다.");
-      chatGPTService.adjustRoute(routeId,text);
+      Long parsedRouteId=0L;
+      if (routeId.equals("null")|| routeId.equals("undefined")|| routeId.isEmpty()){
+         int start = text.indexOf(":");
+         int end = start+text.indexOf("-",start+2);
+         routeController.addRoute(principal, text.substring(start+2, end));
+      }else {
+         try {
+            parsedRouteId = Long.parseLong(routeId);
+            if (!placeMapper.findUsersByRouteId(parsedRouteId).contains(user))
+               throw new AccessDeniedException("루트를 추가할 권한이 없습니다.");
+         } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("잘못된 routeId " + routeId);
+         }
+      }
+
+      chatGPTService.adjustRoute(parsedRouteId,text);
       return ResponseEntity.ok("루트가 적용되었습니다.");
    }
 }

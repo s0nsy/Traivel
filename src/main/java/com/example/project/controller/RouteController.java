@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.security.Principal;
 import java.util.Collection;
 
 @RequiredArgsConstructor
@@ -22,8 +23,8 @@ public class RouteController {
 
    // 루트 db 추가
    @PostMapping("/")
-   public ResponseEntity<String> addRoute(@AuthenticationPrincipal UserDetails user, String title){
-      routeService.addRoute(user.getUsername(),title);
+   public ResponseEntity<String> addRoute(Principal principal, String title){
+      routeService.addRoute(principal.getName(),title);
       return ResponseEntity.ok("루트를 추가했습니다.");
    }
 
