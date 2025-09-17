@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class AccessSummaryDto {
+   Long id;
    String title;
    LocalDateTime createdAt;
    String writer;
