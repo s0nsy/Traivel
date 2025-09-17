@@ -43,7 +43,7 @@
     </select>
 
     <resultMap id="findSummaryAllWithUser" type="com.example.project.entity.Access">
-        <id property="id" column="access_id"/>
+        <id property="id" column="id"/>
         <result property="title" column="title"/>
         <result property="created_at" column="created_at"/>
 
