@@ -47,6 +47,7 @@ public class AccessService {
       access.setCreated_at(LocalDateTime.now());
       access.setWriter(userMapper.findByUsername(username));
       accessMapper.save(access);
+      System.out.println("저장 후 Access 객체 id: " + access.getId());
       if(request.getImageUrl()!=null||request.getImageUrl().equals(""))
          addImage(request,access);
    }
