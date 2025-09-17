@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TravelResponse implements Serializable {
    private String destination;
+   private String city;
    private List<String> features;
 
 }

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
@@ -58,50 +59,47 @@ public class ChatGPTService {
       return response;
 
    }
+
    // 여행지 추천 받기
-   @Cacheable(value="추천받은여행지", key="#root.target.getTravelRecommKey(#request)")
+   @Cacheable(value="추천받은여행지", key="@cacheKeyUtil.getTravelRecommKey(#request)")
    public List<TravelResponse> getTravelRecommendations(TravelRequest request) throws JsonProcessingException {
 
       String prompt = escapeJson(recommendedPrompt(request));
-      String content = extractContent(OpenAPISetting(prompt,400));
-      return parseRecommendedPlaces(content);
-   }
-
-   // 여행지 추천받기 캐시 저장. 키 생성
-   public String getTravelRecommKey(TravelRequest request) throws JsonProcessingException {
-      String dtoToJson = objectMapper.writeValueAsString(request);
-      return DigestUtils.sha256Hex(dtoToJson);
+      String content = extractContent(OpenAPISetting(prompt, 400));
+      return parseRecommendedPlaces(content); // 문자열로된 결과 파싱으로 값 추출
+//      return jsonRecommendedPlaces(content); // string to json
    }
 
    private String recommendedPrompt(TravelRequest request){
       return String.format("다음 정보로 여행지를 추천해주세요:\n"+
               "일정 정보: %s \n" +
-              "상세 인원 정보: %s \n" +
               "여행의 목적: %s \n" +
               "여행 예산: %s \n" +
               "선호하는 숙박 시설: %s \n" +
-              "중요하게 여기는 요소: %s \n" +
+              "중요하게 여기는 요소: %s \n" + 
               "선호하는 이동 수단: %s \n" +
+              "여행 구성원: %s \n" +
               "특히 마음에 들었던 여행지: %s \n" +
               "주의해야 할 요소: %s \n" +
               "AI 추천 방식: %s \n" +
               "여행 중 어느 정도의 자유 시간을 원하시나요? : %s \n" +
               "\n" +
-              "위 정보를 바탕으로, 무조건 어떤 부가적인 말 없이 다음과 같은 형식으로 국내 여행지 7곳을 추천해주세요.\n" +
-              "1. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
-              "2. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
-              "3. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
-              "4. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
-              "5. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
-              "6. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
-              "7. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3",
-              request.getSchedule(),
-              request.getGroupComposition(),
+              "위 정보를 바탕으로, 무조건 어떤 부가적인 말 없이 아래 형식으로 반환하여 국내 여행지 7곳을 추천해주세요.\n" +
+                  "1. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
+                  "2. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
+                  "3. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
+                  "4. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
+                  "5. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
+                  "6. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
+                  "7. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3",
+
+            request.getSchedule(),
               request.getPurpose(),
               request.getBudget(),
               request.getAccommodation(),
               request.getKeyPoint(),
               request.getTransport(),
+              request.getCompanion(),
               request.getFavorite(),
               request.getSpecialNeeds(),
               request.getRecommendationType(),
@@ -111,15 +109,15 @@ public class ChatGPTService {
 
    // 여행 루트 추천
    public String getRouteRecommendation(RecommendRouteRequest routeRequest) throws JsonProcessingException {
+      System.out.println(routeRequest);
       String prompt = escapeJson(RoutePrompt(routeRequest));
       String content = extractContent(OpenAPISetting(prompt,1000));
-      return content; //수정
+      return content;
    }
 
    public String RoutePrompt(RecommendRouteRequest routeRequest){
       return String.format(
          "일정 정보: %s \n" +
-         "상세 인원 정보: %s \n" +
          "여행의 목적: %s \n" +
          "여행 예산: %s \n" +
          "선호하는 숙박 시설: %s \n" +
@@ -144,15 +142,14 @@ public class ChatGPTService {
          "- 두 번째 장소명:\n" +
          "- 영업 시간:\n" +
          "- 특별한 방문 팁:\n" +
-
          "- 유명 음식:\n",
             routeRequest.getTravelRequest().getSchedule(),
-            routeRequest.getTravelRequest().getGroupComposition(),
             routeRequest.getTravelRequest().getPurpose(),
             routeRequest.getTravelRequest().getBudget(),
             routeRequest.getTravelRequest().getAccommodation(),
             routeRequest.getTravelRequest().getKeyPoint(),
             routeRequest.getTravelRequest().getTransport(),
+            routeRequest.getTravelRequest().getCompanion(),
             routeRequest.getTravelRequest().getFavorite(),
             routeRequest.getTravelRequest().getSpecialNeeds(),
             routeRequest.getTravelRequest().getRecommendationType(),
@@ -164,17 +161,21 @@ public class ChatGPTService {
       );
    }
 
-
+   // 파싱해서 추천 여행지 출력
    public List<TravelResponse> parseRecommendedPlaces(String content) {
       List<TravelResponse> places = new ArrayList<>();
       String[] lines = content.split("\n");
       for (String line : lines) {
+         System.out.println(line);
          String destination = extractPlaceDestination(line);
+         String city = extractPlaceCity(line);
          List<String> features = extractFeatures(line);
-         places.add(new TravelResponse(destination, features));
+         places.add(new TravelResponse(destination, city, features));
       }
+      System.out.println(places);
       return places;
    }
+
    public String extractContent(String response) throws JsonProcessingException {
       ObjectMapper objectMapper = new ObjectMapper();
       JsonNode root = objectMapper.readTree(response);
@@ -185,8 +186,16 @@ public class ChatGPTService {
       }
       return null;
    }
+
    public String extractPlaceDestination(String content){
       int spotIndex = content.indexOf('.');
+      int colonIndex = content.indexOf('-');
+      content = content.substring(spotIndex+1, colonIndex);
+      return content.trim();
+   }
+
+   public String extractPlaceCity(String content){
+      int spotIndex = content.indexOf('-');
       int colonIndex = content.indexOf(':');
       content = content.substring(spotIndex+1, colonIndex);
       return content.trim();
