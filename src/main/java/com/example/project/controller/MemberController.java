@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,8 +33,8 @@ public class MemberController {
 
    // 초대 링크 생성
    @PostMapping("/link")
-   public ResponseEntity<String> createLink(Long routeId, @AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException {
-      String linkToken =memberService.createInviteLink(routeId, userDetails.getUsername());
+   public ResponseEntity<String> createLink(Long routeId, Principal principal) throws AccessDeniedException {
+      String linkToken =memberService.createInviteLink(routeId, principal.getName());
       return ResponseEntity.ok(linkToken);
    }
 

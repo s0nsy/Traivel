@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -40,7 +41,8 @@ public class MemberService {
       invite.setExpired_at(expiredAt);
       memberMapper.saveInvite(invite);
 
-      return "https://traivel.p-e.kr.com/invite/" +token;
+//      return "https://traivel.p-e.kr.com/invite/" +token;
+      return token;
    }
 
    // 멤버 방출
