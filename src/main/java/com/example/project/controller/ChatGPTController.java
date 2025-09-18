@@ -55,7 +55,7 @@ public class ChatGPTController {
       if (routeId.equals("null")|| routeId.equals("undefined")|| routeId.isEmpty()){
          int start = text.indexOf(":");
          int end = start+text.indexOf("-",start+2);
-         routeController.addRoute(principal, text.substring(start+2, end));
+         parsedRouteId= routeController.addRoute(principal, text.substring(start+2, end));
       }else {
          try {
             parsedRouteId = Long.parseLong(routeId);
@@ -65,7 +65,7 @@ public class ChatGPTController {
             throw new IllegalArgumentException("잘못된 routeId " + routeId);
          }
       }
-
+      System.out.println(text);
       chatGPTService.adjustRoute(parsedRouteId,text);
       return ResponseEntity.ok("루트가 적용되었습니다.");
    }

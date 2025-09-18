@@ -133,7 +133,7 @@ public class ChatGPTService {
 
          "위에서 언급된 각 여행지에 대해 여행 루트를 작성합니다."+
          "하루에 두 가지 일정과 해당 여행지 유명 음식 두 가지를 한 줄에 작성해주세요."+
-         "부가적인 말은 제외하고 다음 정보를 다음과 동일하게 제공해 주세요:"+
+         "부가적인 말은 하지말고!!! 다음 정보를 다음과 동일한 구조로만 제공해 주세요:"+
          "[n일차] (e.g. [1일차]) \n" +
          "- 첫 번째 장소명:\n" +
          "- 영업 시간:\n" +
@@ -210,31 +210,65 @@ public class ChatGPTService {
 
    // 출력된 추천 루트 적용
    public void adjustRoute(Long routeId, String text){
-      String[] lines = text.split("\n");
+      text=text.replaceAll("^\"|\"$","").replaceAll("\\\\n","");
+      String[] lines = text.split("\\[");
       int day =0;
-      String[] recommend= new String[4];
 
-      for(String line: lines){
-         line=line.trim();
-         if(line.startsWith("[")){
-            day=Integer.parseInt(line.replaceAll("[^0-9]",""));
-         }else if(line.contains("첫 번째 장소명")){
-            recommend[0]= line.split("장소명:")[1].trim();
-         }else if(line.contains("두 번째 장소명")){
-            recommend[1]= line.split("장소명:")[1].trim();
-         }else if(line.contains("유명 음식")){
-            String foods = line.split("음식:")[1].trim();
-            recommend[2]= foods.split(",")[0].trim();
-            recommend[3]= foods.split(",")[1].trim();
+      for(int i =1;i<lines.length;i++) {
+         System.out.println(lines[i]);
+         day=Integer.parseInt(lines[i].substring(0,1));
+         lines[i]=lines[i].substring(7);
+         String[] recommend= new String[4];
+         if(lines[i].contains("유명 음식:")){
+            String foods = lines[i].split("유명 음식:")[1].trim();
+            recommend[2]= foods.length()>0?foods.split(",")[0].trim():"";
+            recommend[3]= foods.length()>1?foods.split(",")[1].trim():"";
          }
-         if(recommend[3]!=null) {
-            for (int i = 0; i < 4; i++) {
-               MemoRequest memoRequest = new MemoRequest(routeId, recommend[i], i, day, "MEMO");
-               routeService.addMemo(memoRequest);
-            }
-            recommend=new String[4];
+         lines[i]=lines[i].split("- 유명 음식:")[0];
+
+         if(lines[i].contains("두 번째 장소명:"))
+            recommend[1]= lines[i].split("두 번째 ")[1].trim();
+         lines[i]=lines[i].split("- 두 번째 장소명:")[0];
+
+         if(lines[i].contains("첫 번째 장소명:"))
+            recommend[0]= lines[i].split("첫 번째 ")[1].trim();
+
+         for(String recommends: recommend){
+            System.out.println(recommends);
+         }
+         for (int j = 0; j < 4; j++) {
+            MemoRequest memoRequest = new MemoRequest(routeId, recommend[j], j, day, "MEMO");
+            routeService.addMemo(memoRequest);
          }
       }
+// swagger
+//      for(String line: lines){
+//         line=line.trim();
+//         if(line.startsWith("[")){
+//            if(recommend[0]!=null) {
+//               for (int i = 0; i < 4; i++) {
+//                  MemoRequest memoRequest = new MemoRequest(routeId, recommend[i], i, day, "MEMO");
+//                  routeService.addMemo(memoRequest);
+//               }
+//               recommend = new String[4];
+//            }
+//            day=Integer.parseInt(line.replaceAll("[^0-9]",""));
+//         }else if(line.contains("첫 번째 장소명:")){
+//            recommend[0]= line.split("첫 번째 장소명:")[1].trim();
+//         }else if(line.contains("두 번째 장소명:")){
+//            recommend[1]= line.split("두 번째 장소명:")[1].trim();
+//         }else if(line.contains("유명 음식:")){
+//            String foods = line.split("유명 음식:")[1].trim();
+//            recommend[2]= foods.length()>0?foods.split(",")[0].trim():"";
+//            recommend[3]= foods.length()>1?foods.split(",")[1].trim():"";
+//         }
+//      }
+//      if(recommend[0]!=null){
+//         for (int i = 0; i < 4; i++) {
+//            MemoRequest memoRequest = new MemoRequest(routeId, recommend[i], i, day, "MEMO");
+//            routeService.addMemo(memoRequest);
+//         }
+//      }
    }
 
 }

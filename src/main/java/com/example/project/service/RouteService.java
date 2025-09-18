@@ -26,7 +26,7 @@ public class RouteService {
    private final MemberMapper memberMapper;
 
    // 루트 추가
-   public void addRoute(String username, String title){
+   public Long addRoute(String username, String title){
       User user = userMapper.findByUsername(username);
       if(user==null)
          throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
@@ -38,6 +38,7 @@ public class RouteService {
       route.setOwner(user);
       placeMapper.addRoute(route);
       placeMapper.addRouteUser(route,user);
+      return route.getId();
    }
 
    // 장소 추가

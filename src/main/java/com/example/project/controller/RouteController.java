@@ -1,5 +1,6 @@
 package com.example.project.controller;
 
+import com.example.project.entity.Route;
 import com.example.project.entity.User;
 import com.example.project.entity.dto.*;
 import com.example.project.mapper.UserMapper;
@@ -23,9 +24,9 @@ public class RouteController {
 
    // 루트 db 추가
    @PostMapping("/")
-   public ResponseEntity<String> addRoute(Principal principal, String title){
-      routeService.addRoute(principal.getName(),title);
-      return ResponseEntity.ok("루트를 추가했습니다.");
+   public Long addRoute(Principal principal, String title){
+      Long routeId = routeService.addRoute(principal.getName(),title);
+      return routeId;
    }
 
    // 루트 조회
