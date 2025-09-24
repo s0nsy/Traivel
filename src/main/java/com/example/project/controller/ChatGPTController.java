@@ -67,6 +67,6 @@ public class ChatGPTController {
       }
       System.out.println(text);
       chatGPTService.adjustRoute(parsedRouteId,text);
-      return ResponseEntity.ok("루트가 적용되었습니다. 루트: "+routeId);
+      return ResponseEntity.ok("루트가 적용되었습니다. 루트: "+parsedRouteId);
    }
 }

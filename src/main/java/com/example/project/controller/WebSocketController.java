@@ -20,13 +20,13 @@ public class WebSocketController {
    @MessageMapping("/move-block")
    @ResponseBody
    public void moveBlock(BlockMoveMessage message){
-      System.out.println("블록 이동 요청 받음: " + message.getBlockId() + " -> " + message.getNewOrder());
+      System.out.println("블록 이동 요청 받음: " + message.getBlockId() + ": " + message.getNewOrder());
       BlockDto updated=routeService.moveBlock(message.getRouteId(),message.getBlockId(),message.getNewOrder(), message.getNewDay());
       if(updated!=null){
          messagingTemplate.convertAndSend("/topic/blocks", routeService.getAllBlocks(message.getRouteId()));
       }
    }
-   @GetMapping("/ws")
+   @GetMapping("/ws-test")
    public String webSocket(){
       return "webSocket";
    }

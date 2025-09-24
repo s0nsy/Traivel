@@ -40,7 +40,8 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/swagger-resources/**",
                         "/v3/api-docs/**",
-                        "/"
+                        "/",
+                        "/ws/**"
                   )
                   .permitAll()  // 로그인, 회원가입 페이지는 모두에게 열어줌
                   .anyRequest().authenticated()  // 나머지 요청은 인증 필요

@@ -26,7 +26,7 @@ public class NaverSearchService {
 
       String uri = UriComponentsBuilder.fromUriString("https://openapi.naver.com/v1/search/local.json")
             .queryParam("query", keyword)
-            .queryParam("display", 5)
+            .queryParam("display", 10)
             .queryParam("sort", "random")
             .build()
             .toUriString();

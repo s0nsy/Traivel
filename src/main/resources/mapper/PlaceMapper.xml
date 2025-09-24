@@ -89,21 +89,48 @@
         select u.* from users u join route_user ru on u.id=ru.user_id where ru.route_id=#{routeId}
     </select>
     <select id="findByBlockId" resultMap="routeItemResultMap">
-        select ri.id, ri.day, ri.route_id, ri."order", ri.dtype,
-               pi.place_id, mi.memo_id
+        select ri.id, ri.day, ri.route_id as routeId, ri."order", ri.dtype,
+               pi.place_id ,mi.memo_id
         from route_item ri
         left join place_item pi on ri.id=pi.id
         left join memo_item mi on ri.id=mi.id
-                                where ri.id=#{id}
+        where ri.id=#{id}
     </select>
-    <select id="findByDay" resultMap="routeItemResultMap">
-        select * from route_item where route_id=#{routeId} and day=#{day}
-    </select>
+
+    <select id="findByDay" resultMap="blockDtoMap">
+        select ri.day, ri.id as route_item_id, ri."order", ri.dtype,
+               pi.place_id as place_id,
+               mi.memo_id as memo_id,
+               coalesce(p.title ,m.content) as title,
+               p.address as address
+        from route r
+                 left join route_item ri on r.id = ri.route_id
+                 left join place_item pi on ri.id=pi.id
+                 left join place p on pi.place_id = p.id
+                 left join memo_item mi on ri.id=mi.id
+                 left join memo m on mi.memo_id = m.id
+        where r.id=#{routeId} and ri.day =#{day}
+        order by ri."order"
+        </select>
+
     <update id="updateRouteItem" parameterType="com.example.project.entity.RouteItem">
         update route_item set day=#{day}, "order"=#{order} where id=#{id}
     </update>
-    <select id="findAllBlocks" parameterType="com.example.project.entity.RouteItem">
-        select * from route_item where route_id=#{routeId}
+    <select id="findAllBlocks" parameterType="Long" resultMap="blockDtoMap">
+        select ri.day, ri.id as route_item_id, ri."order", ri.dtype,
+               pi.place_id as place_id,
+               mi.memo_id as memo_id,
+               coalesce(p.title ,m.content) as title,
+               p.address as address,
+               coalesce(m.id,p.id) as item_id
+        from route r
+            left join route_item ri on r.id = ri.route_id
+                 left join place_item pi on ri.id=pi.id
+                 left join place p on pi.place_id = p.id
+                 left join memo_item mi on ri.id=mi.id
+                 left join memo m on mi.memo_id = m.id
+        where r.id=#{id}
+        order by ri.day, ri."order"
     </select>
     <delete id="deleteMemo">
         delete from memo where id=#{id}
@@ -121,6 +148,17 @@
         select id from memo where route_id=#{id}
     </select>
 
+    <resultMap id="blockDtoMap" type="com.example.project.entity.dto.BlockDto">
+        <id property="id" column="route_item_id"/>
+        <result property="order" column="order"/>
+        <result property="day" column="day"/>
+        <result property="dtype" column="dtype"/>
+        <result property="title" column="title"/>
+        <result property="address" column="address"/>
+        <result property="placeId" column="place_id"/>
+        <result property="memoId" column="memo_id"/>
+    </resultMap>
+
     <resultMap id="routeItemResultMap" type="com.example.project.entity.RouteItem">
         <id property="id" column="id"/>
         <result property="order" column="order"/>
@@ -136,11 +174,14 @@
     <resultMap id="placeItemResultMap" type="com.example.project.entity.PlaceItem" extends="routeItemResultMap">
         <association property="place" javaType="com.example.project.entity.Place">
             <id column="place_id" property="id"/>
+            <result column ="place_title" property ="title"/>
+            <result column="place_address" property="address"/>
         </association>
     </resultMap>
     <resultMap id="memoItemResultMap" type="com.example.project.entity.MemoItem" extends="routeItemResultMap">
         <association property="memo" javaType="com.example.project.entity.Memo">
             <id column="memo_id" property="id"/>
+            <result column="memo_content" property="content"/>
         </association>
     </resultMap>
 </mapper>

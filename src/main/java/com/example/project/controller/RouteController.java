@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,7 +24,7 @@ public class RouteController {
    private final UserMapper userMapper;
 
    // 루트 db 추가
-   @PostMapping("/")
+   @PostMapping
    public Long addRoute(Principal principal, String title){
       Long routeId = routeService.addRoute(principal.getName(),title);
       return routeId;
@@ -44,7 +45,8 @@ public class RouteController {
 
    // 메모 수정
    @PutMapping("/memo/{memoId}")
-   public ResponseEntity<String> editMemo(@PathVariable Long memoId, String content){
+   public ResponseEntity<String> editMemo(@PathVariable Long memoId , @RequestBody Map<String,String> body){
+      String content = body.get("content");
       routeService.editMemo(memoId,content);
       return ResponseEntity.ok("수정했습니다.");
    }

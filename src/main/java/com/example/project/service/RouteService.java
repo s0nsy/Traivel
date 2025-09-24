@@ -175,34 +175,40 @@ public class RouteService {
    // 루트 블럭 변경
    public BlockDto moveBlock(Long routeId, Long blockId, int newOrder, int newDay){
       BlockDto blockDto=new BlockDto(placeMapper.findByBlockId(blockId));
+      blockDto.setRouteId(routeId);
 
       int oldOrder = blockDto.getOrder();
       blockDto.setOrder(newOrder);
       blockDto.setDay(newDay);
 
-      List<RouteItem> routeItemList =placeMapper.findByDay(routeId, newDay);
-      List<BlockDto> blocksList = routeItemList.stream().map(BlockDto::new).collect(Collectors.toList());
+      List<BlockDto> blocksList = placeMapper.findByDay(routeId, newDay);
+      System.out.println(blocksList);
+
       Map<Integer,BlockDto> blocks = blocksList.stream().collect(Collectors.toMap(BlockDto::getOrder, Function.identity()));
 
       if(blockDto.getDay()==newDay) {
          for (BlockDto b : blocks.values()) {
-            int order = b.getOrder();
-            if (b.getId() != blockId) {
-               if (oldOrder > newOrder) {
-                  if (order < oldOrder && order >= newOrder) {
-                     b.setOrder(order - 1);
-                  }
-               } else if (oldOrder < newOrder) {
-                  if (order > oldOrder && order <= newOrder) {
-                     b.setOrder(order + 1);
+            if (b.getId() == b.getOrder()) {
+               b.setOrder(newOrder);
+
+            } else {
+               if (b.getId() != blockId) {
+                  int order = b.getOrder();
+                  if (oldOrder > newOrder) {
+                     if (order < oldOrder && order >= newOrder) {
+                        b.setOrder(order + 1);
+                     }
+                  } else if (oldOrder < newOrder) {
+                     if (order > oldOrder && order <= newOrder) {
+                        b.setOrder(order - 1);
+                     }
                   }
                }
             }
             placeMapper.updateRouteItem(b);
          }
       }else {
-         List<RouteItem> oldRouteItemList =placeMapper.findByDay(routeId, blockDto.getDay());
-         List<BlockDto> oldBlockList = oldRouteItemList.stream().map(BlockDto::new).collect(Collectors.toList());
+         List<BlockDto> oldBlockList = placeMapper.findByDay(routeId, blockDto.getDay());
          Map<Integer,BlockDto> oldBlocks = oldBlockList.stream().collect(Collectors.toMap(BlockDto::getOrder, Function.identity()));
 
          for(BlockDto b : oldBlocks.values()){
@@ -217,7 +223,10 @@ public class RouteService {
    }
 
    // 블럭 조회
-   public Collection<BlockDto> getAllBlocks(Long routeId){
+   public Collection<BlockDto>  getAllBlocks(Long routeId){
+      Route route = placeMapper.findByRouteId(routeId);
+      if(route==null)
+         throw new IllegalArgumentException("해당 루트는 존재하지 않습니다.");
       List<BlockDto> list =placeMapper.findAllBlocks(routeId);
       list.sort(Comparator.comparingInt(BlockDto::getDay)
             .thenComparingInt(BlockDto::getOrder));
