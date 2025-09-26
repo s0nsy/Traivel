@@ -6,7 +6,7 @@ import minus from '../../assets/minus.png';
 import plus from '../../assets/plus.png';
 import bar from '../../assets/bar.png';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAdults, setChildren, setInfants } from '../../store/surveySlice';
+import { setAdults, setChildren, setInfants } from '../../store/beforeSurveySlice';
 
 const BoxCon = styled.div`
     display: flex;

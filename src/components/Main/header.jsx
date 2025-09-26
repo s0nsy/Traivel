@@ -66,10 +66,10 @@ const SideBarBtn = styled.img`
 
 const Header = () => {
   const navigate = useNavigate();
-  const adults = useSelector((state) => state.survey.groupComposition.adults);
-  const children = useSelector((state) => state.survey.groupComposition.children);
-  const infants = useSelector((state) => state.survey.groupComposition.infants);
-  const schedule = useSelector((state) => state.survey.schedule);
+  const adults = useSelector((state) => state.beforeSurvey.groupComposition.adults);
+  const children = useSelector((state) => state.beforeSurvey.groupComposition.children);
+  const infants = useSelector((state) => state.beforeSurvey.groupComposition.infants);
+  const schedule = useSelector((state) => state.beforeSurvey.schedule);
 
   const selectedPeople = adults || children || infants
     ? `${adults+children+infants}명`

@@ -6,13 +6,15 @@ import flag from '../assets/flag.png';
 import sendIcon from '../assets/send-icon.png';
 import send from '../assets/send.png';
 import { useNavigate } from 'react-router';
-import { 
-  setPurpose, setBudget, setkeyElement, setAccommodation, 
-  settransport, setCompanion, setfavorite, setfavoriteReason, 
-  setspecialNeeds, setRecommendationType, setfreeTime, setimportantFactors 
+import {
+  setSchedule, setPurpose, setBudget, setKeyPoint, setAccommodation,
+  settransport, setCompanion, setfavorite,
+  setspecialNeeds, setRecommendationType, setfreeTime
 } from '../store/surveySlice';
-import { setRecommendations } from '../store/surveySlice';
-
+import { setSurveyData, setRecommendations } from '../store/surveySlice';
+import { setTravelRequestData } from '../store/travelSlice';
+import store from '../store/store.js';
+import BASE_URL from '../services/chatService.jsx'
 const TitleCon = styled.div`
   display: flex;
   flex-direction: column;
@@ -220,49 +222,67 @@ const Chat = () => {
   const [showChatCon, setShowChatCon] = useState(true); // 첫 질문은 바로 표시되도록 true로 설정
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userResponses = useSelector((state) => state.survey);
-  const adults = useSelector((state) => state.survey.adults);
-  const children = useSelector((state) => state.survey.children);
-  const infants = useSelector((state) => state.survey.infants);
   const [finish, setFinish] = useState(false);
   const chatContainerRef = useRef(null);
   const [questionResponses, setQuestionResponses] = useState([]);
-  //const PROXY = window.location.hostname === 'localhost' ? '' : '/proxy';
-  
+
+  const PROXY = BASE_URL;
+
+  const [userResponses, setUserResponses] = useState({
+    schedule: '',
+    purpose: '',
+    budget: '',
+    keyPoint: '',
+    accommodation: '',
+    transport: '',
+    companion: '',
+    favorite: '',
+    specialNeeds: '',
+    recommendationType: '',
+    freeTime: ''
+  });
+
   const questions = [
+    '계획하시는 일정이 어떻게 되시나요? (예: 2025-05-01 부터 2025-05-05까지)',
     '이번 여행의 주된 목적은 무엇인가요? (예: 휴식, 탐험, 문화 체험, 미식 여행 등)',
     '여행 예산은 어느 정도인가요? (예: 100만원, 80~120만원)',
     '여행 중 가장 중요하게 생각하는 요소는 무엇인가요? (예: 음식, 역사, 자연 경관, 쇼핑, 액티비티)',
     '어떤 숙박 시설을 선호하나요? (예: 호텔, 게스트하우스, 에어비앤비, 리조트)',
     '여행 중에 어떤 이동 수단을 선호하나요? (예: 자동차, 대중교통, 도보 등)',
     '누구와 함께 여행하나요? (예: 혼자, 가족, 친구, 연인 등)',
-    '이미 다녀온 여행지 중에 특히 마음에 들었던 곳이 있나요? (예: 일본, 홍콩 등)',
-    '해당 여행지가 더 마음에 들었던 이유는 무엇인가요? (예: 친절한 사람들, 좋은 치안 등)',
-    '여행 중에 특별히 필요하거나 피하고 싶은 요소가 있나요? (예: 채식주의, 장애인 접근성, 반려동물 동반 등)',
+    '이전에 방문했던 여행지 중 마음에 들었던 곳이 있으시나요? (예: 홍콩, 일본 등)',
+    '여행 중에 특별히 필요하거나 중요한 요소가 있으신가요? (예: 채식주의, 장애인 접근성, 반려동물 동반 등)',
     'AI가 여행지를 추천할 때 어떤 방식으로 추천 받기를 원하나요? (예: 순위, 테마별 추천, 무작위 추천 등)',
-    '여행 중 어느 정도의 자유 시간을 원하시나요? (예: 모든 일정이 꽉 찬 것, 적당한 자유 시간, 대부분의 시간을 자유롭게 보내기 등)',
-    '위 질문에 대한 답변 중 가장 중요시 생각하는 것들을 단어 형태로 입력해주세요.'
+    '여행 중 어느 정도의 자유 시간을 원하시나요? (예: 모든 일정이 꽉 찬 것, 적당한 자유 시간, 대부분의 시간을 자유롭게 보내기 등)'
   ];
 
   const actionDispatchers = [
-    setPurpose, setBudget, setkeyElement, setAccommodation,
-    settransport, setCompanion, setfavorite, setfavoriteReason,
-    setspecialNeeds, setRecommendationType, setfreeTime, setimportantFactors
+    setSchedule, setPurpose, setBudget, setKeyPoint, setAccommodation,
+    settransport, setCompanion, setfavorite,
+    setspecialNeeds, setRecommendationType, setfreeTime
   ];
 
-  const schedule = useSelector((state) => state.survey.schedule);
+  // const schedule = useSelector((state) => state.survey.schedule);
 
   const handleSend = async () => {
-    if (currentInput.trim() !== '') {
-      dispatch(actionDispatchers[step](currentInput));
+    if (!currentInput.trim())  return;
+
+    dispatch(actionDispatchers[step](currentInput));
+    const keys = Object.keys(userResponses);
+    const key = keys[step];
+    setUserResponses(prev => ({
+      ...prev,
+      [key]: currentInput
+    }));
       setQuestionResponses(prev => [...prev, { question: questions[step], response: currentInput }]);
 
       setCurrentInput('');
 
       if (step < questions.length - 1) {
+        setStep(prev => prev + 1);
+
         setShowChatCon(false); // ChatCon 숨기기
         setTimeout(() => {
-          setStep(prev => prev + 1);
           setShowChatCon(true); // ChatCon을 0.5초 후에 표시
         }, 1000);
       } else {
@@ -276,33 +296,50 @@ const Chat = () => {
           setLoading(false);
         }
       }
-    }
+
   };
 
   const handleSubmit = async () => {
     try {
       const submissionData = {
-        schedule: schedule,
-        groupComposition: { adults: adults, children: children, infants: infants },
+        schedule: userResponses.schedule,
         purpose: userResponses.purpose,
         budget: userResponses.budget,
-        keyElement: userResponses.keyElement,
+        keyPoint: userResponses.keyPoint,
         accommodation: userResponses.accommodation,
         transport: userResponses.transport,
         companion: userResponses.companion,
         favorite: userResponses.favorite,
-        favoriteReason: userResponses.favoriteReason,
         specialNeeds: userResponses.specialNeeds,
         recommendationType: userResponses.recommendationType,
-        freeTime: userResponses.freeTime,
-        importantFactors: userResponses.importantFactors,
+        freeTime: userResponses.freeTime
       };
-      
-     const response = await axios.post(`${PROXY}/chat`, submissionData);
+
+      dispatch(setSurveyData(submissionData));
+
+      const token = localStorage.getItem("jwtToken"); // 로그인 시 저장한 JWT
+
+      const response = await axios.post(`${PROXY}/recommend`, submissionData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+        });
 
       dispatch(setRecommendations(response.data));
       localStorage.setItem('recommendations', JSON.stringify(response.data));
+      console.log("localstorage: "+  localStorage.getItem('recommendations'));
+
       console.log(response.data);
+      dispatch(setSurveyData(submissionData));  // 기존 surveySlice 저장
+      dispatch(setTravelRequestData(submissionData));
+
+      localStorage.setItem('travelRequestData', JSON.stringify(submissionData));
+      const currentSurveyData = store.getState().survey.travelRequestData;
+      const currentTravelData = store.getState().travel.travelRequestData;
+
+      console.log("현재 currentSurveyData 확인:", currentSurveyData);
+      console.log("현재 travelRequestData 확인:", currentTravelData);
 
     } catch (error) {
       console.error('서버 요청 중 오류 발생:', error);

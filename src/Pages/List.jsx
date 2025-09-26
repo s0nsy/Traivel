@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedItem } from "../store/selectedItemSlice";
 import { setRecommendations } from '../store/surveySlice';
+import { recommendDestinations } from "../services/chatService";
+
 
 const Background = styled.div`
   display: flex;
@@ -173,38 +175,51 @@ const MoveToChatIcon = styled.img`
 function List() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    
-    useEffect(() => {
-      const storedRecommendations = localStorage.getItem('recommendations');
-      if (storedRecommendations) {
-        const parsedData = JSON.parse(storedRecommendations);
-        
-        if (parsedData && parsedData.data && Array.isArray(parsedData.data)) {
-          dispatch(setRecommendations(parsedData.data));
-        }
-      }
-    }, [dispatch]);
-  
-    // Redux store에서 recommendations 가져오기
+   const travelRequestData = useSelector((state) => state.travel.travelRequestData)
+      || JSON.parse(localStorage.getItem('travelRequestData'));
+   console.log("travelRequestData 가 ",travelRequestData)
+   useEffect(() => {
+      const fetchRecommendations = async () => {
+         try {
+            const storedRecommendations = JSON.parse(localStorage.getItem('recommendations')) || [];
+            dispatch(setRecommendations(storedRecommendations));
+            // localStorage에 저장 (원래 로직과 연결)
+            // localStorage.setItem('recommendations', JSON.stringify({ storedRecommendations }));
+         } catch (err) {
+            console.error(err);
+         }
+      };
+
+      fetchRecommendations();
+   }, [dispatch]);
+
+
+   // Redux store에서 recommendations 가져오기
     const recommendations = useSelector((state) => state.survey.recommendations);
     const recommendationsArray = Array.isArray(recommendations) ? recommendations : [];
-    
+
     console.log("Recommendations in List:", recommendationsArray);
-  
+
     const [hoveredIndex, setHoveredIndex] = useState(null);
-    
+
     const chatNavigate = () => {
       navigate("/chat");
     };
-  
-    const detailNavigate = () => {
-      navigate("/detail");
-    };
-  
+
+
+   const detailNavigate = (item) => {
+      navigate("/result", {
+         state: {
+            selectedItem: item,
+            travelRequest: travelRequestData
+         }
+      });
+   };
+
     const handleItemClick = (item) => {
       dispatch(setSelectedItem(item));
     };
-  
+
     return (
       <Background>
         <ListContainer>
@@ -223,17 +238,18 @@ function List() {
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <ListIndex>{index + 1}</ListIndex>
                     <ListDetails>
-                      <ListDetailItem>{item.region || 'N/A'}</ListDetailItem>
-                      <ListDetailItem>{item.district || 'N/A'}</ListDetailItem>
+                      <ListDetailItem>{item.destination || 'N/A'}</ListDetailItem>
+                      <ListDetailItem>{item.city || 'N/A'}</ListDetailItem>
                       <ListDetailItem>{item.features ? item.features.join(", ") : 'N/A'}</ListDetailItem>
                     </ListDetails>
                   </div>
                   <ArrowIcon
                     src={listarrow}
                     isVisible={hoveredIndex === index}
-                    onClick={() => {
-                      detailNavigate();
-                      handleItemClick(item);
+                    onClick={(e) => {
+                       e.stopPropagation(); // 부모 클릭 이벤트가 방해하지 않도록
+                       detailNavigate(item);
+                       handleItemClick(item); // 필요한 데이터 처리
                     }}
                   />
                 </ListItem>
@@ -242,7 +258,7 @@ function List() {
               <p>No recommendations available.</p>
             )}
           </ListFrame>
-  
+
           <ListFooter onClick={chatNavigate}>
             <FooterContent>
               <MoveToChatIcon src={movetochat} alt="Move to Chat" />
@@ -253,7 +269,7 @@ function List() {
       </Background>
     );
   }
-  
+
 
 export default List;
 

@@ -12,7 +12,7 @@ import Rectangle from "../assets/sidebar.png";
 import moment from "moment";
 import Output from "./Output";
 import { useDispatch, useSelector } from 'react-redux';
-import { setStartDate, setEndDate, setAdults, setChildren, setInfants } from '../store/surveySlice';
+import { setStartDate, setEndDate, setAdults, setChildren, setInfants } from '../store/beforeSurveySlice';
 
 
 const Background = styled.div`
@@ -189,7 +189,6 @@ const Home = () => {
   return (
     <Background>
       <FirstCon>
-
         <FlagImg src={flag} />
         <Title>Route Porter</Title>
         <Description>
@@ -236,6 +235,7 @@ const Home = () => {
 
       </FirstCon>
     </Background>
+
   );
 };
 
