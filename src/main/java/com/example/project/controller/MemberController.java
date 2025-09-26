@@ -87,4 +87,14 @@ public class MemberController {
       return dtoList;
    }
 
+   // 멤버 조회
+   @GetMapping("/list")
+   public List<String> getMember(Long routeId, Principal principal){
+      User user = userMapper.findByUsername(principal.getName());
+      if(user==null)
+         throw new RuntimeException("오류가 발생했습니다.");
+      return memberService.getMember(routeId);
+
+   }
+
 }

@@ -13,4 +13,10 @@
     <select id="findNotificationByUserId" resultType="com.example.project.entity.Notification">
         select * from notification where user_id=#{id}
     </select>
+    <select id ="findMemberByRouteId" resultType="String">
+        select u.username from route_user ru
+            join users u on ru.user_id= u.id
+            where ru.route_id=#{id}
+    </select>
+
 </mapper>

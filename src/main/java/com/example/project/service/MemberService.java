@@ -60,4 +60,14 @@ public class MemberService {
          placeMapper.deleteRouteUser(route,member);
       }
    }
+
+   // 멤버 조회
+   public List<String> getMember(Long routeId){
+      Route route= placeMapper.findByRouteId(routeId);
+      if(route==null)
+         throw new RuntimeException("해당 루트 아이디의 루트는 존재하지 않습니다: "+routeId);
+      List<String> members = memberMapper.findMemberByRouteId(routeId);
+      System.out.println(members);
+      return members;
+   }
 }

@@ -11,4 +11,5 @@ public interface MemberMapper {
    void saveInvite(Invite invite);
    Invite findByToken(String token);
    List<Notification> findNotificationByUserId(Long id);
+   List<String> findMemberByRouteId(Long id);
 }
