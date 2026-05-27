@@ -1,46 +1,69 @@
 spring:
   application.name: Project
+  profiles:
+    active: local
   devtools:
     restart:
       enabled: true
   datasource:
-    # url: jdbc:postgresql://localhost:5432/project
-    url: jdbc:postgresql://3.38.9.29:5432/traivel
-    username: postgres
-    password: admin
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate.ddl-auto: update
+    hibernate.ddl-auto: validate
     show-sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
   data:
     redis:
-      host: 3.38.9.29
+      host: ${REDIS_HOST}
       port: 6379
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.example.project.entity
-
-#  configuration:
-#    map-underscore-to-camel-case: true
-#  config-location: classpath:mybatis-config.xml
 jwt:
-  secret: ${JWT_SECRET}
-  expiration: 86400000
+  secret: ${JWT_SECRET:local-dev-secret-key-do-not-use-in-production-32b}
+  access-expiration: 1800000
+  refresh-expiration: 604800000
 springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, loggers, env
+  endpoint:
+    health:
+      show-details: when-authorized
+
+storage:
+  local:
+    path: ${user.home}/traivel/images
+
+openai:
+  api-key: ${SPRING_AI_OPENAI_API_KEY:}
+
+naver:
+  search:
+    id: ${NAVER_SEARCH_ID:}
+    secret: ${NAVER_SEARCH_SECRET:}
+  map:
+    id: ${NAVER_MAP_ID:}
+    secret: ${NAVER_MAP_SECRET:}
+
 aws:
-  access-key: ${AMAZON_ACCESS_KEY}
-  secret-key: ${AMAZON_SECRET_ACCESS_KEY}
+  access-key: ${AMAZON_ACCESS_KEY:}
+  secret-key: ${AMAZON_SECRET_ACCESS_KEY:}
   region: ap-northeast-2
   s3:
-    bucket: ${AWS_S3_BUCKET}
+    bucket: ${AWS_S3_BUCKET:}
 
