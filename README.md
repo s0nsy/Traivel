@@ -5,6 +5,7 @@
 **Traivel**은 OpenAI API를 활용해 개인 맞춤형 여행 루트를 추천하고,  
 WebSocket 기반 실시간 다인원 협업으로 여행 루트를 함께 수정하며 계획할 수 있는 여행 계획 플랫폼입니다.
 <br>
+
 ---
 
 ## 📌 서비스 소개
@@ -13,42 +14,47 @@ WebSocket 기반 실시간 다인원 협업으로 여행 루트를 함께 수정
 - 여러 사용자가 동시에 여행 일정을 실시간으로 추가, 편집 가능한 협업 기능 (WebSocket 활용)
 - 지도에 여행지 핀을 찍어 시각적으로 루트 확인 가능
 - Naver 검색 및 지도 API를 활용해 여행지 정보와 위치 제공
-- JWT 인증 기반 권한 관리로 안전한 사용자 관리
+- JWT 인증 기반 권한 관리 (Access Token + Refresh Token)
+- Redis 분산 락을 통한 동시성 제어
+- AWS S3 및 로컬 스토리지 이미지 업로드 지원
 <br><br>
+
 ---
 
 ## 📌 기술 스택
 
-- **Backend**: Spring Boot, MyBatis, WebSocket, REST API
-- **Database**: PostgreSQL
-- **인프라 및 배포**: AWS EC2, GitHub Actions (CI/CD), Nginx
-- **인증**: JWT
-- **외부 API**: OpenAI GPT API, Naver Search API, Naver Map API, Gateway API
+- **Backend**: Spring Boot, Spring Data JPA, WebSocket, REST API
+- **Database**: PostgreSQL, Flyway (마이그레이션)
+- **Cache / Lock**: Redis
+- **인프라 및 배포**: AWS EC2, AWS S3, Docker, GitHub Actions (CI/CD), Nginx
+- **인증**: JWT (Access Token + Refresh Token)
+- **API 문서**: Swagger (Springdoc)
+- **외부 API**: OpenAI GPT API, Naver Search API, Naver Map API
 <br><br>
+
 ---
 
 ## 🗂 폴더 구조
+
 ```
-Traivel/
-├─ backend/
-│ ├─ src/main/java/com/yourorg/traivel/
-│ │ ├─ controller/
-│ │ ├─ service/
-│ │ ├─ mapper/
-│ │ ├─ entity/
-│ │ │ └─ dto/
-│ │ └─ config/
-│ │   └─ security/
-│ │     ├─ jwt/
-│ │     └─ dto/
-│ └─ resources/
-│   ├─ application.yml
-│   ├─ mapper/
-│   └─ templates/
-├─ .github/
-│ └─ workflows/
-│ └─ deploy.yml
-└─ README.md
+src/main/java/com/example/project/
+├─ controller/
+├─ service/
+│  └─ storage/
+├─ repository/
+├─ entity/
+│  ├─ base/
+│  └─ dto/
+├─ exception/
+└─ config/
+   └─ security/
+      ├─ jwt/
+      └─ dto/
+src/main/resources/
+├─ application.yml
+├─ application-local.yml   (gitignore, 로컬 전용)
+├─ db/migration/           (Flyway SQL)
+└─ logback-spring.xml
 ```
 
 ---
@@ -57,21 +63,56 @@ Traivel/
 
 ### 사전 준비
 
-- Java 17 설치
-- PostgreSQL 설치 및 실행
-- OpenAI API Key 준비
-- Naver Map API Key 준비
-- Naver Search API Key 준비
-- JWT secrets 준비
+- Java 17
+- PostgreSQL
+- Redis
+- OpenAI API Key
+- Naver Map / Search API Key
 
-### 1. 데이터베이스 설정
+### 1. 환경 변수 설정
 
-- PostgreSQL에 데이터베이스 생성
-- `src/main/resources/application.yml` 또는 환경 변수에 DB 접속 정보 설정
+| 변수명 | 설명 |
+|---|---|
+| `DB_URL` | PostgreSQL JDBC URL |
+| `DB_USERNAME` | DB 사용자명 |
+| `DB_PASSWORD` | DB 비밀번호 |
+| `REDIS_HOST` | Redis 호스트 |
+| `JWT_SECRET` | JWT 서명 키 |
+| `SPRING_AI_OPENAI_API_KEY` | OpenAI API Key |
+| `NAVER_SEARCH_ID` | Naver Search API ID |
+| `NAVER_SEARCH_SECRET` | Naver Search API Secret |
+| `NAVER_MAP_ID` | Naver Map API ID |
+| `NAVER_MAP_SECRET` | Naver Map API Secret |
+| `AMAZON_ACCESS_KEY` | AWS Access Key |
+| `AMAZON_SECRET_ACCESS_KEY` | AWS Secret Key |
+| `AWS_S3_BUCKET` | S3 버킷 이름 |
 
-### 2. 백엔드 실행
+로컬 실행 시에는 `src/main/resources/application-local.yml`에 datasource와 Redis 호스트를 설정합니다.
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/traivel
+    username: your_username
+    password: your_password
+  data:
+    redis:
+      host: localhost
+```
+
+### 2. Docker로 실행 (권장)
 
 ```bash
-cd Traivel
+docker-compose up -d
+```
+
+### 3. 직접 빌드 및 실행
+
+```bash
 ./gradlew clean build -x test
-java -jar build/libs/Traivel-0.0.1-SNAPSHOT.jar
+java -jar build/libs/project-0.0.1-SNAPSHOT.jar
+```
+
+### 4. API 문서 확인
+
+서버 실행 후 Swagger UI: `http://localhost:8080/swagger-ui.html`
