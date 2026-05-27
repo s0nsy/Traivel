@@ -1,27 +1,30 @@
 package com.example.project.entity;
 
+import com.example.project.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 @Data
-public class Access {
-   private Long id;
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+@Table(name = "access")
+public class Access extends BaseEntity {
 
-   private String title;
-   @Column(columnDefinition="TEXT")
-   private String content;
+    private String title;
 
-   @OneToMany(mappedBy="access", cascade=CascadeType.ALL, orphanRemoval = true)
-   private List<Image> ImageUrl = new ArrayList<>();
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
-   private LocalDateTime created_at;
-   private LocalDateTime updated_at;
+    @OneToMany(mappedBy = "access", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> ImageUrl = new ArrayList<>();
 
-   @ManyToOne(fetch = FetchType.LAZY)
-   @JoinColumn(name="user_id")
-   private User writer;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User writer;
 }

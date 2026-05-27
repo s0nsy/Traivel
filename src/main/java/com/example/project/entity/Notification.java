@@ -1,22 +1,28 @@
 package com.example.project.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.project.entity.base.BaseEntity;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
+@Entity
 @Data
-public class Notification {
-   private Long id;
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+@Table(name = "notification")
+public class Notification extends BaseEntity {
 
-   private Long userId;
-   private String message;
-   private String Type;
-   private boolean isRead;
-   private LocalDateTime createdAt;
-   private String content;
+    @Column(name = "user_id")
+    private Long userId;
 
+    private String message;
+
+    @Column(name = "type")
+    private String type;
+
+    @Column(name = "is_read")
+    private boolean isRead;
+
+    private String content;
 }

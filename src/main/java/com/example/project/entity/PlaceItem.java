@@ -1,19 +1,20 @@
 package com.example.project.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
+@Entity
 @Data
-@Table(name="place_item")
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@Table(name = "place_item")
 @PrimaryKeyJoinColumn(name = "id")
-@Inheritance(strategy=InheritanceType.JOINED)
-public class PlaceItem extends RouteItem{
+@DiscriminatorValue("PLACE")
+public class PlaceItem extends RouteItem {
 
-   @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-   @JoinColumn(name="place_id")
+   @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+   @JoinColumn(name = "place_id")
    private Place place;
-
 }
