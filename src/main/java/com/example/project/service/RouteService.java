@@ -2,234 +2,235 @@ package com.example.project.service;
 
 import com.example.project.entity.*;
 import com.example.project.entity.dto.*;
-import com.example.project.mapper.MemberMapper;
-import com.example.project.mapper.PlaceMapper;
-import com.example.project.mapper.UserMapper;
-import jakarta.transaction.Transactional;
+import com.example.project.exception.BusinessException;
+import com.example.project.exception.ErrorCode;
+import com.example.project.exception.ForbiddenException;
+import com.example.project.exception.NotFoundException;
+import com.example.project.repository.*;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
-import java.nio.file.AccessDeniedException;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional
 public class RouteService {
-   private final UserMapper userMapper;
-   private final PlaceMapper placeMapper;
-   private final MemberMapper memberMapper;
 
-   // 루트 추가
-   public Long addRoute(String username, String title){
-      User user = userMapper.findByUsername(username);
-      if(user==null)
-         throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+    private final UserRepository userRepository;
+    private final RouteRepository routeRepository;
+    private final PlaceRepository placeRepository;
+    private final RouteItemRepository routeItemRepository;
+    private final PlaceItemRepository placeItemRepository;
+    private final MemoRepository memoRepository;
+    private final MemoItemRepository memoItemRepository;
+    private final InviteRepository inviteRepository;
+    private final DistributedLockService distributedLockService;
+    private final PlatformTransactionManager transactionManager;
 
-      Route route = new Route();
-      route.setTitle(title);
-      route.setCreated_at(LocalDateTime.now());
-      route.getUsers().add(user);
-      route.setOwner(user);
-      placeMapper.addRoute(route);
-      placeMapper.addRouteUser(route,user);
-      return route.getId();
-   }
+    private TransactionTemplate transactionTemplate;
 
-   // 장소 추가
-   public void addPin(AddPlaceToRouteRequest request){
-//      Place place = placeMapper.findByPlaceTitle(request.getNaverSearchRequest().getTitle());
-      NaverSearchRequest place = request.getNaverSearchRequest();
+    @PostConstruct
+    private void init() {
+        transactionTemplate = new TransactionTemplate(transactionManager);
+    }
 
-      Place newPlace = new Place();
-      newPlace.setTitle(place.getTitle());
-      newPlace.setAddress(place.getAddress());
-      newPlace.setRoadAddress(place.getRoadAddress());
-      newPlace.setLink(place.getLink());
-      newPlace.setCategory(place.getCategory());
-      newPlace.setMapx(place.getMapx());
-      newPlace.setMapy(place.getMapy());
+    public Long addRoute(String username, String title) {
+        log.info("루트 생성 요청: 제목='{}', 사용자={}", title, username);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        Route route = new Route();
+        route.setTitle(title);
+        route.setOwner(user);
+        Route saved = routeRepository.save(route);
+        routeRepository.addRouteUser(saved.getId(), user.getId());
+        log.info("루트 생성 완료: ID={}, 제목='{}', 사용자={}", saved.getId(), title, username);
+        return saved.getId();
+    }
 
-      Route route = placeMapper.findByRouteId(request.getRouteId());
-      if(route==null)
-         throw new RuntimeException("루트가 존재하지 않습니다.");
+    public void addPin(AddPlaceToRouteRequest request) {
+        NaverPlaceDto place = request.getPlace();
+        log.info("장소 추가 요청: 장소='{}', 루트ID={}", place.getTitle(), request.getRouteId());
 
-      newPlace.setRoute(route);
-      placeMapper.savePlace(newPlace);
+        Place newPlace = new Place();
+        newPlace.setTitle(place.getTitle());
+        newPlace.setAddress(place.getAddress());
+        newPlace.setRoadAddress(place.getRoadAddress());
+        newPlace.setLink(place.getLink());
+        newPlace.setCategory(place.getCategory());
+        newPlace.setMapx(place.getMapx());
+        newPlace.setMapy(place.getMapy());
 
-      PlaceItem placeItem = new PlaceItem();
-      placeItem.setPlace(newPlace);
-      placeItem.setRoute(route);
-      placeItem.setDay(request.getDay());
-      placeItem.setDtype(request.getDtype());
+        Route route = routeRepository.findById(request.getRouteId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ROUTE_NOT_FOUND));
+        newPlace.setRoute(route);
+        placeRepository.save(newPlace);
 
-      Map<String, Object> map = new HashMap<>();
-      //여러값(routeId,day) 넘겨야하니 map
-      map.put("routeId", request.getRouteId());
-      map.put("day",request.getDay());
+        int maxOrder = routeItemRepository.findMaxOrderByRouteIdAndDay(request.getRouteId(), request.getDay());
+        PlaceItem placeItem = new PlaceItem();
+        placeItem.setPlace(newPlace);
+        placeItem.setRoute(route);
+        placeItem.setDay(request.getDay());
+        placeItem.setOrder(maxOrder + 1);
+        routeItemRepository.save(placeItem);
+        log.info("장소 추가 완료: 장소ID={}, 장소='{}', 루트ID={}", newPlace.getId(), place.getTitle(), request.getRouteId());
+    }
 
-      int maxOrder = placeMapper.findMaxOrderByRouteDay(map);
-      placeItem.setOrder(maxOrder+1);
-      placeMapper.saveRouteItem(placeItem);
-      placeMapper.savePlaceItem(placeItem);
-      System.out.println(placeItem);
+    public void addMemo(MemoRequest memoRequest) {
+        log.info("메모 추가 요청: 루트ID={}, day={}", memoRequest.getRouteId(), memoRequest.getDay());
+        Route route = routeRepository.findById(memoRequest.getRouteId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ROUTE_NOT_FOUND));
+        Memo memo = new Memo();
+        memo.setContent(memoRequest.getContent());
+        memo.setRoute(route);
+        memoRepository.save(memo);
 
-   }
+        int maxOrder = routeItemRepository.findMaxOrderByRouteIdAndDay(memoRequest.getRouteId(), memoRequest.getDay());
+        MemoItem memoItem = new MemoItem();
+        memoItem.setMemo(memo);
+        memoItem.setRoute(route);
+        memoItem.setDay(memoRequest.getDay());
+        memoItem.setOrder(maxOrder + 1);
+        routeItemRepository.save(memoItem);
+        log.debug("메모 추가 완료: 메모ID={}", memo.getId());
+    }
 
-   // 메모 추가
-   public void addMemo(MemoRequest memoRequest){
+    public void editMemo(Long id, String content) {
+        log.info("메모 수정 요청: ID={}", id);
+        Memo memo = memoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMO_NOT_FOUND));
+        memo.setContent(content);
+        memoRepository.save(memo);
+        log.debug("메모 수정 완료: ID={}", id);
+    }
 
-      Memo memo = new Memo();
-      memo.setContent(memoRequest.getContent());
-      Route route = placeMapper.findByRouteId(memoRequest.getRouteId());
-      if(route==null)
-         throw new NullPointerException("해당 루트가 존재하지 않습니다.");
-      memo.setRoute(route);
-      placeMapper.saveMemo(memo);
+    public String deleteMemo(Long memoId) {
+        log.info("메모 삭제 요청: ID={}", memoId);
+        Memo memo = memoRepository.findById(memoId).orElse(null);
+        MemoItem memoItem = memoItemRepository.findByMemoId(memoId).orElse(null);
+        if (memo == null || memoItem == null) {
+            log.warn("메모 삭제 실패 - 존재하지 않음: ID={}", memoId);
+            throw new NotFoundException(ErrorCode.MEMO_NOT_FOUND);
+        }
+        routeItemRepository.deleteById(memoItem.getId());
+        memoRepository.deleteById(memoId);
+        log.info("메모 삭제 완료: ID={}", memoId);
+        return "삭제되었습니다";
+    }
 
-      MemoItem memoItem = new MemoItem();
-      memoItem.setMemo(memo);
-      memoItem.setRoute(route);
-      memoItem.setDay(memoRequest.getDay());
-      memoItem.setDtype(memoRequest.getDtype());
+    public String deletePlace(Long placeId) {
+        log.info("장소 삭제 요청: ID={}", placeId);
+        Place place = placeRepository.findById(placeId).orElse(null);
+        PlaceItem placeItem = placeItemRepository.findByPlaceId(placeId).orElse(null);
+        if (placeItem == null || place == null) {
+            log.warn("장소 삭제 실패 - 존재하지 않음: ID={}", placeId);
+            throw new NotFoundException(ErrorCode.PLACE_NOT_FOUND);
+        }
+        routeItemRepository.deleteById(placeItem.getId());
+        placeRepository.deleteById(placeId);
+        log.info("장소 삭제 완료: ID={}", placeId);
+        return "삭제되었습니다";
+    }
 
-      Map<String, Object> map = new HashMap<>();
-      map.put("routeId", memoRequest.getRouteId());
-      map.put("day", memoRequest.getDay());
+    @Transactional
+    public void deleteRoute(Long routeId, User user) {
+        log.info("루트 삭제 요청: ID={}, 요청자={}", routeId, user.getUsername());
+        Route route = routeRepository.findById(routeId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ROUTE_NOT_FOUND));
+        Long ownerId = routeRepository.findOwnerIdById(routeId);
+        if (!ownerId.equals(user.getId())) {
+            log.warn("루트 삭제 권한 없음: ID={}, 요청자={}", routeId, user.getUsername());
+            throw new ForbiddenException(ErrorCode.NOT_ROUTE_OWNER);
+        }
+        routeRepository.deleteAllRouteUsers(routeId);
+        placeRepository.findIdsByRouteId(routeId).forEach(this::deletePlace);
+        memoRepository.findIdsByRouteId(routeId).forEach(this::deleteMemo);
+        routeRepository.delete(route);
+        log.info("루트 삭제 완료: ID={}", routeId);
+    }
 
-      int maxOrder = placeMapper.findMaxOrderByRouteDay(map);
-      memoItem.setOrder(maxOrder+1);
-      placeMapper.saveRouteItem(memoItem);
-      placeMapper.saveMemoItem(memoItem);
-   }
+    public void joinRoute(String token, User user) {
+        log.info("루트 참가 요청: 사용자={}, 토큰={}", user.getUsername(), token);
+        Invite invite = inviteRepository.findByToken(token)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.INVALID_INVITE_TOKEN));
+        Route route = routeRepository.findById(invite.getRouteId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ROUTE_NOT_FOUND));
+        List<User> users = routeRepository.findUsersByRouteId(route.getId());
+        if (users.contains(user)) {
+            log.info("루트 참가 생략 - 이미 멤버: 사용자={}, 루트ID={}", user.getUsername(), route.getId());
+            return;
+        }
+        if (users.size() >= 30) {
+            log.warn("루트 참가 거부 - 멤버 상한 초과: 루트ID={}, 현재인원={}", route.getId(), users.size());
+            throw new BusinessException(ErrorCode.ROUTE_MEMBER_LIMIT_EXCEEDED);
+        }
+        routeRepository.addRouteUser(route.getId(), user.getId());
+        log.info("루트 참가 완료: 사용자={}, 루트ID={}", user.getUsername(), route.getId());
+    }
 
-   // 메모 수정
-   public void editMemo(Long id, String content){
-      Memo memo = placeMapper.findByMemoId(id);
-      memo.setContent(content);
-      placeMapper.editMemo(memo);
-   }
+    // Route 행에 대한 비관적 락으로 db 레벨 이중 보호.
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public Collection<BlockDto> moveBlock(Long routeId, Long blockId, int newOrder, int newDay) {
+        log.debug("블록 이동 요청: 블록ID={}, 루트ID={}, newDay={}, newOrder={}", blockId, routeId, newDay, newOrder);
 
-   // 메모 삭제
-   public String deleteMemo(Long memoId){
-      Memo memo = placeMapper.findByMemoId(memoId);
-      MemoItem memoItem= placeMapper.findByMemoItemId(memoId);
-      if(memo==null||memoItem==null)
-         return "존재하지 않는 메모입니다.";
-      placeMapper.deleteMemoItem(memoItem);
-      placeMapper.deleteMemo(memoId);
-      placeMapper.deleteRouteItem(memoItem.getId());
-      return "삭제되었습니다";
-   }
+        String lockToken = distributedLockService.acquire(routeId);
+        try {
+            transactionTemplate.executeWithoutResult(status -> {
+                routeRepository.findByIdWithLock(routeId)
+                        .orElseThrow(() -> new NotFoundException(ErrorCode.ROUTE_NOT_FOUND));
+                executeReorder(routeId, blockId, newOrder, newDay);
+            });
 
-   // 장소 삭제
-   public String deletePlace(Long placeId) {
-      Place place = placeMapper.findByPlaceId(placeId);
-      PlaceItem placeItem= placeMapper.findByPlaceItemId(placeId);
-      if(placeItem==null || place==null)
-         return "존재하지 않는 장소입니다.";
-      placeMapper.deletePlaceItem(placeItem);
-      placeMapper.deletePlace(placeId);
-      placeMapper.deleteRouteItem(placeItem.getId());
-      return "삭제되었습니다";
-   }
+            Collection<BlockDto> result = transactionTemplate.execute(status -> {
+                List<RouteItem> items = routeItemRepository.findByRouteId(routeId);
+                List<BlockDto> list = items.stream().map(BlockDto::new).collect(Collectors.toList());
+                list.sort(Comparator.comparingInt(BlockDto::getDay).thenComparingInt(BlockDto::getOrder));
+                return list;
+            });
 
-   // 여행 루트 전체 삭제
-   @Transactional
-   public void deleteRoute(Long routeId, User user) throws AccessDeniedException {
-      Route route = placeMapper.findByRouteId(routeId);
-      if(route==null)
-         throw new NullPointerException("존재하지 않는 루트입니다.");
-      Long ownerId = placeMapper.findByOwnerIdByRouteId(routeId);
-      if(ownerId!=user.getId())
-         throw new AccessDeniedException("해당 여행 루트 생성자가 여행 루트를 삭제할 수 있습니다.");
-      placeMapper.deleteRouteUser(route,user);
-      //해당 routeId 인 placeId, memoId의 리스트들
-      List<Long> placeList = placeMapper.findPlaceIdByRouteId(routeId);
-      List<Long> memoList = placeMapper.findMemoIdByRouteId(routeId);
-      placeList.stream().forEach(placeId->deletePlace(placeId));
-      memoList.stream().forEach(memoId->deleteMemo(memoId));
-      placeMapper.deleteRoute(route);
-   }
+            log.debug("블록 이동 완료: 블록ID={}, 루트ID={}", blockId, routeId);
+            return result;
+        } finally {
+            distributedLockService.release(routeId, lockToken);
+        }
+    }
 
-   // 여행 루트 입장
-   public void joinRoute(String token,User user){
-      Invite invite = memberMapper.findByToken(token);
-      System.out.println(invite);
-      System.out.println("routeId: " + invite.getRoute_id());
-      Route route = placeMapper.findByRouteId(invite.getRoute_id());
-      List<User> users= placeMapper.findUsersByRouteId(route.getId());
-      System.out.println(user);
+    private void executeReorder(Long routeId, Long blockId, int newOrder, int newDay) {
+        RouteItem target = routeItemRepository.findById(blockId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BLOCK_NOT_FOUND));
 
-      if(!users.contains(user)) {
-         route.getUsers().add(user);
-         placeMapper.addRouteUser(route,user);
-      }
-   }
+        int oldDay = target.getDay();
+        int oldOrder = target.getOrder();
 
-   // 루트 블럭 변경
-   public BlockDto moveBlock(Long routeId, Long blockId, int newOrder, int newDay){
-      BlockDto blockDto=new BlockDto(placeMapper.findByBlockId(blockId));
-      blockDto.setRouteId(routeId);
-
-      int oldOrder = blockDto.getOrder();
-      blockDto.setOrder(newOrder);
-      blockDto.setDay(newDay);
-
-      List<BlockDto> blocksList = placeMapper.findByDay(routeId, newDay);
-      System.out.println(blocksList);
-
-      Map<Integer,BlockDto> blocks = blocksList.stream().collect(Collectors.toMap(BlockDto::getOrder, Function.identity()));
-
-      if(blockDto.getDay()==newDay) {
-         for (BlockDto b : blocks.values()) {
-            if (b.getId() == b.getOrder()) {
-               b.setOrder(newOrder);
-
-            } else {
-               if (b.getId() != blockId) {
-                  int order = b.getOrder();
-                  if (oldOrder > newOrder) {
-                     if (order < oldOrder && order >= newOrder) {
-                        b.setOrder(order + 1);
-                     }
-                  } else if (oldOrder < newOrder) {
-                     if (order > oldOrder && order <= newOrder) {
-                        b.setOrder(order - 1);
-                     }
-                  }
-               }
+        if (oldDay == newDay) {
+            if (oldOrder < newOrder) {
+                routeItemRepository.shiftDownBetween(routeId, oldDay, oldOrder, newOrder, blockId);
+            } else if (oldOrder > newOrder) {
+                routeItemRepository.shiftUpBetween(routeId, oldDay, newOrder, oldOrder, blockId);
             }
-            placeMapper.updateRouteItem(b);
-         }
-      }else {
-         List<BlockDto> oldBlockList = placeMapper.findByDay(routeId, blockDto.getDay());
-         Map<Integer,BlockDto> oldBlocks = oldBlockList.stream().collect(Collectors.toMap(BlockDto::getOrder, Function.identity()));
+        } else {
+            routeItemRepository.shiftDownFrom(routeId, oldDay, oldOrder, blockId);
+            routeItemRepository.shiftUpFrom(routeId, newDay, newOrder, blockId);
+        }
 
-         for(BlockDto b : oldBlocks.values()){
-            if(b.getOrder()>oldOrder)
-            b.setOrder(b.getOrder()-1);
-            placeMapper.updateRouteItem(b);
-         }
-      }
-      placeMapper.updateRouteItem(blockDto);
+        routeItemRepository.updateOrderAndDay(blockId, newOrder, newDay);
+    }
 
-      return blockDto;
-   }
-
-   // 블럭 조회
-   public Collection<BlockDto>  getAllBlocks(Long routeId){
-      Route route = placeMapper.findByRouteId(routeId);
-      if(route==null)
-         throw new IllegalArgumentException("해당 루트는 존재하지 않습니다.");
-      List<BlockDto> list =placeMapper.findAllBlocks(routeId);
-      list.sort(Comparator.comparingInt(BlockDto::getDay)
-            .thenComparingInt(BlockDto::getOrder));
-      return list;
-   }
+    public Collection<BlockDto> getAllBlocks(Long routeId) {
+        log.debug("루트 전체 블록 조회: 루트ID={}", routeId);
+        routeRepository.findById(routeId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ROUTE_NOT_FOUND));
+        List<RouteItem> items = routeItemRepository.findByRouteId(routeId);
+        List<BlockDto> list = items.stream().map(BlockDto::new).collect(Collectors.toList());
+        list.sort(Comparator.comparingInt(BlockDto::getDay).thenComparingInt(BlockDto::getOrder));
+        return list;
+    }
 }

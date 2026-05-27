@@ -1,11 +1,12 @@
 package com.example.project.controller;
 
-import com.example.project.entity.Route;
 import com.example.project.entity.User;
 import com.example.project.entity.dto.*;
-import com.example.project.mapper.UserMapper;
 import com.example.project.service.RouteService;
+import com.example.project.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,63 +17,60 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/route")
 public class RouteController {
    private final RouteService routeService;
-   private final UserMapper userMapper;
+   private final UserService userService;
 
-   // 루트 db 추가
    @PostMapping
-   public Long addRoute(Principal principal, String title){
-      Long routeId = routeService.addRoute(principal.getName(),title);
+   public Long addRoute(Principal principal, String title) {
+      log.info("루트 추가 요청: 제목='{}', 사용자={}", title, principal.getName());
+      Long routeId = routeService.addRoute(principal.getName(), title);
       return routeId;
    }
 
-   // 루트 조회
    @GetMapping("/{routeId}")
-   public ResponseEntity<Collection<BlockDto>> getRoute(@PathVariable Long routeId){
+   public ResponseEntity<Collection<BlockDto>> getRoute(@PathVariable Long routeId) {
+      log.debug("루트 조회: ID={}", routeId);
       return ResponseEntity.ok(routeService.getAllBlocks(routeId));
    }
 
-   // 메모 추가
    @PostMapping("/memo")
-   public ResponseEntity<String> addMemo(@RequestBody MemoRequest memoRequest){
+   public ResponseEntity<String> addMemo(@Valid @RequestBody MemoRequest memoRequest) {
+      log.info("메모 추가 요청: 루트ID={}, day={}", memoRequest.getRouteId(), memoRequest.getDay());
       routeService.addMemo(memoRequest);
       return ResponseEntity.ok("메모를 추가했습니다.");
    }
 
-   // 메모 수정
    @PutMapping("/memo/{memoId}")
-   public ResponseEntity<String> editMemo(@PathVariable Long memoId , @RequestBody Map<String,String> body){
-      String content = body.get("content");
-      routeService.editMemo(memoId,content);
+   public ResponseEntity<String> editMemo(@PathVariable Long memoId, @RequestBody Map<String, String> body) {
+      log.info("메모 수정 요청: ID={}", memoId);
+      routeService.editMemo(memoId, body.get("content"));
       return ResponseEntity.ok("수정했습니다.");
    }
 
-   // 메모 삭제
    @DeleteMapping("/memo/{MemoId}")
-   public ResponseEntity<String> deleteMemo(@PathVariable Long MemoId){
-      String response = routeService.deleteMemo(MemoId);
-      return ResponseEntity.ok(response);
+   public ResponseEntity<String> deleteMemo(@PathVariable Long MemoId) {
+      log.info("메모 삭제 요청: ID={}", MemoId);
+      return ResponseEntity.ok(routeService.deleteMemo(MemoId));
    }
 
-   // 장소 삭제
    @DeleteMapping("/place/{placeId}")
-   public ResponseEntity<String> deletePlace(@PathVariable Long placeId){
-      String response =routeService.deletePlace(placeId);
-      return ResponseEntity.ok(response);
+   public ResponseEntity<String> deletePlace(@PathVariable Long placeId) {
+      log.info("장소 삭제 요청: ID={}", placeId);
+      return ResponseEntity.ok(routeService.deletePlace(placeId));
    }
 
-   // 루트 삭제
    @DeleteMapping("/{routeId}")
-   public ResponseEntity<String> deleteRoute(@PathVariable Long routeId, @AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException {
-      User user = userMapper.findByUsername(userDetails.getUsername());
-      routeService.deleteRoute(routeId,user);
+   public ResponseEntity<String> deleteRoute(
+         @PathVariable Long routeId,
+         @AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException {
+      log.info("루트 삭제 요청: ID={}, 요청자={}", routeId, userDetails.getUsername());
+      User user = userService.findByUsername(userDetails.getUsername());
+      routeService.deleteRoute(routeId, user);
       return ResponseEntity.ok("루트를 삭제했습니다.");
    }
-
-
-
 }
