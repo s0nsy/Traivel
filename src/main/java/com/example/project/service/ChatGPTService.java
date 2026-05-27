@@ -2,273 +2,184 @@ package com.example.project.service;
 
 import com.example.project.entity.dto.MemoRequest;
 import com.example.project.entity.dto.RecommendRouteRequest;
+import com.example.project.entity.dto.RouteRecommendationResponse;
+import com.example.project.entity.dto.RouteRecommendationResponse.DayRoute;
 import com.example.project.entity.dto.TravelRequest;
 import com.example.project.entity.dto.TravelResponse;
-import com.example.project.mapper.PlaceMapper;
-import com.fasterxml.jackson.core.JsonParseException;
+import com.example.project.exception.BusinessException;
+import com.example.project.exception.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.core.util.Json;
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
-import org.apache.commons.codec.digest.DigestUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ChatGPTService {
 
-   private final WebClient OpenAiWebClient;
+    private final WebClient OpenAiWebClient;
+    private final RouteService routeService;
+    private final ObjectMapper objectMapper;
 
-   private final RouteService routeService;
-   private final ObjectMapper objectMapper;
+    private String callOpenAI(String prompt, int maxToken) {
+        try {
+            Map<String, Object> body = new LinkedHashMap<>();
+            body.put("model", "gpt-4o");
+            body.put("messages", List.of(Map.of("role", "user", "content", prompt)));
+            body.put("response_format", Map.of("type", "json_object"));
+            body.put("max_tokens", maxToken);
 
-   private String escapeJson(String text) {
-      return text.replace("\"", "\\\"")
-            .replace("\n", "\\n");
-   }
+            String requestBody = objectMapper.writeValueAsString(body);
+            String apiKey = "Bearer " + System.getenv("SPRING_AI_OPENAI_API_KEY");
 
-   public String OpenAPISetting(String prompt,int maxToken){
-      String url= "https://api.openai.com/v1/chat/completions";
-      String requestBody = String.format("{\n" +
-            "  \"model\": \"gpt-4o\",\n" +
-            "  \"messages\": [\n" +
-            "    {\"role\": \"user\", \"content\": \"%s\"}\n" +
-            "  ],\n" +
-            "  \"max_tokens\": %d \n" +
-            "}", prompt, maxToken);
-      String apiKey = "Bearer "+System.getenv("SPRING_AI_OPENAI_API_KEY");
+            return OpenAiWebClient.post()
+                    .uri("https://api.openai.com/v1/chat/completions")
+                    .header("Authorization", apiKey)
+                    .header("Content-Type", "application/json")
+                    .bodyValue(requestBody)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
 
-      String response = OpenAiWebClient.post()
-            .uri(url)
-            .header("Authorization", apiKey)
-            .header("Content-Type", "application/json")
-            .bodyValue(requestBody)
-            .retrieve()
-            .bodyToMono(String.class).block();
-      return response;
+        } catch (JsonProcessingException e) {
+            log.error("OpenAI 요청 직렬화 실패", e);
+            throw new BusinessException(ErrorCode.OPENAI_RESPONSE_INVALID);
+        }
+    }
 
-   }
+    private String extractContent(String apiResponse) throws JsonProcessingException {
+        JsonNode root = objectMapper.readTree(apiResponse);
+        JsonNode choices = root.path("choices");
+        if (choices.isArray() && !choices.isEmpty()) {
+            String content = choices.get(0).path("message").path("content").asText(null);
+            if (content != null && !content.isBlank()) {
+                return content;
+            }
+        }
+        log.error("OpenAI 응답에서 content 추출 실패: {}", apiResponse);
+        throw new BusinessException(ErrorCode.OPENAI_RESPONSE_INVALID);
+    }
 
-   // 여행지 추천 받기
-   @Cacheable(value="추천받은여행지", key="@cacheKeyUtil.getTravelRecommKey(#request)")
-   public List<TravelResponse> getTravelRecommendations(TravelRequest request) throws JsonProcessingException {
+    @Cacheable(value = "추천받은여행지", key = "@cacheKeyUtil.getTravelRecommKey(#request)")
+    public List<TravelResponse> getTravelRecommendations(TravelRequest request) throws JsonProcessingException {
+        log.info("여행지 추천 요청: 일정={}, 목적={}", request.getSchedule(), request.getPurpose());
 
-      String prompt = escapeJson(recommendedPrompt(request));
-      String content = extractContent(OpenAPISetting(prompt, 400));
-      return parseRecommendedPlaces(content); // 문자열로된 결과 파싱으로 값 추출
-//      return jsonRecommendedPlaces(content); // string to json
-   }
+        String content = extractContent(callOpenAI(recommendedPrompt(request), 800));
+        JsonNode root = objectMapper.readTree(content);
 
-   private String recommendedPrompt(TravelRequest request){
-      return String.format("다음 정보로 여행지를 추천해주세요:\n"+
-              "일정 정보: %s \n" +
-              "여행의 목적: %s \n" +
-              "여행 예산: %s \n" +
-              "선호하는 숙박 시설: %s \n" +
-              "중요하게 여기는 요소: %s \n" + 
-              "선호하는 이동 수단: %s \n" +
-              "여행 구성원: %s \n" +
-              "특히 마음에 들었던 여행지: %s \n" +
-              "주의해야 할 요소: %s \n" +
-              "AI 추천 방식: %s \n" +
-              "여행 중 어느 정도의 자유 시간을 원하시나요? : %s \n" +
-              "\n" +
-              "위 정보를 바탕으로, 무조건 어떤 부가적인 말 없이 아래 형식으로 반환하여 국내 여행지 7곳을 추천해주세요.\n" +
-                  "1. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
-                  "2. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
-                  "3. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
-                  "4. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
-                  "5. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
-                  "6. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3\n" +
-                  "7. [지역명] - [도시명]: 해당 도시의 특징 1, 특징 2, 특징 3",
+        List<TravelResponse> results = new ArrayList<>();
+        for (JsonNode rec : root.path("recommendations")) {
+            String destination = rec.path("destination").asText();
+            String city = rec.path("city").asText();
+            List<String> features = new ArrayList<>();
+            for (JsonNode f : rec.path("features")) {
+                features.add(f.asText());
+            }
+            results.add(new TravelResponse(destination, city, features));
+        }
 
-            request.getSchedule(),
-              request.getPurpose(),
-              request.getBudget(),
-              request.getAccommodation(),
-              request.getKeyPoint(),
-              request.getTransport(),
-              request.getCompanion(),
-              request.getFavorite(),
-              request.getSpecialNeeds(),
-              request.getRecommendationType(),
-              request.getFreeTime()
-      );
-   }
+        log.info("여행지 추천 완료: 추천 수={}", results.size());
+        return results;
+    }
 
-   // 여행 루트 추천
-   public String getRouteRecommendation(RecommendRouteRequest routeRequest) throws JsonProcessingException {
-      System.out.println(routeRequest);
-      String prompt = escapeJson(RoutePrompt(routeRequest));
-      String content = extractContent(OpenAPISetting(prompt,1000));
-      return content;
-   }
+    private String recommendedPrompt(TravelRequest r) {
+        return String.format(
+                "다음 여행 정보를 바탕으로 국내 여행지 7곳을 추천해주세요.\n" +
+                "일정: %s\n목적: %s\n예산: %s\n숙박: %s\n중요요소: %s\n" +
+                "이동수단: %s\n구성원: %s\n선호지: %s\n특이사항: %s\n추천방식: %s\n자유시간: %s\n\n" +
+                "반드시 아래 JSON 형식으로만 응답하세요. JSON 외의 텍스트는 절대 포함하지 마세요.\n" +
+                "{\n" +
+                "  \"recommendations\": [\n" +
+                "    {\"destination\": \"경상북도\", \"city\": \"경주\", \"features\": [\"역사유적\", \"불국사\", \"첨성대\"]},\n" +
+                "    {\"destination\": \"전라남도\", \"city\": \"여수\", \"features\": [\"바다뷰\", \"밤바다\", \"케이블카\"]}\n" +
+                "  ]\n" +
+                "}",
+                r.getSchedule(), r.getPurpose(), r.getBudget(), r.getAccommodation(),
+                r.getKeyPoint(), r.getTransport(), r.getCompanion(), r.getFavorite(),
+                r.getSpecialNeeds(), r.getRecommendationType(), r.getFreeTime()
+        );
+    }
 
-   public String RoutePrompt(RecommendRouteRequest routeRequest){
-      return String.format(
-         "일정 정보: %s \n" +
-         "여행의 목적: %s \n" +
-         "여행 예산: %s \n" +
-         "선호하는 숙박 시설: %s \n" +
-         "중요하게 여기는 요소: %s \n" +
-         "선호하는 이동 수단: %s \n" +
-         "특히 마음에 들었던 여행지: %s \n" +
-         "주의해야 할 요소: %s \n" +
-         "AI 추천 방식: %s \n" +
-         "여행 중 어느 정도의 자유 시간을 원하시나요? : %s \n" +
+    public RouteRecommendationResponse getRouteRecommendation(RecommendRouteRequest routeRequest)
+            throws JsonProcessingException {
+        log.info("루트 추천 요청: 목적지={}", routeRequest.getDestination());
 
-         "여행 장소: %s \n" +
-         "특징: %s, %s, %s \n" +
+        String content = extractContent(callOpenAI(routePrompt(routeRequest), 1500));
+        RouteRecommendationResponse result = objectMapper.readValue(content, RouteRecommendationResponse.class);
 
-         "위에서 언급된 각 여행지에 대해 여행 루트를 작성합니다."+
-         "하루에 두 가지 일정과 해당 여행지 유명 음식 두 가지를 한 줄에 작성해주세요."+
-         "부가적인 말은 하지말고!!! 다음 정보를 다음과 동일한 구조로만 제공해 주세요:"+
-         "[n일차] (e.g. [1일차]) \n" +
-         "- 첫 번째 장소명:\n" +
-         "- 영업 시간:\n" +
-         "- 특별한 방문 팁:\n" +
+        log.debug("루트 추천 완료: 목적지={}, 일수={}", routeRequest.getDestination(),
+                result.getDays() != null ? result.getDays().size() : 0);
+        return result;
+    }
 
-         "- 두 번째 장소명:\n" +
-         "- 영업 시간:\n" +
-         "- 특별한 방문 팁:\n" +
-         "- 유명 음식:\n",
-            routeRequest.getTravelRequest().getSchedule(),
-            routeRequest.getTravelRequest().getPurpose(),
-            routeRequest.getTravelRequest().getBudget(),
-            routeRequest.getTravelRequest().getAccommodation(),
-            routeRequest.getTravelRequest().getKeyPoint(),
-            routeRequest.getTravelRequest().getTransport(),
-            routeRequest.getTravelRequest().getCompanion(),
-            routeRequest.getTravelRequest().getFavorite(),
-            routeRequest.getTravelRequest().getSpecialNeeds(),
-            routeRequest.getTravelRequest().getRecommendationType(),
-            routeRequest.getTravelRequest().getFreeTime(),
-            routeRequest.getDestination(),
-            routeRequest.getFeatures().get(0),
-            routeRequest.getFeatures().get(1),
-            routeRequest.getFeatures().get(2)
-      );
-   }
+    private String routePrompt(RecommendRouteRequest r) {
+        TravelRequest t = r.getTravelRequest();
+        return String.format(
+                "다음 여행 정보를 바탕으로 '%s' 여행 루트를 작성해주세요.\n" +
+                "일정: %s\n목적: %s\n예산: %s\n숙박: %s\n중요요소: %s\n이동수단: %s\n" +
+                "장소 특징: %s, %s, %s\n\n" +
+                "각 day마다 방문할 장소 2곳과 유명 음식 2가지를 포함하세요.\n" +
+                "반드시 아래 JSON 형식으로만 응답하세요. JSON 외의 텍스트는 절대 포함하지 마세요.\n" +
+                "{\n" +
+                "  \"destination\": \"%s\",\n" +
+                "  \"days\": [\n" +
+                "    {\n" +
+                "      \"day\": 1,\n" +
+                "      \"firstPlace\": {\"name\": \"오동도\", \"hours\": \"09:00-18:00\", \"tip\": \"아침 방문 추천\"},\n" +
+                "      \"secondPlace\": {\"name\": \"이순신광장\", \"hours\": \"상시개방\", \"tip\": \"야경이 아름다움\"},\n" +
+                "      \"foods\": [\"돌산갓김치\", \"서대회\"]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}",
+                r.getDestination(),
+                t.getSchedule(), t.getPurpose(), t.getBudget(), t.getAccommodation(),
+                t.getKeyPoint(), t.getTransport(),
+                r.getFeatures().get(0), r.getFeatures().get(1), r.getFeatures().get(2),
+                r.getDestination()
+        );
+    }
 
-   // 파싱해서 추천 여행지 출력
-   public List<TravelResponse> parseRecommendedPlaces(String content) {
-      List<TravelResponse> places = new ArrayList<>();
-      String[] lines = content.split("\n");
-      for (String line : lines) {
-         System.out.println(line);
-         String destination = extractPlaceDestination(line);
-         String city = extractPlaceCity(line);
-         List<String> features = extractFeatures(line);
-         places.add(new TravelResponse(destination, city, features));
-      }
-      System.out.println(places);
-      return places;
-   }
+    public void adjustRoute(Long routeId, RouteRecommendationResponse routeData) {
+        log.info("AI 추천 루트 적용 요청: 루트ID={}", routeId);
 
-   public String extractContent(String response) throws JsonProcessingException {
-      ObjectMapper objectMapper = new ObjectMapper();
-      JsonNode root = objectMapper.readTree(response);
-      JsonNode choices = root.path("choices");
-      if (choices.isArray() && choices.size() > 0) {
-         JsonNode message = choices.get(0).path("message");
-         return message.path("content").asText();
-      }
-      return null;
-   }
+        if (routeData.getDays() == null || routeData.getDays().isEmpty()) {
+            log.warn("AI 루트 적용 실패 - days 없음: 루트ID={}", routeId);
+            return;
+        }
 
-   public String extractPlaceDestination(String content){
-      int spotIndex = content.indexOf('.');
-      int colonIndex = content.indexOf('-');
-      content = content.substring(spotIndex+1, colonIndex);
-      return content.trim();
-   }
+        for (DayRoute dayRoute : routeData.getDays()) {
+            int day = dayRoute.getDay();
+            String[] items = {
+                nameOf(dayRoute.getFirstPlace()),
+                nameOf(dayRoute.getSecondPlace()),
+                foodAt(dayRoute.getFoods(), 0),
+                foodAt(dayRoute.getFoods(), 1)
+            };
+            for (int i = 0; i < items.length; i++) {
+                if (items[i] != null && !items[i].isBlank()) {
+                    routeService.addMemo(new MemoRequest(routeId, items[i], i + 1, day, "MEMO"));
+                    log.debug("메모 추가: 루트ID={}, day={}, 항목={}", routeId, day, items[i]);
+                }
+            }
+        }
+        log.info("AI 추천 루트 적용 완료: 루트ID={}", routeId);
+    }
 
-   public String extractPlaceCity(String content){
-      int spotIndex = content.indexOf('-');
-      int colonIndex = content.indexOf(':');
-      content = content.substring(spotIndex+1, colonIndex);
-      return content.trim();
-   }
+    private String nameOf(RouteRecommendationResponse.PlaceInfo place) {
+        return place != null ? place.getName() : null;
+    }
 
-   public List<String> extractFeatures(String content){
-      int colonIndex = content.indexOf(':');
-      content = content.substring(colonIndex+1);
-      String[] features=content.split(",");
-      return Arrays.stream(features).map(String::trim).collect(Collectors.toList());
-   }
-
-   // 출력된 추천 루트 적용
-   public void adjustRoute(Long routeId, String text){
-      text=text.replaceAll("^\"|\"$","").replaceAll("\\\\n","");
-      String[] lines = text.split("\\[");
-      int day =0;
-
-      for(int i =1;i<lines.length;i++) {
-         System.out.println(lines[i]);
-         day=Integer.parseInt(lines[i].substring(0,1));
-         lines[i]=lines[i].substring(7);
-         String[] recommend= new String[4];
-         if(lines[i].contains("유명 음식:")){
-            String foods = lines[i].split("유명 음식:")[1].trim();
-            recommend[2]= foods.length()>0?foods.split(",")[0].trim():"";
-            recommend[3]= foods.length()>1?foods.split(",")[1].trim():"";
-         }
-         lines[i]=lines[i].split("- 유명 음식:")[0];
-
-         if(lines[i].contains("두 번째 장소명:"))
-            recommend[1]= lines[i].split("두 번째 ")[1].trim();
-         lines[i]=lines[i].split("- 두 번째 장소명:")[0];
-
-         if(lines[i].contains("첫 번째 장소명:"))
-            recommend[0]= lines[i].split("첫 번째 ")[1].trim();
-
-         for(String recommends: recommend){
-            System.out.println(recommends);
-         }
-         for (int j = 0; j < 4; j++) {
-            MemoRequest memoRequest = new MemoRequest(routeId, recommend[j], j, day, "MEMO");
-            routeService.addMemo(memoRequest);
-         }
-      }
-// swagger
-//      for(String line: lines){
-//         line=line.trim();
-//         if(line.startsWith("[")){
-//            if(recommend[0]!=null) {
-//               for (int i = 0; i < 4; i++) {
-//                  MemoRequest memoRequest = new MemoRequest(routeId, recommend[i], i, day, "MEMO");
-//                  routeService.addMemo(memoRequest);
-//               }
-//               recommend = new String[4];
-//            }
-//            day=Integer.parseInt(line.replaceAll("[^0-9]",""));
-//         }else if(line.contains("첫 번째 장소명:")){
-//            recommend[0]= line.split("첫 번째 장소명:")[1].trim();
-//         }else if(line.contains("두 번째 장소명:")){
-//            recommend[1]= line.split("두 번째 장소명:")[1].trim();
-//         }else if(line.contains("유명 음식:")){
-//            String foods = line.split("유명 음식:")[1].trim();
-//            recommend[2]= foods.length()>0?foods.split(",")[0].trim():"";
-//            recommend[3]= foods.length()>1?foods.split(",")[1].trim():"";
-//         }
-//      }
-//      if(recommend[0]!=null){
-//         for (int i = 0; i < 4; i++) {
-//            MemoRequest memoRequest = new MemoRequest(routeId, recommend[i], i, day, "MEMO");
-//            routeService.addMemo(memoRequest);
-//         }
-//      }
-   }
-
+    private String foodAt(List<String> foods, int index) {
+        return (foods != null && foods.size() > index) ? foods.get(index) : null;
+    }
 }

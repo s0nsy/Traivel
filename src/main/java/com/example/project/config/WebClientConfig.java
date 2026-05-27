@@ -13,7 +13,6 @@ public class WebClientConfig {
    private final OpenAiConfig openAiConfig;
    private final NaverApiConfig naverApiConfig;
 
-   //OpenAI 서버랑 통신할 때 HTTP 요청을 보냄
    @Bean
    public WebClient OpenAiWebClient(){
       return WebClient.builder()
@@ -31,7 +30,6 @@ public class WebClientConfig {
             .build();
    }
 
-   // 역지오코딩 API용
    @Bean
    public WebClient naverMapClient() {
       return WebClient.builder()
