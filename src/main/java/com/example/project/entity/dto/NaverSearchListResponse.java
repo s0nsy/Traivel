@@ -2,12 +2,13 @@ package com.example.project.entity.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class NaverSearchListResponse {
-   private List<NaverSearchRequest> items;
+   private List<NaverPlaceDto> items;
 }
