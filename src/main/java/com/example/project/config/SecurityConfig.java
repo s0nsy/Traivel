@@ -40,16 +40,18 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                   .requestMatchers(
-                        "/auth/register/**",
-                        "/auth/login/**",
+                        "/auth/register",
+                        "/auth/login",
+                        "/auth/refresh",
                         "/swagger-ui/**",
                         "/swagger-resources/**",
                         "/v3/api-docs/**",
                         "/",
-                        "/ws/**"
-                  )
-                  .permitAll()  // 로그인, 회원가입 페이지는 모두에게 열어줌
-                  .anyRequest().authenticated()  // 나머지 요청은 인증 필요
+                        "/ws/**",
+                        "/actuator/health"
+                  ).permitAll()
+                  .requestMatchers("/actuator/**").hasRole("ADMIN")
+                  .anyRequest().authenticated()
             )
             .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 인가 필터 추가
 

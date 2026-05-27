@@ -6,11 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class LoginResponse {
-   private String accessToken;
-
-   @Override
-   public String toString() {
-      return accessToken;
-   }
-
+    private String accessToken;
+    private String refreshToken;
 }
