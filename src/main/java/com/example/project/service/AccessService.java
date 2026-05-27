@@ -1,134 +1,110 @@
 package com.example.project.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.project.entity.Access;
 import com.example.project.entity.Image;
 import com.example.project.entity.dto.AccessRequest;
-import com.example.project.mapper.AccessMapper;
-import com.example.project.mapper.UserMapper;
-import io.swagger.v3.oas.annotations.Parameter;
+import com.example.project.exception.ForbiddenException;
+import com.example.project.exception.NotFoundException;
+import com.example.project.exception.ErrorCode;
+import com.example.project.repository.AccessRepository;
+import com.example.project.repository.ImageRepository;
+import com.example.project.repository.UserRepository;
+import com.example.project.service.storage.StorageService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.AccessDeniedException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
+@Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AccessService {
 
-   private final AccessMapper accessMapper;
-   private final UserMapper userMapper;
+    private final AccessRepository accessRepository;
+    private final ImageRepository imageRepository;
+    private final UserRepository userRepository;
+    private final StorageService storageService;
 
-   @Value("${aws.s3.bucket}")
-   private String bucket;
-   private final AmazonS3 amazonS3;
+    public void createAccess(AccessRequest request, String username) {
+        log.info("후기 작성 요청: 제목='{}', 작성자={}", request.getTitle(), username);
+        Access access = new Access();
+        access.setTitle(request.getTitle());
+        access.setContent(request.getContent());
+        access.setImageUrl(new ArrayList<>());
+        access.setWriter(userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND)));
+        accessRepository.save(access);
+        if (request.getImageUrl() != null && !request.getImageUrl().isEmpty())
+            addImages(request.getImageUrl(), access);
+        log.info("후기 작성 완료: ID={}, 작성자={}", access.getId(), username);
+    }
 
-   // 후기 추가
-   public void createAccess(AccessRequest request, String username) throws IOException {
+    public void editAccess(AccessRequest request, Long accessId, String username) {
+        log.info("후기 수정 요청: ID={}, 요청자={}", accessId, username);
+        Access access = accessRepository.findById(accessId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ACCESS_POST_NOT_FOUND));
 
-      Access access = new Access();
-      access.setTitle(request.getTitle());
-      access.setContent(request.getContent());
-      System.out.println(request.getContent());
+        Long currentUserId = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND)).getId();
+        if (!access.getWriter().getId().equals(currentUserId)) {
+            log.warn("후기 수정 권한 없음: ID={}, 요청자={}", accessId, username);
+            throw new ForbiddenException(ErrorCode.NOT_ACCESS_WRITER);
+        }
 
-      List<Image> images= new ArrayList<>();
-      access.setImageUrl(images);
-      access.setCreated_at(LocalDateTime.now());
-      access.setWriter(userMapper.findByUsername(username));
-      accessMapper.save(access);
-      if(request.getImageUrl()!=null||request.getImageUrl().equals(""))
-         addImage(request,access);
-   }
+        access.setTitle(request.getTitle());
+        access.setContent(request.getContent());
+        accessRepository.save(access);
 
-   // 이미지 추가
-   public void addImage(AccessRequest request, Access access) throws IOException {
-      for(MultipartFile i : request.getImageUrl()){
-         String imageName = i.getOriginalFilename();
-         String saveImageName = UUID.randomUUID()+"_"+imageName;
+        List<Long> currentImages = imageRepository.findIdsByAccessId(access.getId());
+        if (request.getOriginalImageUrl() != null && !request.getOriginalImageUrl().isEmpty()) {
+            currentImages.stream()
+                    .filter(id -> !request.getOriginalImageUrl().contains(id))
+                    .forEach(this::deleteImage);
+        } else {
+            currentImages.forEach(this::deleteImage);
+        }
+        if (request.getImageUrl() != null && !request.getImageUrl().isEmpty())
+            addImages(request.getImageUrl(), access);
+        log.info("후기 수정 완료: ID={}", accessId);
+    }
 
-         ObjectMetadata metadata = new ObjectMetadata();
-         metadata.setContentType(i.getContentType());
-         metadata.setContentLength(i.getSize());
-         PutObjectRequest objectRequest = new PutObjectRequest(bucket, saveImageName, i.getInputStream(), metadata);
-         amazonS3.putObject(objectRequest);
+    public void deleteAccess(Long id, String username) {
+        log.info("후기 삭제 요청: ID={}, 요청자={}", id, username);
+        Access access = accessRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ACCESS_POST_NOT_FOUND));
 
+        Long currentUserId = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND)).getId();
+        if (!access.getWriter().getId().equals(currentUserId)) {
+            log.warn("후기 삭제 권한 없음: ID={}, 요청자={}", id, username);
+            throw new ForbiddenException(ErrorCode.NOT_ACCESS_WRITER);
+        }
 
-         Image image = new Image();
-         image.setImageUrl(saveImageName);
-         image.setAccess(access);
-         accessMapper.saveImage(image,access);
-      }
-   }
+        imageRepository.findIdsByAccessId(access.getId()).forEach(this::deleteImage);
+        accessRepository.delete(access);
+        log.info("후기 삭제 완료: ID={}", id);
+    }
 
-   // 후기 수정
-   public void editAccess(AccessRequest request, @Parameter(description="accessId")Long accessId, String username) throws IOException {
-      Access access = accessMapper.findByAccessId(accessId);
-      System.out.println(access);
-      Long userId = accessMapper.findUserIdByAccessId(accessId);
-      if(access==null)
-         throw new NullPointerException("해당 게시글이 없습니다.");
-      else if(userId!=userMapper.findByUsername(username).getId())
-         throw new AccessDeniedException("해당 게시글의 작성자가 아닙니다.");
-      access.setTitle(request.getTitle());
-      access.setContent(request.getContent());
-      access.setUpdated_at(LocalDateTime.now());
-      accessMapper.editAccess(access);
+    private void addImages(List<MultipartFile> files, Access access) {
+        for (MultipartFile file : files) {
+            String key = storageService.upload(file);
+            Image image = new Image();
+            image.setImageUrl(key);
+            image.setAccess(access);
+            imageRepository.save(image);
+            log.debug("이미지 저장 완료: 키={}, 후기ID={}", key, access.getId());
+        }
+    }
 
-      List<Long> currentImages= accessMapper.findImageByAccessId(access.getId());
-
-      if(request.getOriginalImageUrl().size()!=0){
-         for (Long image : currentImages) {
-            System.out.println(image);
-            if (!request.getOriginalImageUrl().contains(image)) {
-               deleteImage(image);
-            }
-         }
-      }else
-         for (Long image : currentImages)
-            deleteImage(image);
-      if(request.getImageUrl()!=null)
-         addImage(request,access);
-
-   }
-
-   // 이미지 삭제
-   public void deleteImage(Long image){
-         String imageName = accessMapper.findByImageId(image);
-         DeleteObjectRequest objectRequest = new DeleteObjectRequest(bucket, imageName);
-         System.out.println("url: " + imageName);
-         try {
-            amazonS3.deleteObject(objectRequest);
-         } catch (Exception e) {
-            System.out.println("이미지가 존재하지 않습니다.");
-            e.printStackTrace();
-         }
-         accessMapper.deleteByImageId(image);
-   }
-
-   // 후기 삭제
-   public void deleteAccess(Long id, String username) throws AccessDeniedException {
-      Access access = accessMapper.findByAccessId(id);
-      Long userId = accessMapper.findUserIdByAccessId(id);
-      if(access==null)
-         throw new NullPointerException("해당 게시글이 없습니다.");
-      else if(userId!=userMapper.findByUsername(username).getId())
-         throw new AccessDeniedException("해당 게시글의 작성자가 아닙니다.");
-      for(Long imageId: accessMapper.findImageByAccessId(access.getId())) {
-         deleteImage(imageId);
-      }
-
-      accessMapper.deleteImageByAccessId(access.getId());
-      accessMapper.deleteAccess(access);
-   }
+    private void deleteImage(Long imageId) {
+        String key = imageRepository.findUrlById(imageId);
+        storageService.delete(key);
+        imageRepository.deleteById(imageId);
+        log.debug("이미지 삭제 완료: ID={}", imageId);
+    }
 }
