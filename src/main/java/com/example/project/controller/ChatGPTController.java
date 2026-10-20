@@ -3,10 +3,14 @@ package com.example.project.controller;
 import com.example.project.entity.User;
 import com.example.project.entity.dto.RecommendRouteRequest;
 import com.example.project.entity.dto.RouteRecommendationResponse;
+import com.example.project.entity.dto.TravelInfoRequest;
+import com.example.project.entity.dto.TravelInfoResponse;
 import com.example.project.entity.dto.TravelRequest;
 import com.example.project.entity.dto.TravelResponse;
+import com.example.project.kafka.DestinationProducer;
 import com.example.project.repository.RouteRepository;
 import com.example.project.service.ChatGPTService;
+import com.example.project.service.NaverSearchService;
 import com.example.project.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,9 +30,47 @@ import java.util.List;
 @RequestMapping("/chat")
 public class ChatGPTController {
    private final ChatGPTService chatGPTService;
+   private final NaverSearchService naverSearchService;
    private final UserService userService;
    private final RouteRepository routeRepository;
    private final RouteController routeController;
+   private final DestinationProducer destinationProducer;
+
+   @PostMapping("/info")
+   public ResponseEntity<TravelInfoResponse> getTravelInfo(
+         @RequestBody TravelInfoRequest request) {
+      log.info("여행 부가정보 요청: 도시={}", request.getCity());
+      List<com.example.project.entity.dto.NaverPlaceDto> hotels;
+      try {
+         String query = request.getCity() + " " + request.getAccommodation();
+         hotels = naverSearchService.searchPlace(query).stream()
+               .filter(h -> h.getCategory() != null && h.getCategory().startsWith("숙박"))
+               .limit(3)
+               .toList();
+         // 숙박 카테고리 결과가 부족하면 필터 없이 재시도
+         if (hotels.isEmpty()) {
+            hotels = naverSearchService.searchPlace(request.getCity() + " 숙박").stream()
+                  .filter(h -> h.getCategory() != null && h.getCategory().startsWith("숙박"))
+                  .limit(3)
+                  .toList();
+         }
+         hotels.forEach(h -> {
+            String name = h.getTitle().replaceAll("<[^>]+>", "");
+            h.setImageUrl(naverSearchService.searchImageThumbnail(name));
+         });
+      } catch (Exception e) {
+         log.warn("숙박 검색 실패: {}", e.getMessage());
+         hotels = List.of();
+      }
+      List<com.example.project.entity.dto.HighlightDto> highlights;
+      try {
+         highlights = chatGPTService.getHighlights(request);
+      } catch (Exception e) {
+         log.warn("현지 트렌드 생성 실패: {}", e.getMessage());
+         highlights = List.of();
+      }
+      return ResponseEntity.ok(new TravelInfoResponse(hotels, highlights));
+   }
 
    @PostMapping("/recommend")
    public ResponseEntity<List<TravelResponse>> getRecommendDestinations(
@@ -59,6 +101,7 @@ public class ChatGPTController {
       Long parsedRouteId;
       if (routeId.equals("null") || routeId.equals("undefined") || routeId.isEmpty()) {
          parsedRouteId = routeController.addRoute(principal, routeData.getDestination());
+         destinationProducer.send(routeData.getDestination());
       } else {
          try {
             parsedRouteId = Long.parseLong(routeId);

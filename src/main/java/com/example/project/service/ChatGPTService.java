@@ -1,9 +1,11 @@
 package com.example.project.service;
 
+import com.example.project.entity.dto.HighlightDto;
 import com.example.project.entity.dto.MemoRequest;
 import com.example.project.entity.dto.RecommendRouteRequest;
 import com.example.project.entity.dto.RouteRecommendationResponse;
 import com.example.project.entity.dto.RouteRecommendationResponse.DayRoute;
+import com.example.project.entity.dto.TravelInfoRequest;
 import com.example.project.entity.dto.TravelRequest;
 import com.example.project.entity.dto.TravelResponse;
 import com.example.project.exception.BusinessException;
@@ -40,12 +42,9 @@ public class ChatGPTService {
             body.put("max_tokens", maxToken);
 
             String requestBody = objectMapper.writeValueAsString(body);
-            String apiKey = "Bearer " + System.getenv("SPRING_AI_OPENAI_API_KEY");
 
             return OpenAiWebClient.post()
                     .uri("https://api.openai.com/v1/chat/completions")
-                    .header("Authorization", apiKey)
-                    .header("Content-Type", "application/json")
                     .bodyValue(requestBody)
                     .retrieve()
                     .bodyToMono(String.class)
@@ -97,11 +96,14 @@ public class ChatGPTService {
                 "다음 여행 정보를 바탕으로 국내 여행지 7곳을 추천해주세요.\n" +
                 "일정: %s\n목적: %s\n예산: %s\n숙박: %s\n중요요소: %s\n" +
                 "이동수단: %s\n구성원: %s\n선호지: %s\n특이사항: %s\n추천방식: %s\n자유시간: %s\n\n" +
+                "서울, 제주처럼 넓은 지역을 추천할 경우 city에는 '홍대', '강남', '애월', '성산'처럼 실제 머무를 세부 지역을 입력하세요.\n" +
                 "반드시 아래 JSON 형식으로만 응답하세요. JSON 외의 텍스트는 절대 포함하지 마세요.\n" +
                 "{\n" +
                 "  \"recommendations\": [\n" +
                 "    {\"destination\": \"경상북도\", \"city\": \"경주\", \"features\": [\"역사유적\", \"불국사\", \"첨성대\"]},\n" +
-                "    {\"destination\": \"전라남도\", \"city\": \"여수\", \"features\": [\"바다뷰\", \"밤바다\", \"케이블카\"]}\n" +
+                "    {\"destination\": \"전라남도\", \"city\": \"여수\", \"features\": [\"바다뷰\", \"밤바다\", \"케이블카\"]},\n" +
+                "    {\"destination\": \"제주특별자치도\", \"city\": \"애월\", \"features\": [\"카페거리\", \"해안도로\", \"노을\"]},\n" +
+                "    {\"destination\": \"제주특별자치도\", \"city\": \"성산\", \"features\": [\"일출봉\", \"우도\", \"스노클링\"]}\n" +
                 "  ]\n" +
                 "}",
                 r.getSchedule(), r.getPurpose(), r.getBudget(), r.getAccommodation(),
@@ -159,20 +161,54 @@ public class ChatGPTService {
 
         for (DayRoute dayRoute : routeData.getDays()) {
             int day = dayRoute.getDay();
-            String[] items = {
-                nameOf(dayRoute.getFirstPlace()),
-                nameOf(dayRoute.getSecondPlace()),
-                foodAt(dayRoute.getFoods(), 0),
-                foodAt(dayRoute.getFoods(), 1)
-            };
-            for (int i = 0; i < items.length; i++) {
-                if (items[i] != null && !items[i].isBlank()) {
-                    routeService.addMemo(new MemoRequest(routeId, items[i], i + 1, day, "MEMO"));
-                    log.debug("메모 추가: 루트ID={}, day={}, 항목={}", routeId, day, items[i]);
-                }
+
+            RouteRecommendationResponse.PlaceInfo fp = dayRoute.getFirstPlace();
+            if (fp != null && nameOf(fp) != null && !nameOf(fp).isBlank()) {
+                routeService.addPlaceByName(routeId, fp.getName(), fp.getHours(), fp.getTip(), day);
+                log.debug("장소 추가: 루트ID={}, day={}, 장소={}", routeId, day, fp.getName());
+            }
+
+            RouteRecommendationResponse.PlaceInfo sp = dayRoute.getSecondPlace();
+            if (sp != null && nameOf(sp) != null && !nameOf(sp).isBlank()) {
+                routeService.addPlaceByName(routeId, sp.getName(), sp.getHours(), sp.getTip(), day);
+                log.debug("장소 추가: 루트ID={}, day={}, 장소={}", routeId, day, sp.getName());
+            }
+
+            String food1 = foodAt(dayRoute.getFoods(), 0);
+            if (food1 != null && !food1.isBlank()) {
+                routeService.addMemo(new MemoRequest(routeId, food1, 3, day, "MEMO"));
+                log.debug("음식 메모 추가: 루트ID={}, day={}, 음식={}", routeId, day, food1);
+            }
+
+            String food2 = foodAt(dayRoute.getFoods(), 1);
+            if (food2 != null && !food2.isBlank()) {
+                routeService.addMemo(new MemoRequest(routeId, food2, 4, day, "MEMO"));
+                log.debug("음식 메모 추가: 루트ID={}, day={}, 음식={}", routeId, day, food2);
             }
         }
         log.info("AI 추천 루트 적용 완료: 루트ID={}", routeId);
+    }
+
+    public List<HighlightDto> getHighlights(TravelInfoRequest request) throws JsonProcessingException {
+        log.info("현지 트렌드 요청: 도시={}", request.getCity());
+        String content = extractContent(callOpenAI(highlightsPrompt(request), 500));
+        JsonNode root = objectMapper.readTree(content);
+        List<HighlightDto> results = new ArrayList<>();
+        for (JsonNode h : root.path("highlights")) {
+            results.add(new HighlightDto(h.path("title").asText(), h.path("description").asText()));
+        }
+        log.info("현지 트렌드 완료: 도시={}, 개수={}", request.getCity(), results.size());
+        return results;
+    }
+
+    private String highlightsPrompt(TravelInfoRequest r) {
+        return String.format(
+                "'%s(%s)' 여행의 현지 인기 스팟과 꼭 해볼 것 4가지를 추천해주세요.\n" +
+                "여행 목적: %s, 일정: %s\n\n" +
+                "반드시 아래 JSON 형식으로만 응답하세요. JSON 외의 텍스트는 절대 포함하지 마세요.\n" +
+                "{\"highlights\": [{\"title\": \"스팟명\", \"description\": \"한 줄 설명\"}]}",
+                r.getCity(), r.getDestination(), r.getPurpose(), r.getSchedule()
+        );
     }
 
     private String nameOf(RouteRecommendationResponse.PlaceInfo place) {

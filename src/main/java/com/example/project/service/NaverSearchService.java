@@ -1,43 +1,59 @@
 package com.example.project.service;
 
-import com.example.project.config.NaverApiConfig;
+import com.example.project.entity.dto.NaverImageSearchResponse;
 import com.example.project.entity.dto.NaverPlaceDto;
 import com.example.project.entity.dto.NaverSearchListResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class NaverSearchService {
-   private final NaverApiConfig naverApiConfig;
-   private final WebClient naverWebClient;
-   private final WebClient naverMapClient;
+    private final WebClient naverSearchWebClient;
 
-   public List<NaverPlaceDto> searchPlace(String keyword) {
-      log.info("네이버 장소 검색: keyword='{}'", keyword);
-      String uri = UriComponentsBuilder.fromUriString("https://openapi.naver.com/v1/search/local.json")
-            .queryParam("query", keyword)
-            .queryParam("display", 10)
-            .queryParam("sort", "random")
-            .build()
-            .toUriString();
+    public NaverSearchService(@Qualifier("naverSearchWebClient") WebClient naverSearchWebClient) {
+        this.naverSearchWebClient = naverSearchWebClient;
+    }
 
-      List<NaverPlaceDto> results = naverWebClient.get()
-            .uri(uri)
-            .header("X-Naver-Client-Id", naverApiConfig.getSearchId())
-            .header("X-Naver-Client-Secret", naverApiConfig.getSearchSecret())
-            .retrieve()
-            .bodyToMono(NaverSearchListResponse.class)
-            .map(NaverSearchListResponse::getItems)
-            .block();
+    public List<NaverPlaceDto> searchPlace(String keyword) {
+        log.info("네이버 장소 검색: keyword='{}'", keyword);
+        NaverSearchListResponse response = naverSearchWebClient.get()
+                .uri(builder -> builder
+                        .path("/search/v1/local")
+                        .queryParam("query", keyword)
+                        .queryParam("display", 10)
+                        .build())
+                .retrieve()
+                .bodyToMono(NaverSearchListResponse.class)
+                .block();
 
-      log.info("네이버 장소 검색 결과: keyword='{}', 결과 수={}", keyword, results != null ? results.size() : 0);
-      return results;
-   }
+        if (response == null || response.getItems() == null) return List.of();
+
+        log.info("네이버 장소 검색 결과: keyword='{}', 결과 수={}", keyword, response.getItems().size());
+        return response.getItems();
+    }
+
+    public String searchImageThumbnail(String keyword) {
+        try {
+            NaverImageSearchResponse response = naverSearchWebClient.get()
+                    .uri(builder -> builder
+                            .path("/search/v1/image")
+                            .queryParam("query", keyword)
+                            .queryParam("display", 1)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(NaverImageSearchResponse.class)
+                    .block();
+
+            if (response == null || response.getItems() == null || response.getItems().isEmpty()) return null;
+            return response.getItems().get(0).getThumbnail();
+        } catch (Exception e) {
+            log.warn("이미지 검색 실패: keyword='{}', {}", keyword, e.getMessage());
+            return null;
+        }
+    }
 }
