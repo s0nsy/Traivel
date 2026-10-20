@@ -1,11 +1,13 @@
 package com.example.project.entity.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 
 @Data
 public class TravelRequest {
+   @NotBlank(message = "여행 일정을 입력해주세요.")
    @Schema(description="여행 일정 정보", example="2025-05-01 부터 2025-05-05까지")
    private String schedule;
    @Schema(description="여행 목적", example="맛집")

@@ -17,8 +17,13 @@ public class BlockDto {
    private int order;
    private int day;
    private String dtype;
-   private String title; // place.title or memo.content
-   private String address; // memo는 null
+   private String title;
+   private String address;
+   private String tip;
+   private String link;
+   private String category;
+   private String mapx;
+   private String mapy;
    private Long memoId;
    private Long placeId;
 
@@ -30,10 +35,16 @@ public class BlockDto {
       if(routeItem instanceof PlaceItem placeItem){
          this.title= placeItem.getPlace().getTitle();
          this.address = placeItem.getPlace().getAddress();
+         this.tip = placeItem.getPlace().getRoadAddress();
+         this.link = placeItem.getPlace().getLink();
+         this.category = placeItem.getPlace().getCategory();
+         this.mapx = placeItem.getPlace().getMapx();
+         this.mapy = placeItem.getPlace().getMapy();
          this.placeId= placeItem.getPlace().getId();
       }else if(routeItem instanceof MemoItem memoItem){
          this.title = memoItem.getMemo().getContent();
          this.address= null;
+         this.tip = null;
          this.memoId= memoItem.getMemo().getId();
       }
    }

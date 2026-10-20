@@ -1,12 +1,18 @@
 package com.example.project.config.security.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class LoginRequest {
-   private String username;
-   private String password;
+
+    @NotBlank(message = "아이디를 입력해주세요.")
+    private String username;
+
+    @NotBlank(message = "비밀번호를 입력해주세요.")
+    private String password;
 }

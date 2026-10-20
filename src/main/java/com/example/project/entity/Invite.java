@@ -1,23 +1,26 @@
 package com.example.project.entity;
 
-
+import com.example.project.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Invite {
-   private Long id;
+@EqualsAndHashCode(callSuper = false)
+@Table(name = "invite")
+public class Invite extends BaseEntity {
 
-   private String token;
+    private String token;
 
-   private Long route_id;
+    @Column(name = "route_id")
+    private Long routeId;
 
-   private LocalDateTime expired_at;
-
+    private LocalDateTime expiredAt;
 }

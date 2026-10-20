@@ -1,13 +1,16 @@
 package com.example.project.entity.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class NaverSearchListResponse {
-   private List<NaverSearchRequest> items;
+   private List<NaverPlaceDto> items;
 }
