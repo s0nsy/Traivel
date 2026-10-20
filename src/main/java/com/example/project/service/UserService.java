@@ -15,6 +15,7 @@ import com.example.project.config.security.dto.LoginResponse;
 import com.example.project.config.security.dto.RegisterRequest;
 import com.example.project.config.security.jwt.JwtUtil;
 import jakarta.transaction.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -66,7 +67,13 @@ public class UserService {
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setEmail(request.getEmail());
         newUser.setRole("ROLE_USER");
-        userRepository.save(newUser);
+        try {
+            userRepository.save(newUser);
+        } catch (DataIntegrityViolationException e) {
+            // 애플리케이션 레벨 중복 체크를 통과한 동시 요청이 DB UNIQUE 제약에서 차단됨
+            log.warn("회원가입 실패 - DB 중복 제약 위반 (동시 요청): {}", request.getUsername());
+            throw new DuplicateException(ErrorCode.DUPLICATE_USERNAME);
+        }
         log.info("회원가입 완료: {}", request.getUsername());
     }
 
