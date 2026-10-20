@@ -2,23 +2,29 @@ package com.example.project.controller;
 
 import com.example.project.config.security.dto.LoginRequest;
 import com.example.project.config.security.dto.LoginResponse;
-import com.example.project.config.security.dto.RefreshRequest;
 import com.example.project.config.security.dto.RegisterRequest;
+import com.example.project.config.security.jwt.JwtUtil;
 import com.example.project.entity.Notification;
 import com.example.project.entity.User;
 import com.example.project.entity.dto.NotificationRequest;
 import com.example.project.repository.NotificationRepository;
 import com.example.project.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -30,38 +36,78 @@ public class AuthController {
 
     private final UserService userService;
     private final NotificationRepository notificationRepository;
+    private final JwtUtil jwtUtil;
+
+    @Value("${cookie.secure:true}")
+    private boolean secureCookie;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest,
+                                      HttpServletResponse response) {
         log.info("회원가입 요청: {}", registerRequest.getUsername());
         userService.register(registerRequest);
-        LoginResponse response = userService.login(
+        LoginResponse tokens = userService.login(
                 new LoginRequest(registerRequest.getUsername(), registerRequest.getPassword()));
-        return ResponseEntity.ok(Map.of(
-                "message", "Registered",
-                "accessToken", response.getAccessToken(),
-                "refreshToken", response.getRefreshToken()
-        ));
+        addTokenCookies(response, tokens);
+        return ResponseEntity.ok(Map.of("username", registerRequest.getUsername()));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request,
+                                   HttpServletResponse response) {
         log.info("로그인 요청: {}", request.getUsername());
-        return ResponseEntity.ok(userService.login(request));
+        LoginResponse tokens = userService.login(request);
+        addTokenCookies(response, tokens);
+        return ResponseEntity.ok(Map.of("username", request.getUsername()));
     }
 
     @PostMapping("/refresh")
-    @Operation(description = "refresh token으로 새 access token과 refresh token을 발급합니다.")
-    public ResponseEntity<LoginResponse> refresh(@Valid @RequestBody RefreshRequest request) {
+    @Operation(description = "refresh token 쿠키로 새 access/refresh token 쿠키를 발급합니다.")
+    public ResponseEntity<?> refresh(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken,
+            HttpServletResponse response) {
         log.info("토큰 재발급 요청");
-        return ResponseEntity.ok(userService.refresh(request.getRefreshToken()));
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token missing");
+        }
+        LoginResponse tokens = userService.refresh(refreshToken);
+        addTokenCookies(response, tokens);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<String> logout(@AuthenticationPrincipal UserDetails userDetails,
+                                         HttpServletResponse response) {
         log.info("로그아웃 요청: {}", userDetails.getUsername());
         userService.logout(userDetails.getUsername());
+        clearTokenCookies(response);
         return ResponseEntity.ok("로그아웃 되었습니다.");
+    }
+
+    private void addTokenCookies(HttpServletResponse response, LoginResponse tokens) {
+        response.addHeader(HttpHeaders.SET_COOKIE, buildCookie(
+                "accessToken", tokens.getAccessToken(),
+                Duration.ofMillis(jwtUtil.getAccessTokenExpireTime())).toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, buildCookie(
+                "refreshToken", tokens.getRefreshToken(),
+                Duration.ofMillis(jwtUtil.getRefreshTokenExpireTime())).toString());
+    }
+
+    private void clearTokenCookies(HttpServletResponse response) {
+        response.addHeader(HttpHeaders.SET_COOKIE,
+                buildCookie("accessToken", "", Duration.ZERO).toString());
+        response.addHeader(HttpHeaders.SET_COOKIE,
+                buildCookie("refreshToken", "", Duration.ZERO).toString());
+    }
+
+    private ResponseCookie buildCookie(String name, String value, Duration maxAge) {
+        return ResponseCookie.from(name, value)
+                .httpOnly(true)
+                .secure(secureCookie)
+                .path("/")
+                .maxAge(maxAge)
+                .sameSite("Lax")
+                .build();
     }
 
     @GetMapping("/notifications")

@@ -6,6 +6,8 @@ import com.example.project.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -50,8 +52,15 @@ public class SecurityConfig {
                         "/ws/**",
                         "/actuator/health"
                   ).permitAll()
+                  .requestMatchers(HttpMethod.GET
+                      ,"/destinations/popular"
+                     ,"/naver/static-map").permitAll()
                   .requestMatchers("/actuator/**").hasRole("ADMIN")
                   .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                  .authenticationEntryPoint((req, res, e) ->
+                        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
             )
             .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 인가 필터 추가
 
@@ -62,6 +71,7 @@ public class SecurityConfig {
    public CorsConfigurationSource corsConfigurationSource(){
       CorsConfiguration configuration = new CorsConfiguration();
       configuration.setAllowedOrigins(List.of(
+            "http://localhost:3000",
             "http://localhost:8080",
             "http://localhost:5173",
             "https://traivel.p-e.kr"

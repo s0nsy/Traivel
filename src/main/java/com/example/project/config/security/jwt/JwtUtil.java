@@ -82,6 +82,10 @@ public class JwtUtil {
         return parseClaims(token).getSubject();
     }
 
+    public long getAccessTokenExpireTime() {
+        return accessTokenExpireTime;
+    }
+
     public long getRefreshTokenExpireTime() {
         return refreshTokenExpireTime;
     }
