@@ -35,4 +35,10 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
     @Modifying
     @Query(value = "DELETE FROM route_user WHERE route_id = :routeId", nativeQuery = true)
     void deleteAllRouteUsers(@Param("routeId") Long routeId);
+
+    @Query("SELECT r FROM Route r WHERE r.owner.username = :username ORDER BY r.id DESC")
+    List<Route> findByOwnerUsername(@Param("username") String username);
+
+    @Query("SELECT DISTINCT r FROM User u JOIN u.route r WHERE u.username = :username ORDER BY r.id DESC")
+    List<Route> findByMemberUsername(@Param("username") String username);
 }

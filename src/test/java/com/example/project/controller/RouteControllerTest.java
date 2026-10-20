@@ -143,7 +143,7 @@ class RouteControllerTest {
     @Test
     @WithMockUser
     void editMemo_success() throws Exception {
-        doNothing().when(routeService).editMemo(eq(1L), eq("수정된 내용"));
+        doNothing().when(routeService).editMemo(eq(1L), eq("수정된 내용"), eq("username"));
 
         mockMvc.perform(put("/route/memo/1")
                         .with(csrf())
