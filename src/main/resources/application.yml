@@ -4,7 +4,10 @@ spring:
     active: local
   devtools:
     restart:
-      enabled: true
+      enabled: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -26,6 +29,21 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: 6379
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: notification-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.example.project.kafka"
+  elasticsearch:
+    uris: http://localhost:9200
+
 jwt:
   secret: ${JWT_SECRET:local-dev-secret-key-do-not-use-in-production-32b}
   access-expiration: 1800000
@@ -50,15 +68,15 @@ storage:
     path: ${user.home}/traivel/images
 
 openai:
-  api-key: ${SPRING_AI_OPENAI_API_KEY:}
+  api-key: ${OPENAI_API_KEY}
 
 naver:
   search:
-    id: ${NAVER_SEARCH_ID:}
-    secret: ${NAVER_SEARCH_SECRET:}
+    id: ${NAVER_SEARCH_ID}
+    secret: ${NAVER_SEARCH_SECRET}
   map:
-    id: ${NAVER_MAP_ID:}
-    secret: ${NAVER_MAP_SECRET:}
+    id: ${NAVER_MAP_ID}
+    secret: ${NAVER_MAP_SECRET}
 
 aws:
   access-key: ${AMAZON_ACCESS_KEY:}
