@@ -12,9 +12,10 @@ import java.util.List;
 public class AccessDto {
    private String title;
    private String content;
-   private List<Long> imageUrl;
+   private List<String> imageUrl;
    private String createdAt;
    private String updatedAt;
    private String writer;
-
+   private Long routeId;
+   private List<Long> selectedBlockIds;
 }

@@ -27,4 +27,11 @@ public class Access extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User writer;
+
+    private Long routeId;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "access_selected_blocks", joinColumns = @JoinColumn(name = "access_id"))
+    @Column(name = "block_id")
+    private List<Long> selectedBlockIds = new ArrayList<>();
 }

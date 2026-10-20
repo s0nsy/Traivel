@@ -20,4 +20,7 @@ public class AccessRequest {
     private List<MultipartFile> imageUrl = new ArrayList<>();
 
     private List<Long> originalImageUrl;
+
+    private List<Long> selectedBlockIds = new ArrayList<>();
+
 }

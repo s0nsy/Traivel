@@ -29,7 +29,8 @@ public class S3StorageService implements StorageService {
 
     @Override
     public String upload(MultipartFile file) {
-        String key = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String ext = safeExtension(file.getOriginalFilename());
+        String key = UUID.randomUUID() + ext;
         log.debug("S3 업로드: {} → 키={}", file.getOriginalFilename(), key);
         try {
             ObjectMetadata metadata = new ObjectMetadata();
@@ -51,5 +52,16 @@ public class S3StorageService implements StorageService {
         } catch (Exception e) {
             log.warn("S3 삭제 실패 (이미 없을 수 있음): 키={}, 이유={}", key, e.getMessage());
         }
+    }
+
+    @Override
+    public String getPublicUrl(String key) {
+        return amazonS3.getUrl(bucket, key).toString();
+    }
+
+    private String safeExtension(String filename) {
+        if (filename == null || !filename.contains(".")) return "";
+        String ext = filename.substring(filename.lastIndexOf('.')).toLowerCase();
+        return ext.matches("\\.[a-z0-9]{1,10}") ? ext : "";
     }
 }

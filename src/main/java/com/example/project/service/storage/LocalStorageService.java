@@ -31,10 +31,11 @@ public class LocalStorageService implements StorageService {
 
     @Override
     public String upload(MultipartFile file) {
-        String key = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String ext = safeExtension(file.getOriginalFilename());
+        String key = UUID.randomUUID() + ext;
         log.debug("로컬 저장: {} → 키={}", file.getOriginalFilename(), key);
         try {
-            file.transferTo(Paths.get(uploadPath).resolve(key));
+            file.transferTo(safeResolve(key));
         } catch (IOException e) {
             log.error("로컬 이미지 저장 실패: 파일={}", file.getOriginalFilename(), e);
             throw new BusinessException(ErrorCode.IMAGE_UPLOAD_FAILED);
@@ -45,15 +46,35 @@ public class LocalStorageService implements StorageService {
     @Override
     public void delete(String key) {
         try {
-            Path target = Paths.get(uploadPath).resolve(key);
-            Files.deleteIfExists(target);
+            Files.deleteIfExists(safeResolve(key));
             log.debug("로컬 이미지 삭제 완료: 키={}", key);
         } catch (IOException e) {
             log.warn("로컬 이미지 삭제 실패: 키={}, 이유={}", key, e.getMessage());
         }
     }
 
+    @Override
+    public String getPublicUrl(String key) {
+        return "/access/image/" + key;
+    }
+
     public Path resolve(String key) {
-        return Paths.get(uploadPath).resolve(key);
+        return safeResolve(key);
+    }
+
+    private Path safeResolve(String key) {
+        Path base = Paths.get(uploadPath).toAbsolutePath().normalize();
+        Path target = base.resolve(key).normalize();
+        if (!target.startsWith(base)) {
+            log.warn("Path traversal 시도 감지: key={}", key);
+            throw new BusinessException(ErrorCode.INVALID_FILE_PATH);
+        }
+        return target;
+    }
+
+    private String safeExtension(String filename) {
+        if (filename == null || !filename.contains(".")) return "";
+        String ext = filename.substring(filename.lastIndexOf('.')).toLowerCase();
+        return ext.matches("\\.[a-z0-9]{1,10}") ? ext : "";
     }
 }

@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import com.example.project.repository.AccessRepository;
 import com.example.project.repository.ImageRepository;
 import com.example.project.service.AccessService;
+import com.example.project.service.storage.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +18,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Sort;
+
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,12 +34,13 @@ public class AccessController {
    private final AccessService accessService;
    private final AccessRepository accessRepository;
    private final ImageRepository imageRepository;
+   private final StorageService storageService;
 
    @GetMapping
    public List<AccessSummaryDto> showAccess() {
       log.debug("후기 목록 조회 요청");
       List<AccessSummaryDto> dtos = new ArrayList<>();
-      for (Access access : accessRepository.findAll()) {
+      for (Access access : accessRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))) {
          AccessSummaryDto dto = new AccessSummaryDto();
          dto.setId(access.getId());
          dto.setTitle(access.getTitle());
@@ -51,9 +56,10 @@ public class AccessController {
    @Operation(description = "postman에서 진행해주세요.")
    public ResponseEntity<String> createAccess(
          @Valid @ModelAttribute AccessRequest request,
-         @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+         @AuthenticationPrincipal UserDetails userDetails,
+       @RequestParam(required = false) Long routeId) throws IOException {
       log.info("후기 작성 요청: 작성자={}", userDetails.getUsername());
-      accessService.createAccess(request, userDetails.getUsername());
+      accessService.createAccess(request, userDetails.getUsername(), routeId);
       return ResponseEntity.ok("게시글을 작성했습니다.");
    }
 
@@ -66,8 +72,13 @@ public class AccessController {
       accessDto.setTitle(access.getTitle());
       accessDto.setContent(access.getContent());
       accessDto.setWriter(access.getWriter().getUsername());
-      accessDto.setImageUrl(imageRepository.findIdsByAccessId(accessId));
+      List<String> imageUrls = imageRepository.findKeysByAccessId(accessId).stream()
+            .map(storageService::getPublicUrl)
+            .collect(Collectors.toList());
+      accessDto.setImageUrl(imageUrls);
       accessDto.setCreatedAt(String.valueOf(access.getCreatedAt()));
+      accessDto.setRouteId(access.getRouteId());
+      accessDto.setSelectedBlockIds(access.getSelectedBlockIds());
       return accessDto;
    }
 
@@ -91,4 +102,8 @@ public class AccessController {
       return ResponseEntity.ok("게시글을 삭제했습니다.");
    }
 
+   @GetMapping("/search")
+   public List<AccessSummaryDto> searchAccess(@RequestParam String q){
+      return accessService.searchAccess(q);
+   }
 }
