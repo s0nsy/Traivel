@@ -9,6 +9,8 @@ public enum ErrorCode {
 
     // ── 400 Bad Request ───────────────────────────────────────────────────────
     INVALID_INPUT(400,        "C001", "잘못된 입력값입니다."),
+    INVALID_FILE_PATH(400,    "C002", "허용되지 않는 파일 경로입니다."),
+    INVALID_FILE_TYPE(400,    "C003", "허용되지 않는 파일 형식입니다. (jpg, png, gif, webp만 가능)"),
     PASSWORD_MISMATCH(400,    "U003", "비밀번호가 일치하지 않습니다."),
     INVALID_INVITE_TOKEN(400, "I001", "유효하지 않은 초대 토큰입니다."),
     INVALID_ROUTE_ID(400,     "R003", "올바르지 않은 루트 ID 형식입니다."),
